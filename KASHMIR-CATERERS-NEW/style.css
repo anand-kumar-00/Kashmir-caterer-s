@@ -1,0 +1,8 @@
+.header{
+  background-color: oklab(0.999994 0.0000455677 0.0000200868/0.8);
+  font-family: ui-sans-serif,system-ui, sans-serif;
+  tab-size: 4;
+  width: 900px;
+  height: 65px;
+  text-size-adjust: 100%;
+}
