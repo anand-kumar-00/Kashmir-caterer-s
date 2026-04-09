@@ -24,16 +24,21 @@
         <span class="brand-name">Kashmiri Caterers</span>
 
       </div>
+      <div class="nav-sec">
+      
 
       <!-- Navigation Menu -->
-      <nav class="nav-menu">
+      <nav>
 
-        <!-- Navigation Links -->
-        <a href="#">Menu</a>
-        <a href="#">Booking</a>
-        <a href="#">Explore</a>
+        <!-- Navigation Links --> 
+         <div class="nav-section">
+        <button>menu</button>
+        <button>Booking</button>
+        <button>Explore</button>
+        </div>
 
       </nav>
+      </div>
       <!-- Right side section (Language + Auth buttons) -->
       <div class="right-section">
 
@@ -95,80 +100,6 @@
   </section>
 
 </main>
-<!-- SERVICES SECTION START -->
-<section class="services">
-
-  <!-- Section Container (controls width and center alignment) -->
-  <div class="container">
-
-    <!-- Section Heading -->
-    <div class="services-header">
-
-      <!-- Main Title -->
-      <h2>Our Services</h2>
-
-      <!-- Description -->
-      <p>
-        We offer a diverse range of catering services to make every occasion memorable
-      </p>
-
-    </div>
-
-    <!-- Services Grid (cards layout) -->
-    <div class="services-grid">
-
-      <!-- SERVICE CARD 1 -->
-      <div class="service-card">
-
-        <!-- Image container -->
-        <div class="card-image">
-
-          <!-- Service Image -->
-          <img src="images/marriage.jpg" alt="Wedding Catering">
-
-          <!-- Dark gradient overlay for readability -->
-          <div class="card-overlay"></div>
-
-          <!-- Text on image -->
-          <div class="card-content">
-
-            <!-- Icon (simple for now) -->
-            <span class="icon">❤️</span>
-
-            <!-- Service Title -->
-            <h3>Wedding Catering</h3>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- SERVICE CARD 2 -->
-      <div class="service-card">
-
-        <div class="card-image">
-
-          <img src="images/birthday.jpg" alt="Birthday Catering">
-
-          <div class="card-overlay"></div>
-
-          <div class="card-content">
-            <span class="icon">🎂</span>
-            <h3>Birthday Catering</h3>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- Add more cards same way (Corporate, Events etc.) -->
-
-    </div>
-
-  </div>
-
-</section>
 <!-- ================== SERVICES SECTION ================== -->
 <section class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 bg-gray-50">
   <!-- Section container (centered + max width) -->
@@ -198,7 +129,7 @@
         <div class="relative h-64 overflow-hidden">
           <!-- Service Image -->
           <img 
-            src="images/marriage.jpg" 
+            src="/KASHMIR-CATERERS-NEW/images/service-marriage.png" 
             alt="Wedding Catering"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           >
@@ -224,7 +155,7 @@
 
         <div class="relative h-64 overflow-hidden">
           <img 
-            src="images/birthday.jpg" 
+            src="/KASHMIR-CATERERS-NEW/images/service-birthday.png" 
             alt="Birthday Catering"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           >
@@ -246,7 +177,7 @@
 
         <div class="relative h-64 overflow-hidden">
           <img 
-            src="images/corporate.jpg" 
+            src="/KASHMIR-CATERERS-NEW/images/service-corporate.png" 
             alt="Corporate Catering"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           >
@@ -268,7 +199,7 @@
 
         <div class="relative h-64 overflow-hidden">
           <img 
-            src="images/barbecue.jpg" 
+            src="/KASHMIR-CATERERS-NEW/images/service-bbq.png" 
             alt="Barbecue Catering"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           >
@@ -288,139 +219,100 @@
   </div>
 </section>
 <!-- SECTION: Gallery -->
-<section class="py-16 px-4 bg-white">
-  <!-- Container (center content and limit width) -->
-  <div class="max-w-7xl mx-auto">
+  <section class="py-16 px-4 bg-white"> 
+    <!-- Container (center content and limit width) -->
+      <div class="max-w-7xl mx-auto">
+         <!-- Heading Section -->
+           <div class="text-center mb-10">
+             <!-- Title --> <h2 class="text-3xl font-bold text-gray-900 mb-3">Our Gallery </h2>
+                <!-- Subtitle --> 
+                 <p class="text-gray-500 max-w-2xl mx-auto">
+                   Glimpses from our previous events and celebrations </p>
+                   </div>
+                   <!-- Gallery Grid using columns -->
+                  <div class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+ <!-- IMAGE CARD 1 --> 
+  <div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer"> 
+    <!-- Image container --> 
+     <div class="h-[260px]"> 
+      <!-- Image --> 
+       <img src="/KASHMIR-CATERERS-NEW/images/gallery-1.png" alt="Event Gallery 1" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" > 
+      </div> 
+      <!-- Dark overlay on hover --> 
+       <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300">
 
-    <!-- Heading Section -->
-    <div class="text-center mb-10">
-      <!-- Title -->
-      <h2 class="text-3xl font-bold text-gray-900 mb-3">
-        Our Gallery
-      </h2>
+       </div> 
+       <!-- Border effect on hover --> 
+        <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300">
 
-      <!-- Subtitle -->
-      <p class="text-gray-500 max-w-2xl mx-auto">
-        Glimpses from our previous events and celebrations
-      </p>
-    </div>
+        </div> 
+      </div> 
+      <!-- IMAGE CARD 2 --> 
+       <div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer"> 
+        <!-- Bigger height for variation --> 
+         <div class="h-[420px]"> 
+          <img src="/KASHMIR-CATERERS-NEW/images/gallery-2.png" alt="Event Gallery 2" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" >
+         </div> 
+         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300">
 
-    <!-- Gallery Grid using columns -->
-    <div class="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+         </div> 
+         <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300">
 
-      <!-- IMAGE CARD 1 -->
-      <div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer">
-        
-        <!-- Image container -->
-        <div class="h-[260px]">
-          <!-- Image -->
-          <img 
-            src="/images/gallery1.jpg" 
-            alt="Event Gallery 1"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          >
-        </div>
+         </div> 
+        </div> 
+        <!-- IMAGE CARD 3 --> 
+         <div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer"> 
+          <div class="h-[260px]"> 
+            <img src="/KASHMIR-CATERERS-NEW/images/gallery-3.png" alt="Event Gallery 3" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" > 
+          </div> 
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300">
+          </div> 
+          <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300">
 
-        <!-- Dark overlay on hover -->
-        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300"></div>
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+    <!-- IMAGE CARD 4 --> 
+     <div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer"> 
+      <!-- Image container --> 
+       <div class="h-[260px]"> 
+        <img src="/KASHMIR-CATERERS-NEW/images/gallery-4.png" 
+        <!-- Real image path (NOT _next/image) --> alt="Event Gallery 4" <!-- Accessibility text --> loading="lazy" <!-- Improves performance --> class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" <!-- w-full h-full → full width & height object-cover → maintain aspect ratio transition → smooth zoom animation group-hover:scale-110 → zoom on hover --> > 
+      </div> 
+      <!-- Dark overlay on hover --> 
+       <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300">
 
-        <!-- Border effect on hover -->
-        <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300"></div>
-      </div>
+       </div> 
+       <!-- Border animation --> 
+        <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300">
 
+        </div> 
+      </div> 
+      <!-- IMAGE CARD 5 (Taller card for layout variation) --> 
+       <div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer"> 
+        <div class="h-[420px]"> 
+          <img src="/KASHMIR-CATERERS-NEW/images/gallery-5.png" alt="Event Gallery 5" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" > 
+        </div> 
+        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300">
 
-      <!-- IMAGE CARD 2 -->
-      <div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer">
-        
-        <!-- Bigger height for variation -->
-        <div class="h-[420px]">
-          <img 
-            src="/images/gallery2.jpg" 
-            alt="Event Gallery 2"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          >
-        </div>
+        </div> 
+        <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300"></div> 
+      </div> 
+      <!-- IMAGE CARD 6 --> 
+       <div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer"> 
+        <div class="h-[260px]"> 
+          <img src="/images/gallery6.jpg" alt="Event Gallery 6" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" > 
+        </div> 
+        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300">
 
-        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300"></div>
-        <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300"></div>
-      </div>
+        </div> 
+        <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300">
 
+        </div> 
+      </div> 
+    </section>.
 
-      <!-- IMAGE CARD 3 -->
-      <div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer">
-        
-        <div class="h-[260px]">
-          <img 
-            src="/images/gallery3.jpg" 
-            alt="Event Gallery 3"
-            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-          >
-        </div>
-
-        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300"></div>
-        <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300"></div>
-      </div>
-
-    </div>
-  </div>
-  <!-- IMAGE CARD 4 -->
-<div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer">
-  
-  <!-- Image container -->
-  <div class="h-[260px]">
-    <img 
-      src="/images/gallery4.jpg"  <!-- Real image path (NOT _next/image) -->
-      alt="Event Gallery 4"       <!-- Accessibility text -->
-      loading="lazy"              <!-- Improves performance -->
-      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-      <!-- w-full h-full → full width & height
-           object-cover → maintain aspect ratio
-           transition → smooth zoom animation
-           group-hover:scale-110 → zoom on hover -->
-    >
-  </div>
-
-  <!-- Dark overlay on hover -->
-  <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300"></div>
-
-  <!-- Border animation -->
-  <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300"></div>
-</div>
-
-
-<!-- IMAGE CARD 5 (Taller card for layout variation) -->
-<div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer">
-  
-  <div class="h-[420px]">
-    <img 
-      src="/images/gallery5.jpg"
-      alt="Event Gallery 5"
-      loading="lazy"
-      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-    >
-  </div>
-
-  <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300"></div>
-  <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300"></div>
-</div>
-
-
-<!-- IMAGE CARD 6 -->
-<div class="break-inside-avoid group relative rounded-xl overflow-hidden cursor-pointer">
-  
-  <div class="h-[260px]">
-    <img 
-      src="/images/gallery6.jpg"
-      alt="Event Gallery 6"
-      loading="lazy"
-      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-    >
-  </div>
-
-  <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition duration-300"></div>
-  <div class="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500 transition duration-300"></div>
-</div>
-</section>
 <!-- STAR RATING CONTAINER -->
 <div class="flex gap-1">
 
@@ -614,7 +506,7 @@
       </div>
 
       <!-- Google Maps Button -->
-      <a href="https://www.google.com/maps/place/Srinagar,+Jammu+and+Kashmir" target="_blank">
+      <a href="https://www.google.com/maps/place/Jammu,+Jammu+and+Kashmir" target="_blank">
         <button class="btn">Get Directions</button>
       </a>
 
@@ -625,7 +517,7 @@
 
       <!-- Embedded Map -->
       <iframe
-        src="https://www.google.com/maps?q=Srinagar&output=embed"
+        src="https://www.google.com/maps?q=Jammu&output=embed"
         width="100%"
         height="400"
         style="border:0;"
