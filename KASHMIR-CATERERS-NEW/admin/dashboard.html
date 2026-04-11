@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Kashmiri Caterers</title>
+    <link rel="stylesheet" href="../styles/admin-dashboard.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Kashmiri Caterers</h2>
+            <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" onclick="switchTab('dashboard')">
+                <span class="icon">📊</span>
+                <span class="label">Dashboard</span>
+            </a>
+            <a href="#bookings" class="nav-item" onclick="switchTab('bookings')">
+                <span class="icon">📅</span>
+                <span class="label">Bookings</span>
+            </a>
+            <a href="#menu" class="nav-item" onclick="switchTab('menu')">
+                <span class="icon">🍽️</span>
+                <span class="label">Menu Management</span>
+            </a>
+            <a href="#accounting" class="nav-item" onclick="switchTab('accounting')">
+                <span class="icon">💰</span>
+                <span class="label">Accounting</span>
+            </a>
+            <a href="#reports" class="nav-item" onclick="switchTab('reports')">
+                <span class="icon">📈</span>
+                <span class="label">Reports</span>
+            </a>
+            <a href="#locations" class="nav-item" onclick="switchTab('locations')">
+                <span class="icon">📍</span>
+                <span class="label">Locations</span>
+            </a>
+            <a href="#meetings" class="nav-item" onclick="switchTab('meetings')">
+                <span class="icon">🎥</span>
+                <span class="label">Meetings</span>
+            </a>
+            <a href="#settings" class="nav-item" onclick="switchTab('settings')">
+                <span class="icon">⚙️</span>
+                <span class="label">Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="btn-logout" onclick="logoutFromDashboard()">
+                <span class="icon">🚪</span>
+                <span class="label">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Top Header -->
+        <header class="admin-header">
+            <h1 id="page-title">Dashboard</h1>
+            <div class="header-right">
+                <div class="user-info">
+                    <span id="user-name">Admin User</span>
+                    <div class="user-avatar">👤</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="admin-content">
+            <!-- Dashboard Tab -->
+            <section id="dashboard-tab" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <h3>Total Bookings</h3>
+                            <p class="stat-value" id="total-bookings">0</p>
+                            <small>This month</small>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3>Confirmed Events</h3>
+                            <p class="stat-value" id="confirmed-events">0</p>
+                            <small>This month</small>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">💵</div>
+                        <div class="stat-info">
+                            <h3>Total Revenue</h3>
+                            <p class="stat-value" id="total-revenue">₹0</p>
+                            <small>This month</small>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3>Pending Payments</h3>
+                            <p class="stat-value" id="pending-payments">0</p>
+                            <small>Awaiting payment</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h2>Revenue Trend</h2>
+                    <canvas id="revenue-chart"></canvas>
+                </div>
+
+                <div class="recent-bookings">
+                    <h2>Recent Bookings</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-bookings-list">
+                            <tr>
+                                <td colspan="6" class="empty-state">No bookings yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Bookings Tab -->
+            <section id="bookings-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Booking Management</h2>
+                    <div class="filter-controls">
+                        <select id="status-filter" onchange="filterBookings()">
+                            <option value="">All Status</option>
+                            <option value="pending_payment">Pending Payment</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <input type="date" id="date-filter" onchange="filterBookings()">
+                    </div>
+                </div>
+
+                <div class="bookings-list">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer Name</th>
+                                <th>Event Date</th>
+                                <th>Menu Items</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-list-body">
+                            <tr>
+                                <td colspan="7" class="empty-state">No bookings found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Menu Management Tab -->
+            <section id="menu-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Menu Management</h2>
+                    <button class="btn-primary" onclick="openAddMenuModal()">+ Add Menu Item</button>
+                </div>
+
+                <div class="menu-categories">
+                    <div class="category-section">
+                        <h3>Breakfast</h3>
+                        <div class="menu-items" id="breakfast-items"></div>
+                    </div>
+                    <div class="category-section">
+                        <h3>Lunch</h3>
+                        <div class="menu-items" id="lunch-items"></div>
+                    </div>
+                    <div class="category-section">
+                        <h3>Dinner</h3>
+                        <div class="menu-items" id="dinner-items"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Accounting Tab -->
+            <section id="accounting-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Accounting & Expenses</h2>
+                    <button class="btn-primary" onclick="openAddExpenseModal()">+ Add Expense</button>
+                    <button class="btn-secondary" onclick="exportAccountingData()">Export CSV</button>
+                </div>
+
+                <div class="accounting-summary">
+                    <div class="accounting-card">
+                        <h3>Total Income</h3>
+                        <p class="amount" id="total-income">₹0</p>
+                    </div>
+                    <div class="accounting-card">
+                        <h3>Total Expenses</h3>
+                        <p class="amount expense" id="total-expenses">₹0</p>
+                    </div>
+                    <div class="accounting-card">
+                        <h3>Net Profit</h3>
+                        <p class="amount profit" id="net-profit">₹0</p>
+                    </div>
+                </div>
+
+                <div class="expenses-table">
+                    <h3>Expense Records</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-list">
+                            <tr>
+                                <td colspan="5" class="empty-state">No expenses recorded</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports Tab -->
+            <section id="reports-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Reports & Analytics</h2>
+                    <div class="report-filters">
+                        <select id="year-filter" onchange="generateReport()">
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                        </select>
+                        <button class="btn-secondary" onclick="downloadReport()">Download PDF</button>
+                    </div>
+                </div>
+
+                <div class="report-container">
+                    <div class="report-card">
+                        <h3>Yearly Summary</h3>
+                        <div class="report-data" id="yearly-report">
+                            <div class="report-row">
+                                <span>Total Events</span>
+                                <span id="report-total-events">0</span>
+                            </div>
+                            <div class="report-row">
+                                <span>Total Revenue</span>
+                                <span id="report-total-revenue">₹0</span>
+                            </div>
+                            <div class="report-row">
+                                <span>Total Expenses</span>
+                                <span id="report-total-expenses">₹0</span>
+                            </div>
+                            <div class="report-row highlight">
+                                <span>Net Profit/Loss</span>
+                                <span id="report-net-profit">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <h3>Monthly Breakdown</h3>
+                        <canvas id="monthly-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="report-card">
+                    <h3>Top Services</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Bookings</th>
+                                <th>Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-services">
+                            <tr>
+                                <td colspan="3" class="empty-state">No data</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Locations Tab -->
+            <section id="locations-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Location Management</h2>
+                    <button class="btn-primary" onclick="openAddLocationModal()">+ Add Location</button>
+                </div>
+
+                <div class="locations-management">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Address</th>
+                                <th>Coordinates</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="locations-list-body">
+                            <tr>
+                                <td colspan="5" class="empty-state">Loading locations...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="location-map" style="width: 100%; height: 500px; margin-top: 2rem; border-radius: 8px; overflow: hidden;"></div>
+            </section>
+
+            <!-- Meetings Tab -->
+            <section id="meetings-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Meeting Scheduler</h2>
+                    <button class="btn-primary" onclick="openScheduleMeetingModal()">+ Schedule Meeting</button>
+                </div>
+
+                <div class="meetings-list">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Date & Time</th>
+                                <th>Meeting Type</th>
+                                <th>Zoom Link</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meetings-list-body">
+                            <tr>
+                                <td colspan="6" class="empty-state">No meetings scheduled</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="settings-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Settings</h2>
+                </div>
+
+                <div class="settings-container">
+                    <div class="settings-section">
+                        <h3>Business Information</h3>
+                        <form class="settings-form">
+                            <div class="form-group">
+                                <label>Business Name</label>
+                                <input type="text" placeholder="Kashmiri Caterers" value="Kashmiri Caterers">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" placeholder="+91 9876543210" value="+91 9876543210">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" placeholder="hello@kashmiricaterers.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea placeholder="Business Address"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Payment Settings</h3>
+                        <form class="settings-form">
+                            <div class="form-group">
+                                <label>Razorpay Key</label>
+                                <input type="password" placeholder="razorpay_live_key_xxx">
+                            </div>
+                            <div class="form-group">
+                                <label>Razorpay Secret</label>
+                                <input type="password" placeholder="razorpay_secret_xxx">
+                            </div>
+                            <button type="submit" class="btn-primary">Update Payment Settings</button>
+                        </form>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Account Settings</h3>
+                        <button class="btn-secondary" onclick="changePassword()">Change Password</button>
+                        <button class="btn-danger" onclick="deleteAccount()">Delete Account</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal" id="addMenuModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2>Add Menu Item</h2>
+            <form onsubmit="handleAddMenuItem(event)">
+                <div class="form-group">
+                    <label>Item Name</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select required>
+                        <option value="">Select Category</option>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select required>
+                        <option value="">Select Type</option>
+                        <option value="snacks">Snacks</option>
+                        <option value="main">Main Course</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Add Item</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="addExpenseModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2>Add Expense</h2>
+            <form onsubmit="handleAddExpense(event)">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select required>
+                        <option value="">Select Category</option>
+                        <option value="ingredients">Ingredients</option>
+                        <option value="staff">Staff Salary</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="equipment">Equipment</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" required>
+                </div>
+                <button type="submit" class="btn-primary">Add Expense</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="addLocationModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2>Add Location</h2>
+            <form onsubmit="handleAddLocation(event)">
+                <div class="form-group">
+                    <label>Location Name</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select required>
+                        <option value="office">Office</option>
+                        <option value="event">Event Venue</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Latitude</label>
+                    <input type="number" step="0.000001" required>
+                </div>
+                <div class="form-group">
+                    <label>Longitude</label>
+                    <input type="number" step="0.000001" required>
+                </div>
+                <button type="submit" class="btn-primary">Add Location</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="scheduleMeetingModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2>Schedule Meeting</h2>
+            <form onsubmit="handleScheduleMeeting(event)">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Date & Time</label>
+                    <input type="datetime-local" required>
+                </div>
+                <div class="form-group">
+                    <label>Meeting Type</label>
+                    <select required>
+                        <option value="">Select Type</option>
+                        <option value="consultation">Consultation</option>
+                        <option value="planning">Event Planning</option>
+                        <option value="finalization">Finalization</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Zoom Link</label>
+                    <input type="url" placeholder="https://zoom.us/j/...">
+                </div>
+                <button type="submit" class="btn-primary">Schedule Meeting</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+       <script src="../js/admin-dashboard.js"></script>
+</body>
+</html>
