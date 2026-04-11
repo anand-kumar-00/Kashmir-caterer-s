@@ -32,11 +32,13 @@
     font-family: var(--font-display);
     cursor: pointer;
     transition: transform var(--transition-base);
+    margin-left: 5px;
+    
 }
 
-.logo-icon {
-    font-size: 2rem;
-    animation: pulse 2s ease-in-out infinite;
+.logo img{
+    width: 60px;
+    height: 60px;
 }
 
 .logo:hover {
