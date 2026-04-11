@@ -1,641 +1,76 @@
-/* ================================
-   ADMIN DASHBOARD JAVASCRIPT
-   ================================ */
-
-// Check authentication
-document.addEventListener('DOMContentLoaded', () => {
-    initializeDashboard();
-});
-
-function initializeDashboard() {
-    // Check if user is logged in and is employee/admin
-    let appState = JSON.parse(localStorage.getItem('appState') || '{}');
-    const hasDashboardAccess =
-        appState.isLoggedIn &&
-        (appState.userRole === 'employee' || appState.userRole === 'admin');
-    
-    // Fall back to a preview admin user instead of redirecting during local development
-    if (!hasDashboardAccess) {
-        appState = {
-            isLoggedIn: true,
-            userRole: 'admin',
-            currentUser: { name: 'Admin Preview' },
-        };
-        localStorage.setItem('appState', JSON.stringify(appState));
-    }
-    
-    // Update user name in header
-    if (appState.currentUser) {
-        document.getElementById('user-name').textContent = appState.currentUser.name;
-    }
-    
-    // Load dashboard data
-    loadDashboardData();
-    loadBookings();
-    loadMenuItems();
-    loadExpenses();
-    loadLocations();
-    loadMeetings();
-}
-
-// ================================
-// TAB SWITCHING
-// ================================
-
-function switchTab(tabName) {
-    // Hide all tabs
-    document.querySelectorAll('.tab-content').forEach((tab) => {
-        tab.classList.remove('active');
-    });
-    
-    // Remove active state from nav items
-    document.querySelectorAll('.nav-item').forEach((item) => {
-        item.classList.remove('active');
-    });
-    
-    // Show selected tab
-    const tabElement = document.getElementById(`${tabName}-tab`);
-    if (tabElement) {
-        tabElement.classList.add('active');
-    }
-    
-    // Update nav item active state
-    const navItem = document.querySelector(`a[onclick="switchTab('${tabName}')"]`);
-    if (navItem) {
-        navItem.classList.add('active');
-    }
-    
-    // Update page title
-    const titles = {
-        dashboard: 'Dashboard',
-        bookings: 'Booking Management',
-        menu: 'Menu Management',
-        accounting: 'Accounting',
-        reports: 'Reports',
-        locations: 'Locations',
-        meetings: 'Meetings',
-        settings: 'Settings',
-    };
-    
-    document.getElementById('page-title').textContent = titles[tabName] || 'Dashboard';
-}
-
-// ================================
-// DASHBOARD DATA
-// ================================
-
-function loadDashboardData() {
-    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    
-    // Calculate statistics
-    const totalBookings = bookings.length;
-    const confirmedEvents = bookings.filter((b) => b.status === 'confirmed').length;
-    const totalRevenue = bookings.reduce((sum, b) => sum + (b.estimatedTotal || 0), 0);
-    const pendingPayments = bookings.filter((b) => b.status === 'pending_payment').length;
-    
-    // Update stat cards
-    document.getElementById('total-bookings').textContent = totalBookings;
-    document.getElementById('confirmed-events').textContent = confirmedEvents;
-    document.getElementById('total-revenue').textContent = `₹${totalRevenue.toLocaleString('en-IN')}`;
-    document.getElementById('pending-payments').textContent = pendingPayments;
-    
-    // Load recent bookings
-    loadRecentBookings(bookings);
-}
-
-function loadRecentBookings(bookings) {
-    const tbody = document.getElementById('recent-bookings-list');
-    const recentBookings = bookings.slice(-5).reverse();
-    
-    if (recentBookings.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No bookings yet</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = recentBookings
-        .map(
-            (booking) => `
-            <tr>
-                <td><strong>${booking.id}</strong></td>
-                <td>${booking.customerName}</td>
-                <td>${formatDate(booking.eventDate)}</td>
-                <td>₹${booking.estimatedTotal.toLocaleString('en-IN')}</td>
-                <td><span class="status-badge ${booking.status}">${booking.status.replace('_', ' ')}</span></td>
-                <td>
-                    <button class="action-btn" onclick="viewBookingDetails('${booking.id}')">👁️</button>
-                    <button class="action-btn" onclick="editBooking('${booking.id}')">✏️</button>
-                </td>
-            </tr>
-        `
-        )
-        .join('');
-}
-
-// ================================
-// BOOKINGS MANAGEMENT
-// ================================
-
-function loadBookings() {
-    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    displayBookings(bookings);
-}
-
-function displayBookings(bookings) {
-    const tbody = document.getElementById('bookings-list-body');
-    
-    if (bookings.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No bookings found</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = bookings
-        .map(
-            (booking) => `
-            <tr>
-                <td><strong>${booking.id}</strong></td>
-                <td>${booking.customerName}</td>
-                <td>${formatDate(booking.eventDate)}</td>
-                <td>${booking.menu.join(', ')}</td>
-                <td>₹${booking.estimatedTotal.toLocaleString('en-IN')}</td>
-                <td><span class="status-badge ${booking.status}">${booking.status.replace('_', ' ')}</span></td>
-                <td>
-                    <button class="action-btn" onclick="updateBookingStatus('${booking.id}')">📝</button>
-                    <button class="action-btn" onclick="contactCustomer('${booking.id}')">📞</button>
-                </td>
-            </tr>
-        `
-        )
-        .join('');
-}
-
-function filterBookings() {
-    const statusFilter = document.getElementById('status-filter').value;
-    const dateFilter = document.getElementById('date-filter').value;
-    
-    let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    
-    if (statusFilter) {
-        bookings = bookings.filter((b) => b.status === statusFilter);
-    }
-    
-    if (dateFilter) {
-        bookings = bookings.filter((b) => b.eventDate === dateFilter);
-    }
-    
-    displayBookings(bookings);
-}
-
-function updateBookingStatus(bookingId) {
-    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    const booking = bookings.find((b) => b.id === bookingId);
-    
-    if (!booking) {
-        alert('Booking not found');
-        return;
-    }
-    
-    const newStatus = prompt(
-        'Select new status: \n1. pending_payment\n2. confirmed\n3. completed\n4. cancelled',
-        booking.status
-    );
-    
-    if (newStatus) {
-        booking.status = newStatus;
-        localStorage.setItem('bookings', JSON.stringify(bookings));
-        loadBookings();
-        alert('Booking status updated');
-    }
-}
-
-function contactCustomer(bookingId) {
-    alert('Contact feature will integrate with email/SMS service');
-}
-
-function viewBookingDetails(bookingId) {
-    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    const booking = bookings.find((b) => b.id === bookingId);
-    
-    if (!booking) return;
-    
-    alert(`
-Booking Details:
-ID: ${booking.id}
-Customer: ${booking.customerName}
-Event Date: ${formatDate(booking.eventDate)}
-Menu: ${booking.menu.join(', ')}
-Requirements: ${booking.requirements}
-Amount: ₹${booking.estimatedTotal}
-Status: ${booking.status}
-    `);
-}
-
-function editBooking(bookingId) {
-    alert('Edit functionality will be available in full version');
-}
-
-// ================================
-// MENU MANAGEMENT
-// ================================
-
-function loadMenuItems() {
-    const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-    
-    const categories = ['breakfast', 'lunch', 'dinner'];
-    
-    categories.forEach((category) => {
-        const items = menuItems.filter((item) => item.category === category);
-        const container = document.getElementById(`${category}-items`);
-        
-        if (items.length === 0) {
-            container.innerHTML = '<p style="color: #999;">No items yet</p>';
-            return;
-        }
-        
-        container.innerHTML = items
-            .map(
-                (item) => `
-            <div class="menu-item-card">
-                <div class="menu-item-info">
-                    <h4>${item.name}</h4>
-                    <p style="color: #999; font-size: 0.85rem;">${item.type}</p>
-                    <p style="font-size: 0.85rem;">${item.description}</p>
-                </div>
-                <div style="text-align: right;">
-                    <div class="menu-item-price">₹${item.price}</div>
-                    <button class="action-btn" onclick="editMenuItem('${item.id}')">✏️</button>
-                    <button class="action-btn" onclick="deleteMenuItem('${item.id}')">🗑️</button>
-                </div>
-            </div>
-        `
-            )
-            .join('');
-    });
-}
-
-function openAddMenuModal() {
-    document.getElementById('addMenuModal').classList.add('active');
-}
-
-function handleAddMenuItem(event) {
-    event.preventDefault();
-    
-    const form = event.target;
-    const formData = new FormData(form);
-    
-    const menuItem = {
-        id: 'ITEM-' + Date.now(),
-        name: form.querySelector('input[type="text"]').value,
-        category: form.querySelectorAll('select')[0].value,
-        type: form.querySelectorAll('select')[1].value,
-        price: parseInt(form.querySelector('input[type="number"]').value),
-        description: form.querySelector('textarea').value,
-    };
-    
-    let menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-    menuItems.push(menuItem);
-    localStorage.setItem('menuItems', JSON.stringify(menuItems));
-    
-    alert('Menu item added successfully');
-    closeModal();
-    loadMenuItems();
-    form.reset();
-}
-
-function editMenuItem(itemId) {
-    alert('Edit functionality coming soon');
-}
-
-function deleteMenuItem(itemId) {
-    if (confirm('Are you sure you want to delete this item?')) {
-        let menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-        menuItems = menuItems.filter((item) => item.id !== itemId);
-        localStorage.setItem('menuItems', JSON.stringify(menuItems));
-        loadMenuItems();
-        alert('Menu item deleted');
-    }
-}
-
-// ================================
-// ACCOUNTING
-// ================================
-
-function loadExpenses() {
-    const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
-    displayExpenses(expenses);
-    updateAccountingSummary(expenses);
-}
-
-function displayExpenses(expenses) {
-    const tbody = document.getElementById('expenses-list');
-    
-    if (expenses.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No expenses recorded</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = expenses
-        .map(
-            (expense) => `
-            <tr>
-                <td>${formatDate(expense.date)}</td>
-                <td>${expense.category}</td>
-                <td>${expense.description}</td>
-                <td>₹${expense.amount.toLocaleString('en-IN')}</td>
-                <td>
-                    <button class="action-btn" onclick="deleteExpense('${expense.id}')">🗑️</button>
-                </td>
-            </tr>
-        `
-        )
-        .join('');
-}
-
-function updateAccountingSummary(expenses) {
-    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    
-    const totalIncome = bookings.reduce((sum, b) => sum + (b.estimatedTotal || 0), 0);
-    const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-    const netProfit = totalIncome - totalExpenses;
-    
-    document.getElementById('total-income').textContent = `₹${totalIncome.toLocaleString('en-IN')}`;
-    document.getElementById('total-expenses').textContent = `₹${totalExpenses.toLocaleString('en-IN')}`;
-    document.getElementById('net-profit').textContent = `₹${netProfit.toLocaleString('en-IN')}`;
-}
-
-function openAddExpenseModal() {
-    document.getElementById('addExpenseModal').classList.add('active');
-}
-
-function handleAddExpense(event) {
-    event.preventDefault();
-    
-    const form = event.target;
-    const expense = {
-        id: 'EXP-' + Date.now(),
-        date: form.querySelector('input[type="date"]').value,
-        category: form.querySelectorAll('select')[0].value,
-        description: form.querySelector('input[type="text"]').value,
-        amount: parseInt(form.querySelector('input[type="number"]').value),
-    };
-    
-    let expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
-    expenses.push(expense);
-    localStorage.setItem('expenses', JSON.stringify(expenses));
-    
-    alert('Expense added successfully');
-    closeModal();
-    loadExpenses();
-    form.reset();
-}
-
-function deleteExpense(expenseId) {
-    if (confirm('Delete this expense?')) {
-        let expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
-        expenses = expenses.filter((e) => e.id !== expenseId);
-        localStorage.setItem('expenses', JSON.stringify(expenses));
-        loadExpenses();
-    }
-}
-
-function exportAccountingData() {
-    const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
-    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    
-    let csv = 'Type,Date,Description,Amount\n';
-    
-    bookings.forEach((b) => {
-        csv += `Income,${b.eventDate},Booking ${b.id},${b.estimatedTotal}\n`;
-    });
-    
-    expenses.forEach((e) => {
-        csv += `Expense,${e.date},${e.description},${-e.amount}\n`;
-    });
-    
-    downloadCSV(csv, 'accounting-report.csv');
-}
-
-// ================================
-// REPORTS
-// ================================
-
-function generateReport() {
-    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
-    
-    const totalIncome = bookings.reduce((sum, b) => sum + (b.estimatedTotal || 0), 0);
-    const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-    
-    document.getElementById('report-total-events').textContent = bookings.length;
-    document.getElementById('report-total-revenue').textContent = `₹${totalIncome.toLocaleString('en-IN')}`;
-    document.getElementById('report-total-expenses').textContent = `₹${totalExpenses.toLocaleString('en-IN')}`;
-    document.getElementById('report-net-profit').textContent = `₹${(totalIncome - totalExpenses).toLocaleString('en-IN')}`;
-}
-
-function downloadReport() {
-    alert('PDF export functionality coming soon');
-}
-
-// ================================
-// LOCATIONS
-// ================================
-
-function loadLocations() {
-    // This would load from backend in production
-    const locations = [
-        {
-            id: 'office',
-            name: 'Office Location',
-            type: 'office',
-            address: 'Srinagar, Jammu & Kashmir',
-            lat: 34.083651,
-            lng: 74.797371,
-        },
-        {
-            id: 'event1',
-            name: 'Current Event',
-            type: 'event',
-            address: 'Mumbai, Maharashtra',
-            lat: 19.0760,
-            lng: 72.8777,
-        },
-    ];
-    
-    displayLocations(locations);
-}
-
-function displayLocations(locations) {
-    const tbody = document.getElementById('locations-list-body');
-    
-    if (locations.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No locations</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = locations
-        .map(
-            (loc) => `
-            <tr>
-                <td>${loc.name}</td>
-                <td>${loc.type}</td>
-                <td>${loc.address}</td>
-                <td>${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}</td>
-                <td>
-                    <button class="action-btn" onclick="editLocation('${loc.id}')">✏️</button>
-                    <button class="action-btn" onclick="deleteLocation('${loc.id}')">🗑️</button>
-                </td>
-            </tr>
-        `
-        )
-        .join('');
-}
-
-function openAddLocationModal() {
-    document.getElementById('addLocationModal').classList.add('active');
-}
-
-function handleAddLocation(event) {
-    event.preventDefault();
-    alert('Location added. This will sync with the frontend map.');
-    closeModal();
-    event.target.reset();
-}
-
-function editLocation(locationId) {
-    alert('Edit functionality coming soon');
-}
-
-function deleteLocation(locationId) {
-    if (confirm('Delete this location?')) {
-        alert('Location deleted');
-    }
-}
-
-// ================================
-// MEETINGS
-// ================================
-
-function loadMeetings() {
-    const meetings = JSON.parse(localStorage.getItem('meetings') || '[]');
-    displayMeetings(meetings);
-}
-
-function displayMeetings(meetings) {
-    const tbody = document.getElementById('meetings-list-body');
-    
-    if (meetings.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No meetings scheduled</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = meetings
-        .map(
-            (meeting) => `
-            <tr>
-                <td>${meeting.customerName}</td>
-                <td>${formatDate(meeting.dateTime)}</td>
-                <td>${meeting.type}</td>
-                <td><a href="${meeting.zoomLink}" target="_blank">Join Meeting</a></td>
-                <td>Scheduled</td>
-                <td>
-                    <button class="action-btn" onclick="deleteMeeting('${meeting.id}')">🗑️</button>
-                </td>
-            </tr>
-        `
-        )
-        .join('');
-}
-
-function openScheduleMeetingModal() {
-    document.getElementById('scheduleMeetingModal').classList.add('active');
-}
-
-function handleScheduleMeeting(event) {
-    event.preventDefault();
-    
-    const form = event.target;
-    const meeting = {
-        id: 'MTG-' + Date.now(),
-        customerName: form.querySelectorAll('input')[0].value,
-        dateTime: form.querySelector('input[type="datetime-local"]').value,
-        type: form.querySelector('select').value,
-        zoomLink: form.querySelectorAll('input')[1].value,
-    };
-    
-    let meetings = JSON.parse(localStorage.getItem('meetings') || '[]');
-    meetings.push(meeting);
-    localStorage.setItem('meetings', JSON.stringify(meetings));
-    
-    alert('Meeting scheduled successfully');
-    closeModal();
-    loadMeetings();
-    form.reset();
-}
-
-function deleteMeeting(meetingId) {
-    if (confirm('Cancel this meeting?')) {
-        let meetings = JSON.parse(localStorage.getItem('meetings') || '[]');
-        meetings = meetings.filter((m) => m.id !== meetingId);
-        localStorage.setItem('meetings', JSON.stringify(meetings));
-        loadMeetings();
-    }
-}
-
-// ================================
-// MODAL MANAGEMENT
-// ================================
-
-function closeModal(event) {
-    if (event && event.target.className !== 'modal') return;
-    
-    const activeModal = document.querySelector('.modal.active');
-    if (activeModal) {
-        activeModal.classList.remove('active');
-    }
-}
-
-// ================================
-// SIDEBAR
-// ================================
-
-function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.classList.toggle('active');
-}
-
-// ================================
-// LOGOUT
-// ================================
-
-function logoutFromDashboard() {
-    if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('appState');
-        window.location.href = '../index.html';
-    }
-}
-
-// ================================
-// UTILITY FUNCTIONS
-// ================================
-
-function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
-}
-
-function downloadCSV(csv, filename) {
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    window.URL.revokeObjectURL(url);
-}
-
-// Initialize on load
-document.querySelectorAll('.modal').forEach((modal) => {
-    modal.addEventListener('click', closeModal);
-});
-
-// Generate initial report
-generateReport();
+const defaultLocations=[{id:'office',name:'Office Location',type:'office',address:'Srinagar, Jammu & Kashmir',lat:34.083651,lng:74.797371},{id:'event1',name:'Current Event',type:'event',address:'Mumbai, Maharashtra',lat:19.076,lng:72.8777}];
+document.addEventListener('DOMContentLoaded',()=>initializeDashboard());
+window.addEventListener('storage',(event)=>{if(!event.key||['bookings','menuItems','expenses','meetings','appState','usersDatabase','employeesDatabase','locations'].includes(event.key)){syncDashboardData();}});
+window.addEventListener('focus',syncDashboardData);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){syncDashboardData();}});
+function initializeDashboard(){ensureDashboardData();const appState=JSON.parse(localStorage.getItem('appState')||'{}');const hasDashboardAccess=appState.isLoggedIn&&(appState.userRole==='employee'||appState.userRole==='admin');if(!hasDashboardAccess){window.location.href='../index.html';return;}if(appState.currentUser){document.getElementById('user-name').textContent=appState.currentUser.name;document.getElementById('user-role-label').textContent=`${formatStatus(appState.currentUser.role)} access${appState.currentUser.employeeCode?` | ${appState.currentUser.employeeCode}`:''}`;}syncDashboardData();}
+function ensureDashboardData(){if(!localStorage.getItem('locations')){localStorage.setItem('locations',JSON.stringify(defaultLocations));}if(!localStorage.getItem('employeesDatabase')){const users=getUsers();const employees=users.filter((user)=>user.role==='employee'||user.role==='admin').map((user)=>({id:user.id,employeeCode:user.employeeCode,name:user.name,email:user.email,role:user.role,jobRole:user.jobRole||'staff',dailyRate:Number(user.dailyRate||0),daysWorked:Number(user.daysWorked||0),advancePaid:Number(user.advancePaid||0),isActive:user.isActive!==false,createdAt:user.createdAt||new Date().toISOString()}));localStorage.setItem('employeesDatabase',JSON.stringify(employees));}}
+function syncDashboardData(){if(!document.getElementById('total-bookings'))return;loadDashboardData();loadBookings();loadMenuItems();loadExpenses();loadLocations();loadMeetings();loadEmployees();generateReport();}
+function getBookings(){return JSON.parse(localStorage.getItem('bookings')||'[]');}
+function setBookings(bookings){localStorage.setItem('bookings',JSON.stringify(bookings));}
+function getUsers(){return JSON.parse(localStorage.getItem('usersDatabase')||'[]');}
+function setUsers(users){localStorage.setItem('usersDatabase',JSON.stringify(users));}
+function getEmployees(){return JSON.parse(localStorage.getItem('employeesDatabase')||'[]');}
+function setEmployees(employees){localStorage.setItem('employeesDatabase',JSON.stringify(employees));}
+function getLocations(){return JSON.parse(localStorage.getItem('locations')||'[]');}
+function setLocations(locations){localStorage.setItem('locations',JSON.stringify(locations));}
+function getExpenses(){return JSON.parse(localStorage.getItem('expenses')||'[]');}
+function setExpenses(expenses){localStorage.setItem('expenses',JSON.stringify(expenses));}
+function getMeetings(){return JSON.parse(localStorage.getItem('meetings')||'[]');}
+function setMeetings(meetings){localStorage.setItem('meetings',JSON.stringify(meetings));}
+function switchTab(tabName){document.querySelectorAll('.tab-content').forEach((tab)=>tab.classList.remove('active'));document.querySelectorAll('.nav-item').forEach((item)=>item.classList.remove('active'));const tabElement=document.getElementById(`${tabName}-tab`);if(tabElement)tabElement.classList.add('active');const navItem=document.querySelector(`a[onclick="switchTab('${tabName}')"]`);if(navItem)navItem.classList.add('active');const titles={dashboard:'Dashboard',bookings:'Booking Management',employees:'Employee Management',menu:'Menu Management',accounting:'Accounting & Salary',reports:'Reports',locations:'Locations',meetings:'Meetings',settings:'Settings'};document.getElementById('page-title').textContent=titles[tabName]||'Dashboard';}
+function loadDashboardData(){const bookings=getBookings();document.getElementById('total-bookings').textContent=bookings.length;document.getElementById('confirmed-bookings').textContent=bookings.filter((booking)=>booking.status==='confirmed').length;document.getElementById('cancelled-bookings').textContent=bookings.filter((booking)=>booking.status==='cancelled').length;document.getElementById('pending-payments').textContent=bookings.filter((booking)=>booking.status==='pending_payment').length;document.getElementById('total-revenue').textContent=formatCurrency(bookings.reduce((sum,booking)=>sum+Number(booking.estimatedTotal||0),0));loadRecentBookings(bookings);}
+function loadRecentBookings(bookings){const tbody=document.getElementById('recent-bookings-list');const recentBookings=bookings.slice().sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)).slice(0,5);if(recentBookings.length===0){tbody.innerHTML='<tr><td colspan="6" class="empty-state">No bookings yet</td></tr>';return;}tbody.innerHTML=recentBookings.map((booking)=>`<tr><td><strong>${booking.id}</strong></td><td>${booking.customerName||'Guest'}</td><td>${formatDate(booking.eventDate)}</td><td>${formatCurrency(booking.estimatedTotal||0)}</td><td><span class="status-badge ${booking.status}">${formatStatus(booking.status)}</span></td><td><button class="action-btn" onclick="viewBookingDetails('${booking.id}')">View</button><button class="action-btn" onclick="editBooking('${booking.id}')">Edit</button>${renderCancelBookingButton(booking)}</td></tr>`).join('');}
+function loadBookings(){displayBookings(getBookings());}
+function displayBookings(bookings){const tbody=document.getElementById('bookings-list-body');if(bookings.length===0){tbody.innerHTML='<tr><td colspan="7" class="empty-state">No bookings found</td></tr>';return;}tbody.innerHTML=bookings.map((booking)=>`<tr><td><strong>${booking.id}</strong></td><td>${booking.customerName||'Guest'}</td><td>${formatDate(booking.eventDate)}</td><td>${formatMenuList(booking.menu)}</td><td>${formatCurrency(booking.estimatedTotal||0)}</td><td><span class="status-badge ${booking.status}">${formatStatus(booking.status)}</span></td><td><button class="action-btn" onclick="editBooking('${booking.id}')">Edit</button><button class="action-btn" onclick="updateBookingStatus('${booking.id}')">Status</button>${renderCancelBookingButton(booking)}</td></tr>`).join('');}
+function renderCancelBookingButton(booking){if(booking.status==='cancelled')return '<button class="action-btn" disabled>Cancelled</button>';return `<button class="action-btn" onclick="cancelBooking('${booking.id}')">Cancel</button>`;}
+function filterBookings(){const statusFilter=document.getElementById('status-filter').value;const dateFilter=document.getElementById('date-filter').value;let bookings=getBookings();if(statusFilter)bookings=bookings.filter((booking)=>booking.status===statusFilter);if(dateFilter)bookings=bookings.filter((booking)=>booking.eventDate===dateFilter);displayBookings(bookings);}
+function updateBookingStatus(bookingId){const bookings=getBookings();const booking=bookings.find((item)=>item.id===bookingId);if(!booking){alert('Booking not found');return;}const newStatus=prompt('Enter status: pending_payment, confirmed, completed, cancelled',booking.status);const allowedStatuses=['pending_payment','confirmed','completed','cancelled'];if(newStatus&&allowedStatuses.includes(newStatus)){booking.status=newStatus;setBookings(bookings);refreshBookingViews();alert('Booking status updated');}}
+function editBooking(bookingId){const bookings=getBookings();const booking=bookings.find((item)=>item.id===bookingId);if(!booking){alert('Booking not found');return;}const customerName=prompt('Customer name',booking.customerName||'Guest');if(customerName===null)return;const eventDate=prompt('Event date (YYYY-MM-DD)',booking.eventDate||'');if(eventDate===null)return;const requirements=prompt('Special requirements',booking.requirements||'None');if(requirements===null)return;const amount=prompt('Booking amount',String(booking.estimatedTotal||0));if(amount===null)return;booking.customerName=customerName.trim()||'Guest';booking.eventDate=eventDate;booking.requirements=requirements.trim()||'None';booking.estimatedTotal=Number(amount)||0;setBookings(bookings);refreshBookingViews();alert('Booking updated successfully');}
+function cancelBooking(bookingId){const bookings=getBookings();const booking=bookings.find((item)=>item.id===bookingId);if(!booking){alert('Booking not found');return;}if(booking.status==='cancelled'){alert('This booking is already cancelled');return;}if(!confirm(`Are you sure you want to cancel booking ${booking.id} for ${booking.customerName}?`))return;booking.status='cancelled';setBookings(bookings);refreshBookingViews();alert('Booking cancelled successfully');}
+function refreshBookingViews(){loadDashboardData();const hasFilter=document.getElementById('status-filter').value||document.getElementById('date-filter').value;if(hasFilter){filterBookings();}else{loadBookings();}loadExpenses();loadEmployees();generateReport();}
+function viewBookingDetails(bookingId){const booking=getBookings().find((item)=>item.id===bookingId);if(!booking)return;alert(`Booking Details:\nID: ${booking.id}\nCustomer: ${booking.customerName||'Guest'}\nEvent Date: ${formatDate(booking.eventDate)}\nMenu: ${formatMenuList(booking.menu)}\nRequirements: ${booking.requirements||'None'}\nAmount: ${formatCurrency(booking.estimatedTotal||0)}\nStatus: ${formatStatus(booking.status)}`);}
+function loadMenuItems(){const menuItems=JSON.parse(localStorage.getItem('menuItems')||'[]');['breakfast','lunch','dinner'].forEach((category)=>{const items=menuItems.filter((item)=>item.category===category);const container=document.getElementById(`${category}-items`);if(!container)return;if(items.length===0){container.innerHTML='<p style="color: #999;">No items yet</p>';return;}container.innerHTML=items.map((item)=>`<div class="menu-item-card"><div class="menu-item-info"><h4>${item.name}</h4><p style="color: #999; font-size: 0.85rem;">${item.type}</p><p style="font-size: 0.85rem;">${item.description}</p></div><div style="text-align: right;"><div class="menu-item-price">${formatCurrency(item.price)}</div><button class="action-btn" onclick="editMenuItem('${item.id}')">Edit</button><button class="action-btn" onclick="deleteMenuItem('${item.id}')">Delete</button></div></div>`).join('');});}
+function openAddMenuModal(){document.getElementById('addMenuModal').classList.add('active');}
+function handleAddMenuItem(event){event.preventDefault();const form=event.target;const menuItem={id:'ITEM-'+Date.now(),name:form.querySelector('input[type="text"]').value,category:form.querySelectorAll('select')[0].value,type:form.querySelectorAll('select')[1].value,price:parseInt(form.querySelector('input[type="number"]').value,10),description:form.querySelector('textarea').value};const menuItems=JSON.parse(localStorage.getItem('menuItems')||'[]');menuItems.push(menuItem);localStorage.setItem('menuItems',JSON.stringify(menuItems));alert('Menu item added successfully');closeModal();loadMenuItems();form.reset();}
+function editMenuItem(itemId){const menuItems=JSON.parse(localStorage.getItem('menuItems')||'[]');const item=menuItems.find((menuItem)=>menuItem.id===itemId);if(!item)return;const name=prompt('Item name',item.name);if(name===null)return;const price=prompt('Price',String(item.price));if(price===null)return;const description=prompt('Description',item.description);if(description===null)return;item.name=name;item.price=Number(price)||item.price;item.description=description;localStorage.setItem('menuItems',JSON.stringify(menuItems));loadMenuItems();}
+function deleteMenuItem(itemId){if(!confirm('Are you sure you want to delete this item?'))return;let menuItems=JSON.parse(localStorage.getItem('menuItems')||'[]');menuItems=menuItems.filter((item)=>item.id!==itemId);localStorage.setItem('menuItems',JSON.stringify(menuItems));loadMenuItems();}
+function loadExpenses(){const expenses=getExpenses();displayExpenses(expenses);updateAccountingSummary(expenses);}
+function displayExpenses(expenses){const tbody=document.getElementById('expenses-list');if(expenses.length===0){tbody.innerHTML='<tr><td colspan="5" class="empty-state">No expenses recorded</td></tr>';return;}tbody.innerHTML=expenses.map((expense)=>`<tr><td>${formatDate(expense.date)}</td><td>${expense.category}</td><td>${expense.description}</td><td>${formatCurrency(expense.amount)}</td><td><button class="action-btn" onclick="deleteExpense('${expense.id}')">Delete</button></td></tr>`).join('');}
+function updateAccountingSummary(expenses){const bookings=getBookings();const employees=getEmployees();const totalIncome=bookings.reduce((sum,booking)=>sum+Number(booking.estimatedTotal||0),0);const totalExpenses=expenses.reduce((sum,expense)=>sum+Number(expense.amount||0),0);const totalAdvancePaid=employees.reduce((sum,employee)=>sum+Number(employee.advancePaid||0),0);const totalSalaryGross=employees.reduce((sum,employee)=>sum+getEmployeeGrossSalary(employee),0);const totalSalaryPayable=employees.reduce((sum,employee)=>sum+getEmployeeNetSalary(employee),0);const netProfit=totalIncome-totalExpenses-totalSalaryGross;document.getElementById('total-income').textContent=formatCurrency(totalIncome);document.getElementById('total-expenses').textContent=formatCurrency(totalExpenses);document.getElementById('total-salary-payable').textContent=formatCurrency(totalSalaryPayable);document.getElementById('total-advance-paid').textContent=formatCurrency(totalAdvancePaid);document.getElementById('net-profit').textContent=formatCurrency(netProfit);displaySalarySheet(employees);}
+function openAddExpenseModal(){document.getElementById('addExpenseModal').classList.add('active');}
+function handleAddExpense(event){event.preventDefault();const form=event.target;const expense={id:'EXP-'+Date.now(),date:form.querySelector('input[type="date"]').value,category:form.querySelector('select').value,description:form.querySelector('input[type="text"]').value,amount:parseInt(form.querySelector('input[type="number"]').value,10)};const expenses=getExpenses();expenses.push(expense);setExpenses(expenses);closeModal();form.reset();loadExpenses();generateReport();}
+function deleteExpense(expenseId){if(!confirm('Delete this expense?'))return;const expenses=getExpenses().filter((expense)=>expense.id!==expenseId);setExpenses(expenses);loadExpenses();generateReport();}
+function exportAccountingData(){const expenses=getExpenses();const bookings=getBookings();const employees=getEmployees();let csv='Type,Reference,Description,Amount\n';bookings.forEach((booking)=>{csv+=`Income,${booking.id},Booking ${booking.customerName||'Guest'},${booking.estimatedTotal}\n`;});expenses.forEach((expense)=>{csv+=`Expense,${expense.id},${expense.description},-${expense.amount}\n`;});employees.forEach((employee)=>{csv+=`Salary,${employee.employeeCode},${employee.name},-${getEmployeeNetSalary(employee)}\n`;});downloadCSV(csv,'accounting-report.csv');}
+function loadEmployees(){const employees=getEmployees();const tbody=document.getElementById('employees-list-body');if(!tbody)return;if(employees.length===0){tbody.innerHTML='<tr><td colspan="8" class="empty-state">No employees added</td></tr>';return;}tbody.innerHTML=employees.map((employee)=>`<tr><td><strong>${employee.employeeCode}</strong></td><td>${employee.name}</td><td>${formatStatus(employee.jobRole)}</td><td>${employee.email||'-'}</td><td>${formatCurrency(employee.dailyRate||0)}</td><td>${employee.daysWorked||0}</td><td>${formatCurrency(employee.advancePaid||0)}</td><td><button class="action-btn" onclick="editEmployee('${employee.id}')">Edit</button><button class="action-btn" onclick="editEmployeePayroll('${employee.id}')">Salary</button></td></tr>`).join('');}
+function displaySalarySheet(employees){const tbody=document.getElementById('salary-list-body');if(!tbody)return;if(employees.length===0){tbody.innerHTML='<tr><td colspan="7" class="empty-state">No salary data available</td></tr>';return;}tbody.innerHTML=employees.map((employee)=>`<tr><td>${employee.name}</td><td>${formatStatus(employee.jobRole)}</td><td>${formatCurrency(employee.dailyRate||0)}</td><td>${employee.daysWorked||0}</td><td>${formatCurrency(employee.advancePaid||0)}</td><td>${formatCurrency(getEmployeeNetSalary(employee))}</td><td><button class="action-btn" onclick="editEmployeePayroll('${employee.id}')">Edit</button></td></tr>`).join('');}
+function openAddEmployeeModal(){document.getElementById('addEmployeeModal').classList.add('active');}
+function handleAddEmployee(event){event.preventDefault();const form=event.target;const inputs=form.querySelectorAll('input');const selects=form.querySelectorAll('select');const employee={id:'EMP-'+Date.now(),name:inputs[0].value.trim(),employeeCode:inputs[1].value.trim().toUpperCase(),email:inputs[2].value.trim(),password:btoa(inputs[3].value),role:selects[0].value,jobRole:selects[1].value,dailyRate:Number(inputs[4].value||0),daysWorked:0,advancePaid:0,isActive:true,createdAt:new Date().toISOString()};const users=getUsers();if(users.some((user)=>user.employeeCode===employee.employeeCode||user.email===employee.email)){alert('Employee ID or email already exists');return;}users.push({...employee});setUsers(users);const employees=getEmployees();employees.push({id:employee.id,employeeCode:employee.employeeCode,name:employee.name,email:employee.email,role:employee.role,jobRole:employee.jobRole,dailyRate:employee.dailyRate,daysWorked:0,advancePaid:0,isActive:true,createdAt:employee.createdAt});setEmployees(employees);closeModal();form.reset();loadEmployees();loadExpenses();alert('Employee added successfully');}
+function editEmployee(employeeId){const employees=getEmployees();const employee=employees.find((item)=>item.id===employeeId);if(!employee)return;const name=prompt('Employee name',employee.name);if(name===null)return;const email=prompt('Employee email',employee.email||'');if(email===null)return;const employeeCode=prompt('Employee ID',employee.employeeCode||'');if(employeeCode===null)return;const jobRole=prompt('Job role (cook, waiter, manager, co-helper, accountant, staff)',employee.jobRole||'staff');if(jobRole===null)return;const dailyRate=prompt('Daily salary rate',String(employee.dailyRate||0));if(dailyRate===null)return;employee.name=name.trim();employee.email=email.trim();employee.employeeCode=employeeCode.trim().toUpperCase();employee.jobRole=jobRole.trim();employee.dailyRate=Number(dailyRate)||0;setEmployees(employees);syncEmployeeToUsers(employee);loadEmployees();loadExpenses();alert('Employee updated successfully');}
+function editEmployeePayroll(employeeId){const employees=getEmployees();const employee=employees.find((item)=>item.id===employeeId);if(!employee)return;const daysWorked=prompt('Days worked',String(employee.daysWorked||0));if(daysWorked===null)return;const advancePaid=prompt('Advance paid',String(employee.advancePaid||0));if(advancePaid===null)return;const dailyRate=prompt('Daily salary rate',String(employee.dailyRate||0));if(dailyRate===null)return;employee.daysWorked=Number(daysWorked)||0;employee.advancePaid=Number(advancePaid)||0;employee.dailyRate=Number(dailyRate)||0;setEmployees(employees);syncEmployeeToUsers(employee);loadEmployees();loadExpenses();generateReport();alert('Salary details updated');}
+function syncEmployeeToUsers(employee){const users=getUsers();const user=users.find((item)=>item.id===employee.id);if(user){user.name=employee.name;user.email=employee.email;user.employeeCode=employee.employeeCode;user.role=employee.role;user.jobRole=employee.jobRole;user.dailyRate=employee.dailyRate;user.daysWorked=employee.daysWorked;user.advancePaid=employee.advancePaid;setUsers(users);}}
+function loadLocations(){displayLocations(getLocations());}
+function displayLocations(locations){const tbody=document.getElementById('locations-list-body');if(locations.length===0){tbody.innerHTML='<tr><td colspan="5" class="empty-state">No locations</td></tr>';return;}tbody.innerHTML=locations.map((location)=>`<tr><td>${location.name}</td><td>${location.type}</td><td>${location.address}</td><td>${Number(location.lat).toFixed(4)}, ${Number(location.lng).toFixed(4)}</td><td><button class="action-btn" onclick="editLocation('${location.id}')">Edit</button><button class="action-btn" onclick="deleteLocation('${location.id}')">Delete</button></td></tr>`).join('');}
+function openAddLocationModal(){document.getElementById('addLocationModal').classList.add('active');}
+function handleAddLocation(event){event.preventDefault();const form=event.target;const inputs=form.querySelectorAll('input');const location={id:'LOC-'+Date.now(),name:inputs[0].value,type:form.querySelector('select').value,address:inputs[1].value,lat:Number(inputs[2].value),lng:Number(inputs[3].value)};const locations=getLocations();locations.push(location);setLocations(locations);closeModal();form.reset();loadLocations();}
+function editLocation(locationId){const locations=getLocations();const location=locations.find((item)=>item.id===locationId);if(!location)return;const name=prompt('Location name',location.name);if(name===null)return;const type=prompt('Location type (office/event)',location.type);if(type===null)return;const address=prompt('Address',location.address);if(address===null)return;const lat=prompt('Latitude',String(location.lat));if(lat===null)return;const lng=prompt('Longitude',String(location.lng));if(lng===null)return;location.name=name.trim();location.type=type.trim();location.address=address.trim();location.lat=Number(lat)||location.lat;location.lng=Number(lng)||location.lng;setLocations(locations);loadLocations();alert('Location updated successfully');}
+function deleteLocation(locationId){if(!confirm('Delete this location?'))return;const locations=getLocations().filter((location)=>location.id!==locationId);setLocations(locations);loadLocations();}
+function loadMeetings(){displayMeetings(getMeetings());}
+function displayMeetings(meetings){const tbody=document.getElementById('meetings-list-body');if(meetings.length===0){tbody.innerHTML='<tr><td colspan="6" class="empty-state">No meetings scheduled</td></tr>';return;}tbody.innerHTML=meetings.map((meeting)=>`<tr><td>${meeting.customerName}</td><td>${formatDate(meeting.dateTime)}</td><td>${meeting.type}</td><td><a href="${meeting.zoomLink}" target="_blank">Join Meeting</a></td><td>Scheduled</td><td><button class="action-btn" onclick="deleteMeeting('${meeting.id}')">Delete</button></td></tr>`).join('');}
+function openScheduleMeetingModal(){document.getElementById('scheduleMeetingModal').classList.add('active');}
+function handleScheduleMeeting(event){event.preventDefault();const form=event.target;const meeting={id:'MTG-'+Date.now(),customerName:form.querySelectorAll('input')[0].value,dateTime:form.querySelector('input[type="datetime-local"]').value,type:form.querySelector('select').value,zoomLink:form.querySelectorAll('input')[1].value};const meetings=getMeetings();meetings.push(meeting);setMeetings(meetings);closeModal();form.reset();loadMeetings();}
+function deleteMeeting(meetingId){if(!confirm('Cancel this meeting?'))return;const meetings=getMeetings().filter((meeting)=>meeting.id!==meetingId);setMeetings(meetings);loadMeetings();}
+function generateReport(){const bookings=getBookings();const expenses=getExpenses();const employees=getEmployees();const totalIncome=bookings.reduce((sum,booking)=>sum+Number(booking.estimatedTotal||0),0);const totalExpenses=expenses.reduce((sum,expense)=>sum+Number(expense.amount||0),0);const totalSalary=employees.reduce((sum,employee)=>sum+getEmployeeGrossSalary(employee),0);const netProfit=totalIncome-totalExpenses-totalSalary;document.getElementById('report-total-events').textContent=bookings.length;document.getElementById('report-total-revenue').textContent=formatCurrency(totalIncome);document.getElementById('report-total-expenses').textContent=formatCurrency(totalExpenses);document.getElementById('report-total-salary').textContent=formatCurrency(totalSalary);document.getElementById('report-net-profit').textContent=formatCurrency(netProfit);const topServicesBody=document.getElementById('top-services');const counts={};bookings.forEach((booking)=>{(booking.menu||[]).forEach((item)=>{if(!counts[item])counts[item]={bookings:0,revenue:0};counts[item].bookings+=1;counts[item].revenue+=Number(booking.estimatedTotal||0);});});const rows=Object.entries(counts).slice(0,5);if(rows.length===0){topServicesBody.innerHTML='<tr><td colspan="3" class="empty-state">No data</td></tr>';}else{topServicesBody.innerHTML=rows.map(([service,data])=>`<tr><td>${service}</td><td>${data.bookings}</td><td>${formatCurrency(data.revenue)}</td></tr>`).join('');}}
+function downloadReport(){alert('PDF export functionality coming soon');}
+function saveBusinessSettings(event){event.preventDefault();alert('Business settings saved');}
+function closeModal(event){if(event&&event.target.className!=='modal')return;document.querySelectorAll('.modal.active').forEach((modal)=>modal.classList.remove('active'));}
+function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('active');}
+function logoutFromDashboard(){if(!confirm('Are you sure you want to logout?'))return;localStorage.removeItem('appState');window.location.href='../index.html';}
+function formatDate(dateString){if(!dateString)return '-';return new Date(dateString).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}
+function formatStatus(status){return String(status||'').replace(/_/g,' ');}
+function formatCurrency(amount){return `Rs ${Number(amount||0).toLocaleString('en-IN')}`;}
+function formatMenuList(menu){if(!Array.isArray(menu)||menu.length===0)return '-';return menu.join(', ');}
+function getEmployeeGrossSalary(employee){return Number(employee.dailyRate||0)*Number(employee.daysWorked||0);}
+function getEmployeeNetSalary(employee){return Math.max(0,getEmployeeGrossSalary(employee)-Number(employee.advancePaid||0));}
+function downloadCSV(csv,filename){const blob=new Blob([csv],{type:'text/csv'});const url=window.URL.createObjectURL(blob);const anchor=document.createElement('a');anchor.href=url;anchor.download=filename;anchor.click();window.URL.revokeObjectURL(url);}
+document.querySelectorAll('.modal').forEach((modal)=>{modal.addEventListener('click',closeModal);});

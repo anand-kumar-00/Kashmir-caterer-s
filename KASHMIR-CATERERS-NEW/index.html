@@ -236,22 +236,11 @@
                     <!-- Step 2: Menu Selection -->
                     <div class="step-content" id="step2">
                         <h3>Select Menu</h3>
-                        <div class="menu-categories">
-                            <div class="category">
-                                <h4>Breakfast</h4>
-                                <label><input type="checkbox" value="breakfast-snacks" class="menu-item"> Breakfast Snacks</label>
-                                <label><input type="checkbox" value="breakfast-main" class="menu-item"> Breakfast Main Course</label>
-                            </div>
-                            <div class="category">
-                                <h4>Lunch</h4>
-                                <label><input type="checkbox" value="lunch-snacks" class="menu-item"> Lunch Snacks</label>
-                                <label><input type="checkbox" value="lunch-main" class="menu-item"> Lunch Main Course</label>
-                            </div>
-                            <div class="category">
-                                <h4>Dinner</h4>
-                                <label><input type="checkbox" value="dinner-snacks" class="menu-item"> Dinner Snacks</label>
-                                <label><input type="checkbox" value="dinner-main" class="menu-item"> Dinner Main Course</label>
-                            </div>
+                        <p class="menu-selection-subtitle">
+                            Choose dishes by meal and course. Each item shows its rate so customers can plan clearly.
+                        </p>
+                        <div class="menu-categories" id="bookingMenuCategories">
+                            <div class="menu-loading-state">Loading menu options...</div>
                         </div>
                         <div class="button-group">
                             <button class="btn-secondary" onclick="goToStep(1)">Back</button>
@@ -315,7 +304,7 @@
             <button class="modal-close" onclick="closeLoginModal()">&times;</button>
             <h2>Login</h2>
             <form onsubmit="handleLogin(event)">
-                <input type="email" placeholder="Email" required>
+                <input type="text" placeholder="Email or Employee ID" required>
                 <input type="password" placeholder="Password" required>
                 <button type="submit" class="btn-primary">Login</button>
                 <p class="form-toggle">Don't have an account? <a href="#" onclick="switchToSignup(event)">Signup</a></p>

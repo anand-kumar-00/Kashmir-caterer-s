@@ -4,32 +4,98 @@
 
 let currentStep = 1;
 const totalSteps = 4;
+const bookingMenuCatalog = [
+    {
+        meal: 'Breakfast',
+        description: 'Morning selections for elegant starts and light gatherings.',
+        courses: [
+            {
+                title: 'Snacks',
+                items: [
+                    { id: 'breakfast-kahwa', name: 'Kashmiri Kahwa', price: 1800, note: 'Traditional welcome beverage' },
+                    { id: 'breakfast-bakerkhani', name: 'Bakerkhani', price: 2200, note: 'Flaky bakery special' },
+                    { id: 'breakfast-harissa-bites', name: 'Harissa Bites', price: 2600, note: 'Chef-served mini portions' },
+                ],
+            },
+            {
+                title: 'Main Course',
+                items: [
+                    { id: 'breakfast-nadru-yakhni', name: 'Nadru Yakhni', price: 3400, note: 'Lotus stem yogurt curry' },
+                    { id: 'breakfast-chaman-qaliya', name: 'Chaman Qaliya', price: 3200, note: 'Paneer in saffron gravy' },
+                    { id: 'breakfast-lavasa-platter', name: 'Lavasa Breakfast Platter', price: 2800, note: 'Bread assortment with accompaniments' },
+                ],
+            },
+        ],
+    },
+    {
+        meal: 'Lunch',
+        description: 'Balanced menu choices suited for family events and celebrations.',
+        courses: [
+            {
+                title: 'Snacks',
+                items: [
+                    { id: 'lunch-seekh-kebab', name: 'Seekh Kebab', price: 3000, note: 'Chargrilled signature starter' },
+                    { id: 'lunch-paneer-tikka', name: 'Paneer Tikka', price: 2800, note: 'Smoky vegetarian classic' },
+                    { id: 'lunch-nadru-chips', name: 'Nadru Chips', price: 2400, note: 'Crisp lotus stem snack' },
+                ],
+            },
+            {
+                title: 'Main Course',
+                items: [
+                    { id: 'lunch-rogan-josh', name: 'Rogan Josh', price: 4200, note: 'Slow-cooked Kashmiri mutton curry' },
+                    { id: 'lunch-dum-aloo', name: 'Kashmiri Dum Aloo', price: 3100, note: 'Spiced baby potato speciality' },
+                    { id: 'lunch-gushtaba', name: 'Gushtaba', price: 4500, note: 'Royal meatball delicacy' },
+                ],
+            },
+        ],
+    },
+    {
+        meal: 'Dinner',
+        description: 'Refined evening dishes for premium dining and wedding service.',
+        courses: [
+            {
+                title: 'Snacks',
+                items: [
+                    { id: 'dinner-mutton-shami', name: 'Mutton Shami Kebab', price: 3400, note: 'Soft kebabs with rich aroma' },
+                    { id: 'dinner-cheese-cigars', name: 'Cheese Cigars', price: 2600, note: 'Crisp party starter' },
+                    { id: 'dinner-veg-nuggets', name: 'Vegetable Saffron Nuggets', price: 2300, note: 'Golden fried vegetarian bites' },
+                ],
+            },
+            {
+                title: 'Main Course',
+                items: [
+                    { id: 'dinner-rista', name: 'Rista', price: 4300, note: 'Classic red-gravy meatballs' },
+                    { id: 'dinner-yakhni', name: 'Mutton Yakhni', price: 4100, note: 'Aromatic yogurt-based curry' },
+                    { id: 'dinner-veg-pulao', name: 'Kashmiri Veg Pulao', price: 2900, note: 'Fragrant rice with dry fruits' },
+                ],
+            },
+        ],
+    },
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderBookingMenuOptions();
+});
 
 // Step Navigation
 function goToStep(stepNumber) {
-    // Validate current step before moving
     if (stepNumber > currentStep && !validateCurrentStep()) {
         showNotification('Please complete all required fields', 'error');
         return;
     }
-    
-    // Hide all steps
+
     document.querySelectorAll('.step-content').forEach((content) => {
         content.classList.remove('active');
     });
-    
-    // Show selected step
+
     const stepElement = document.getElementById(`step${stepNumber}`);
     if (stepElement) {
         stepElement.classList.add('active');
     }
-    
-    // Update step indicator
+
     updateStepIndicator(stepNumber);
-    
     currentStep = stepNumber;
-    
-    // Update review if moving to step 4
+
     if (stepNumber === 4) {
         updateReviewDisplay();
     }
@@ -39,7 +105,7 @@ function updateStepIndicator(activeStep) {
     document.querySelectorAll('.step').forEach((step, index) => {
         const stepNum = index + 1;
         step.classList.remove('active', 'completed');
-        
+
         if (stepNum < activeStep) {
             step.classList.add('completed');
         } else if (stepNum === activeStep) {
@@ -59,7 +125,7 @@ function validateCurrentStep() {
         case 2:
             return validateMenuSelection();
         case 3:
-            return true; // Requirements are optional
+            return true;
         default:
             return true;
     }
@@ -67,12 +133,12 @@ function validateCurrentStep() {
 
 function validateDateSelection() {
     const dateInput = document.getElementById('eventDate');
-    
+
     if (!dateInput.value) {
         showNotification('Please select an event date', 'error');
         return false;
     }
-    
+
     appState.bookingData.eventDate = dateInput.value;
     saveState();
     return true;
@@ -84,15 +150,84 @@ function validateDateSelection() {
 
 function validateMenuSelection() {
     const selectedMenus = document.querySelectorAll('.menu-item:checked');
-    
+
     if (selectedMenus.length === 0) {
         showNotification('Please select at least one menu item', 'error');
         return false;
     }
-    
+
     appState.bookingData.menu = Array.from(selectedMenus).map((item) => item.value);
     saveState();
     return true;
+}
+
+function renderBookingMenuOptions() {
+    const container = document.getElementById('bookingMenuCategories');
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = bookingMenuCatalog
+        .map(
+            (section) => `
+            <div class="category">
+                <h4>${section.meal}</h4>
+                <p class="category-description">${section.description}</p>
+                ${section.courses
+                    .map(
+                        (course) => `
+                        <div class="menu-course">
+                            <div class="menu-course-title">${course.title}</div>
+                            <div class="menu-dish-list">
+                                ${course.items.map((item) => renderMenuDishCard(item)).join('')}
+                            </div>
+                        </div>
+                    `
+                    )
+                    .join('')}
+            </div>
+        `
+        )
+        .join('');
+}
+
+function renderMenuDishCard(item) {
+    const isChecked = appState.bookingData.menu.includes(item.id) ? 'checked' : '';
+
+    return `
+        <label class="menu-dish">
+            <input type="checkbox" value="${item.id}" class="menu-item" ${isChecked}>
+            <span class="menu-dish-card">
+                <span class="menu-dish-card-main">
+                    <span class="menu-dish-check"></span>
+                    <span>
+                        <span class="menu-dish-title">${item.name}</span>
+                        <span class="menu-dish-meta">${item.note}</span>
+                    </span>
+                </span>
+                <span class="menu-dish-price">Rs ${item.price.toLocaleString('en-IN')}</span>
+            </span>
+        </label>
+    `;
+}
+
+function findMenuItemById(itemId) {
+    for (const section of bookingMenuCatalog) {
+        for (const course of section.courses) {
+            const item = course.items.find((dish) => dish.id === itemId);
+
+            if (item) {
+                return {
+                    ...item,
+                    meal: section.meal,
+                    course: course.title,
+                };
+            }
+        }
+    }
+
+    return null;
 }
 
 // ================================
@@ -111,49 +246,35 @@ function saveRequirements() {
 // ================================
 
 function updateReviewDisplay() {
-    // Save requirements first
     saveRequirements();
-    
-    // Update review date
+
     const reviewDate = document.getElementById('reviewDate');
     reviewDate.textContent = formatDate(appState.bookingData.eventDate);
-    
-    // Update review menu
+
     const reviewMenu = document.getElementById('reviewMenu');
-    const menuLabels = {
-        'breakfast-snacks': 'Breakfast Snacks',
-        'breakfast-main': 'Breakfast Main',
-        'lunch-snacks': 'Lunch Snacks',
-        'lunch-main': 'Lunch Main',
-        'dinner-snacks': 'Dinner Snacks',
-        'dinner-main': 'Dinner Main',
-    };
-    
     const menuList = appState.bookingData.menu
-        .map((item) => menuLabels[item] || item)
+        .map((itemId) => {
+            const menuItem = findMenuItemById(itemId);
+            return menuItem ? `${menuItem.name} (${menuItem.meal} ${menuItem.course})` : itemId;
+        })
         .join(', ');
     reviewMenu.textContent = menuList || '-';
-    
-    // Update review requirements
+
     const reviewRequirements = document.getElementById('reviewRequirements');
     reviewRequirements.textContent = appState.bookingData.requirements || 'None';
-    
-    // Calculate and update estimated total
+
     updateEstimatedTotal();
 }
 
 function updateEstimatedTotal() {
-    const basePrice = 10000; // Base catering price
-    const perPersonPrice = 500; // Price per person
-    const menuCount = appState.bookingData.menu.length;
-    
-    // Simple calculation: base + (menu items * per-item price)
-    const estimatedTotal = basePrice + (menuCount * perPersonPrice * 5); // Assuming 5 people per item
-    
+    const estimatedTotal = appState.bookingData.menu.reduce((sum, itemId) => {
+        const menuItem = findMenuItemById(itemId);
+        return sum + (menuItem ? menuItem.price : 0);
+    }, 0);
+
     const reviewTotal = document.getElementById('estimatedTotal');
-    reviewTotal.textContent = `₹${estimatedTotal.toLocaleString('en-IN')}`;
-    
-    // Store for payment
+    reviewTotal.textContent = `Rs ${estimatedTotal.toLocaleString('en-IN')}`;
+
     appState.bookingData.estimatedTotal = estimatedTotal;
     saveState();
 }
@@ -163,16 +284,14 @@ function updateEstimatedTotal() {
 // ================================
 
 async function submitBooking() {
-    // Validate all data
     if (!appState.bookingData.eventDate || appState.bookingData.menu.length === 0) {
         showNotification('Please complete all required fields', 'error');
         return;
     }
-    
-    // Create booking object
+
     const booking = {
         id: generateBookingId(),
-        customerName: 'Guest', // Would be from authenticated user
+        customerName: 'Guest',
         eventDate: appState.bookingData.eventDate,
         menu: appState.bookingData.menu,
         requirements: appState.bookingData.requirements,
@@ -180,19 +299,14 @@ async function submitBooking() {
         status: 'pending_payment',
         createdAt: new Date().toISOString(),
     };
-    
+
     try {
-        // Save booking to localStorage (In production, send to backend)
         saveBookingLocally(booking);
-        
-        // Show success message
         showNotification('Booking created successfully! Proceeding to payment...', 'success');
-        
-        // Redirect to payment
+
         setTimeout(() => {
             proceedToPayment(booking);
         }, 1500);
-        
     } catch (error) {
         handleError(error, 'Failed to create booking');
     }
@@ -208,8 +322,23 @@ function saveBookingLocally(booking) {
     localStorage.setItem('bookings', JSON.stringify(bookings));
 }
 
+function updateStoredBooking(bookingId, updates) {
+    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    const bookingIndex = bookings.findIndex((booking) => booking.id === bookingId);
+
+    if (bookingIndex === -1) {
+        return;
+    }
+
+    bookings[bookingIndex] = {
+        ...bookings[bookingIndex],
+        ...updates,
+    };
+
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+}
+
 function proceedToPayment(booking) {
-    // Simulate payment gateway integration
     const paymentModal = document.createElement('div');
     paymentModal.className = 'modal active';
     paymentModal.id = 'paymentModal';
@@ -220,14 +349,14 @@ function proceedToPayment(booking) {
             <div style="text-align: center; padding: 2rem;">
                 <p>Booking ID: <strong>${booking.id}</strong></p>
                 <p style="font-size: 1.5rem; color: var(--secondary); margin: 1rem 0;">
-                    ₹${booking.estimatedTotal.toLocaleString('en-IN')}
+                    Rs ${booking.estimatedTotal.toLocaleString('en-IN')}
                 </p>
                 <p>Select payment method:</p>
                 <div style="margin: 2rem 0; display: flex; gap: 1rem; flex-direction: column;">
-                    <button class="btn-primary" onclick="simulatePayment('card', ${booking.estimatedTotal})">
+                    <button class="btn-primary" onclick="simulatePayment('${booking.id}', 'card', ${booking.estimatedTotal})">
                         Credit/Debit Card
                     </button>
-                    <button class="btn-primary" onclick="simulatePayment('upi', ${booking.estimatedTotal})">
+                    <button class="btn-primary" onclick="simulatePayment('${booking.id}', 'upi', ${booking.estimatedTotal})">
                         UPI Payment
                     </button>
                     <button class="btn-secondary" onclick="closePaymentModal()">
@@ -237,7 +366,7 @@ function proceedToPayment(booking) {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(paymentModal);
 }
 
@@ -248,24 +377,27 @@ function closePaymentModal() {
     }
 }
 
-function simulatePayment(method, amount) {
-    showNotification(`Processing ${method.toUpperCase()} payment of ₹${amount}...`, 'success');
-    
-    // Simulate payment processing
+function simulatePayment(bookingId, method, amount) {
+    showNotification(`Processing ${method.toUpperCase()} payment of Rs ${amount}...`, 'success');
+
     setTimeout(() => {
-        completePayment();
+        completePayment(bookingId);
     }, 2000);
 }
 
-function completePayment() {
+function completePayment(bookingId) {
+    updateStoredBooking(bookingId, {
+        status: 'confirmed',
+        paidAt: new Date().toISOString(),
+    });
+
     closePaymentModal();
-    
-    // Show confirmation
+
     const confirmationModal = document.createElement('div');
     confirmationModal.className = 'modal active';
     confirmationModal.innerHTML = `
         <div class="modal-content" style="text-align: center;" onclick="event.stopPropagation()">
-            <h2 style="color: var(--secondary); margin-bottom: 1rem;">✓ Payment Successful!</h2>
+            <h2 style="color: var(--secondary); margin-bottom: 1rem;">Payment Successful!</h2>
             <p style="font-size: 1.1rem; margin-bottom: 1rem;">
                 Your booking has been confirmed. A confirmation email has been sent.
             </p>
@@ -277,39 +409,33 @@ function completePayment() {
             </button>
         </div>
     `;
-    
+
     document.body.appendChild(confirmationModal);
 }
 
 function resetBookingForm() {
-    // Reset form
     document.getElementById('eventDate').value = '';
     document.querySelectorAll('.menu-item').forEach((item) => {
         item.checked = false;
     });
     document.getElementById('requirements').value = '';
-    
-    // Reset state
+
     appState.bookingData = {
         eventDate: null,
         menu: [],
         requirements: null,
     };
     saveState();
-    
-    // Close modal and reset UI
+    renderBookingMenuOptions();
+
     const modal = document.querySelector('.modal.active');
     if (modal) {
         modal.remove();
     }
-    
-    // Go back to step 1
+
     currentStep = 1;
     goToStep(1);
-    
-    // Scroll to booking section
     scrollToSection('booking');
-    
     showNotification('Thank you for booking with us!', 'success');
 }
 
@@ -321,7 +447,7 @@ function openLightbox(element) {
     const lightbox = document.getElementById('lightbox');
     const lightboxImage = document.getElementById('lightboxImage');
     const img = element.querySelector('img');
-    
+
     lightboxImage.src = img.src;
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -333,7 +459,6 @@ function closeLightbox() {
     document.body.style.overflow = 'auto';
 }
 
-// Close lightbox on ESC key
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeLightbox();

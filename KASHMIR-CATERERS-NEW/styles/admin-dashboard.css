@@ -155,6 +155,12 @@ body {
     color: var(--dark);
 }
 
+.header-subtitle {
+    margin-top: 0.35rem;
+    color: var(--gray-medium);
+    font-size: 0.9rem;
+}
+
 .header-right {
     display: flex;
     align-items: center;
@@ -215,14 +221,29 @@ body {
     margin-bottom: 2rem;
 }
 
+.section-header.compact {
+    margin-bottom: 1rem;
+}
+
 .section-header h2 {
     font-size: 1.5rem;
 }
 
 .filter-controls,
-.report-filters {
+.report-filters,
+.header-actions {
     display: flex;
     gap: 1rem;
+}
+
+.info-banner {
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    color: var(--gray-dark);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
 }
 
 .filter-controls select,
@@ -312,11 +333,19 @@ canvas {
 .recent-bookings,
 .bookings-list,
 .expenses-table,
-.meetings-list {
+.meetings-list,
+.employees-list,
+.salary-table {
     background: white;
     border-radius: 8px;
     box-shadow: var(--shadow-md);
     overflow: hidden;
+}
+
+.panel-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
 }
 
 .data-table {
@@ -694,6 +723,11 @@ canvas {
     }
 
     .filter-controls {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .header-actions {
         width: 100%;
         flex-direction: column;
     }

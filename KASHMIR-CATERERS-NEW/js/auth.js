@@ -2,8 +2,90 @@
    AUTHENTICATION SYSTEM
    ================================ */
 
-// User database (In production, this would be a backend)
-const usersDatabase = JSON.parse(localStorage.getItem('usersDatabase') || '[]');
+const defaultEmployeeUsers = [
+    {
+        id: 'EMP-ADMIN-001',
+        employeeCode: 'KC-ADMIN-001',
+        name: 'Kashmir Admin',
+        email: 'admin@kashmircaterers.local',
+        password: btoa('admin123'),
+        role: 'admin',
+        jobRole: 'manager',
+        dailyRate: 2500,
+        daysWorked: 26,
+        advancePaid: 5000,
+        createdAt: new Date().toISOString(),
+    },
+    {
+        id: 'EMP-MANAGER-001',
+        employeeCode: 'KC-EMP-101',
+        name: 'Operations Manager',
+        email: 'manager@kashmircaterers.local',
+        password: btoa('manager123'),
+        role: 'employee',
+        jobRole: 'manager',
+        dailyRate: 1800,
+        daysWorked: 24,
+        advancePaid: 3000,
+        createdAt: new Date().toISOString(),
+    },
+];
+
+let usersDatabase = JSON.parse(localStorage.getItem('usersDatabase') || '[]');
+let employeesDatabase = JSON.parse(localStorage.getItem('employeesDatabase') || '[]');
+
+initializeAuthData();
+
+function initializeAuthData() {
+    if (usersDatabase.length === 0) {
+        usersDatabase = [...defaultEmployeeUsers];
+        localStorage.setItem('usersDatabase', JSON.stringify(usersDatabase));
+    }
+
+    if (employeesDatabase.length === 0) {
+        employeesDatabase = defaultEmployeeUsers.map((user) => createEmployeeRecordFromUser(user));
+        localStorage.setItem('employeesDatabase', JSON.stringify(employeesDatabase));
+    }
+}
+
+function createEmployeeRecordFromUser(user) {
+    return {
+        id: user.id,
+        employeeCode: user.employeeCode,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        jobRole: user.jobRole || 'staff',
+        dailyRate: Number(user.dailyRate || 0),
+        daysWorked: Number(user.daysWorked || 0),
+        advancePaid: Number(user.advancePaid || 0),
+        isActive: user.isActive !== false,
+        createdAt: user.createdAt || new Date().toISOString(),
+    };
+}
+
+function syncEmployeesDatabaseFromUsers() {
+    employeesDatabase = JSON.parse(localStorage.getItem('employeesDatabase') || '[]');
+    usersDatabase.forEach((user) => {
+        if (user.role !== 'employee' && user.role !== 'admin') {
+            return;
+        }
+
+        const existingEmployeeIndex = employeesDatabase.findIndex((employee) => employee.id === user.id);
+        const employeeRecord = createEmployeeRecordFromUser(user);
+
+        if (existingEmployeeIndex === -1) {
+            employeesDatabase.push(employeeRecord);
+        } else {
+            employeesDatabase[existingEmployeeIndex] = {
+                ...employeesDatabase[existingEmployeeIndex],
+                ...employeeRecord,
+            };
+        }
+    });
+
+    localStorage.setItem('employeesDatabase', JSON.stringify(employeesDatabase));
+}
 
 // ================================
 // LOGIN MODAL
@@ -61,62 +143,51 @@ function switchToLogin(event) {
 
 async function handleLogin(event) {
     event.preventDefault();
-    
+
     const form = event.target;
-    const email = form.querySelector('input[type="email"]').value.trim();
+    const identifier = form.querySelector('input[type="text"]').value.trim();
     const password = form.querySelector('input[type="password"]').value;
-    
-    // Validate inputs
-    if (!validateEmail(email)) {
-        showNotification('Invalid email address', 'error');
+
+    if (!identifier) {
+        showNotification('Enter your email or employee ID', 'error');
         return;
     }
-    
+
     if (password.length < 6) {
         showNotification('Password must be at least 6 characters', 'error');
         return;
     }
-    
+
     try {
-        // Simulate API call
-        const user = authenticateUser(email, password);
-        
-        if (user) {
-            // Determine user role
-            const role = user.role || 'customer';
-            
-            // Set app state
-            appState.isLoggedIn = true;
-            appState.userRole = role;
-            appState.currentUser = {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: role,
-            };
-            saveState();
-            
-            // Update UI
-            updateAuthUI();
-            
-            // Close modal
-            closeLoginModal();
-            
-            // Show success and redirect
-            showNotification(`Welcome back, ${user.name}!`, 'success');
-            
-            // Redirect based on role
-            setTimeout(() => {
-                if (role === 'employee' || role === 'admin') {
-                    window.location.href = 'admin/dashboard.html';
-                } else {
-                    // Keep on main site for customers
-                    window.location.reload();
-                }
-            }, 1500);
-        } else {
-            showNotification('Invalid email or password', 'error');
+        const user = authenticateUser(identifier, password);
+
+        if (!user) {
+            showNotification('Invalid login details', 'error');
+            return;
         }
+
+        const role = user.role || 'customer';
+        appState.isLoggedIn = true;
+        appState.userRole = role;
+        appState.currentUser = {
+            id: user.id,
+            employeeCode: user.employeeCode || null,
+            name: user.name,
+            email: user.email,
+            role,
+        };
+        saveState();
+        updateAuthUI();
+        closeLoginModal();
+        showNotification(`Welcome back, ${user.name}!`, 'success');
+
+        setTimeout(() => {
+            if (role === 'employee' || role === 'admin') {
+                window.location.href = 'admin/dashboard.html';
+            } else {
+                window.location.reload();
+            }
+        }, 1000);
     } catch (error) {
         handleError(error, 'Login failed');
     }
@@ -128,58 +199,54 @@ async function handleLogin(event) {
 
 async function handleSignup(event) {
     event.preventDefault();
-    
+
     const form = event.target;
     const inputs = form.querySelectorAll('input');
     const name = inputs[0].value.trim();
     const email = inputs[1].value.trim();
     const password = inputs[2].value;
     const confirmPassword = inputs[3].value;
-    
-    // Validate inputs
+
     if (!name || name.length < 3) {
         showNotification('Name must be at least 3 characters', 'error');
         return;
     }
-    
+
     if (!validateEmail(email)) {
         showNotification('Invalid email address', 'error');
         return;
     }
-    
+
     if (password.length < 6) {
         showNotification('Password must be at least 6 characters', 'error');
         return;
     }
-    
+
     if (password !== confirmPassword) {
         showNotification('Passwords do not match', 'error');
         return;
     }
-    
+
     try {
-        // Check if user already exists
-        const existingUser = usersDatabase.find((u) => u.email === email);
+        usersDatabase = JSON.parse(localStorage.getItem('usersDatabase') || '[]');
+        const existingUser = usersDatabase.find((user) => user.email.toLowerCase() === email.toLowerCase());
         if (existingUser) {
             showNotification('Email already registered', 'error');
             return;
         }
-        
-        // Create new user
+
         const newUser = {
             id: generateUserId(),
-            name: name,
-            email: email,
-            password: hashPassword(password), // In production, hash on server
+            name,
+            email,
+            password: hashPassword(password),
             role: 'customer',
             createdAt: new Date().toISOString(),
         };
-        
-        // Save to database
+
         usersDatabase.push(newUser);
         localStorage.setItem('usersDatabase', JSON.stringify(usersDatabase));
-        
-        // Auto-login
+
         appState.isLoggedIn = true;
         appState.userRole = 'customer';
         appState.currentUser = {
@@ -189,21 +256,13 @@ async function handleSignup(event) {
             role: newUser.role,
         };
         saveState();
-        
-        // Update UI
         updateAuthUI();
-        
-        // Close modal
         closeSignupModal();
-        
-        // Show success
         showNotification(`Welcome, ${name}! Account created successfully.`, 'success');
-        
-        // Reload page
+
         setTimeout(() => {
             window.location.reload();
-        }, 1500);
-        
+        }, 1000);
     } catch (error) {
         handleError(error, 'Signup failed');
     }
@@ -213,15 +272,22 @@ async function handleSignup(event) {
 // AUTHENTICATION HELPERS
 // ================================
 
-function authenticateUser(email, password) {
-    const user = usersDatabase.find((u) => u.email === email);
-    
+function authenticateUser(identifier, password) {
+    usersDatabase = JSON.parse(localStorage.getItem('usersDatabase') || '[]');
+    syncEmployeesDatabaseFromUsers();
+
+    const normalizedIdentifier = identifier.toLowerCase();
+    const user = usersDatabase.find((candidate) => {
+        const emailMatch = candidate.email && candidate.email.toLowerCase() === normalizedIdentifier;
+        const employeeMatch = candidate.employeeCode && candidate.employeeCode.toLowerCase() === normalizedIdentifier;
+        return emailMatch || employeeMatch;
+    });
+
     if (user && comparePassword(password, user.password)) {
-        // Return user without password
         const { password: _, ...userWithoutPassword } = user;
         return userWithoutPassword;
     }
-    
+
     return null;
 }
 
@@ -230,12 +296,10 @@ function generateUserId() {
 }
 
 function hashPassword(password) {
-    // Simple hash for demo (use bcrypt in production)
     return btoa(password);
 }
 
 function comparePassword(password, hash) {
-    // Simple comparison for demo (use bcrypt in production)
     return btoa(password) === hash;
 }
 
@@ -246,24 +310,33 @@ function comparePassword(password, hash) {
 function updateAuthUI() {
     const loginBtn = document.querySelector('.login-btn');
     const signupBtn = document.querySelector('.signup-btn');
-    
+
+    if (!loginBtn || !signupBtn) {
+        return;
+    }
+
     if (appState.isLoggedIn && appState.currentUser) {
-        // Replace auth buttons with user profile
-        const userName = appState.currentUser.name.split(' ')[0]; // First name only
-        
-        loginBtn.textContent = `${userName}`;
+        const userName = appState.currentUser.name.split(' ')[0];
+        loginBtn.textContent = userName;
         loginBtn.onclick = (e) => {
             e.preventDefault();
             openUserMenu();
         };
-        
-        signupBtn.textContent = 'Dashboard';
-        signupBtn.onclick = (e) => {
-            e.preventDefault();
-            if (appState.userRole === 'employee' || appState.userRole === 'admin') {
+
+        if (appState.userRole === 'employee' || appState.userRole === 'admin') {
+            signupBtn.style.display = 'inline-flex';
+            signupBtn.textContent = 'Dashboard';
+            signupBtn.onclick = (e) => {
+                e.preventDefault();
                 window.location.href = 'admin/dashboard.html';
-            }
-        };
+            };
+        } else {
+            signupBtn.textContent = 'Account';
+            signupBtn.onclick = (e) => {
+                e.preventDefault();
+                openUserMenu();
+            };
+        }
     }
 }
 
@@ -275,89 +348,60 @@ function openUserMenu() {
     const menu = document.createElement('div');
     menu.className = 'user-menu';
     menu.innerHTML = `
-        <div style="position: fixed; top: 70px; right: 20px; background: white; border-radius: 8px; 
-                    box-shadow: 0 10px 20px rgba(0,0,0,0.15); z-index: 4000; min-width: 200px;">
+        <div style="position: fixed; top: 70px; right: 20px; background: white; border-radius: 8px;
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.15); z-index: 4000; min-width: 220px;">
             <div style="padding: 16px;">
-                <p style="margin: 0 0 8px 0; font-weight: 600;">
-                    ${appState.currentUser.name}
-                </p>
-                <p style="margin: 0 0 16px 0; font-size: 0.9rem; color: #999;">
-                    ${appState.currentUser.email}
-                </p>
-                <a href="#" onclick="viewBookings(event)" 
-                   style="display: block; padding: 8px 0; color: var(--secondary); text-decoration: none; margin-bottom: 8px;">
-                    My Bookings
-                </a>
-                <a href="#" onclick="viewProfile(event)"
-                   style="display: block; padding: 8px 0; color: var(--secondary); text-decoration: none; margin-bottom: 8px;">
-                    Profile Settings
-                </a>
+                <p style="margin: 0 0 8px 0; font-weight: 600;">${appState.currentUser.name}</p>
+                <p style="margin: 0 0 6px 0; font-size: 0.9rem; color: #999;">${appState.currentUser.email || ''}</p>
+                ${appState.currentUser.employeeCode ? `<p style="margin: 0 0 16px 0; font-size: 0.85rem; color: #999;">Employee ID: ${appState.currentUser.employeeCode}</p>` : ''}
+                <a href="#" onclick="viewBookings(event)" style="display: block; padding: 8px 0; color: var(--secondary); text-decoration: none; margin-bottom: 8px;">My Bookings</a>
+                ${(appState.userRole === 'employee' || appState.userRole === 'admin')
+                    ? '<a href="admin/dashboard.html" style="display: block; padding: 8px 0; color: var(--secondary); text-decoration: none; margin-bottom: 8px;">Open Dashboard</a>'
+                    : ''}
                 <hr style="margin: 8px 0; border: none; border-top: 1px solid #eee;">
-                <a href="#" onclick="logoutUser(event)"
-                   style="display: block; padding: 8px 0; color: #ff6b6b; text-decoration: none;">
-                    Logout
-                </a>
+                <a href="#" onclick="logoutUser(event)" style="display: block; padding: 8px 0; color: #ff6b6b; text-decoration: none;">Logout</a>
             </div>
         </div>
     `;
-    
-    // Remove existing menu if any
+
     const existingMenu = document.querySelector('.user-menu');
     if (existingMenu) {
         existingMenu.remove();
     }
-    
+
     document.body.appendChild(menu);
-    
-    // Close on click outside
+
     setTimeout(() => {
         document.addEventListener('click', (e) => {
             if (!menu.contains(e.target) && !e.target.classList.contains('login-btn')) {
                 menu.remove();
             }
-        });
+        }, { once: true });
     }, 100);
 }
-
-// ================================
-// USER ACTIONS
-// ================================
 
 function viewBookings(event) {
     event.preventDefault();
     showNotification('My Bookings feature coming soon', 'info');
 }
 
-function viewProfile(event) {
-    event.preventDefault();
-    showNotification('Profile Settings feature coming soon', 'info');
-}
-
 function logoutUser(event) {
     event.preventDefault();
-    
-    // Clear auth state
     appState.isLoggedIn = false;
     appState.userRole = null;
     appState.currentUser = null;
     saveState();
-    
-    // Close menu
+
     const menu = document.querySelector('.user-menu');
     if (menu) {
         menu.remove();
     }
-    
-    // Reload page
+
     showNotification('Logged out successfully', 'success');
     setTimeout(() => {
-        window.location.href = '/';
-    }, 1000);
+        window.location.href = 'index.html';
+    }, 800);
 }
-
-// ================================
-// CHECK AUTH STATUS ON PAGE LOAD
-// ================================
 
 document.addEventListener('DOMContentLoaded', () => {
     if (appState.isLoggedIn && appState.currentUser) {
@@ -365,28 +409,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ================================
-// JWT TOKEN MANAGEMENT (For API calls)
-// ================================
-
 function generateJWT(user) {
-    // Simplified JWT generation (use proper JWT library in production)
     const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
     const payload = btoa(JSON.stringify({
         userId: user.id,
         email: user.email,
         role: user.role,
         iat: Math.floor(Date.now() / 1000),
-        exp: Math.floor(Date.now() / 1000) + 86400, // 24 hours
+        exp: Math.floor(Date.now() / 1000) + 86400,
     }));
-    const signature = btoa('secret-key'); // In production, sign on server
-    
+    const signature = btoa('secret-key');
     return `${header}.${payload}.${signature}`;
 }
 
 function getAuthToken() {
-    const token = localStorage.getItem('authToken');
-    return token || null;
+    return localStorage.getItem('authToken') || null;
 }
 
 function saveAuthToken(token) {
