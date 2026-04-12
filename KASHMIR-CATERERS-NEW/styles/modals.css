@@ -91,6 +91,86 @@
     margin-top: var(--spacing-md);
 }
 
+.menu-modal-content {
+    max-width: 1120px;
+    width: min(1120px, 94vw);
+    max-height: 88vh;
+    overflow-y: auto;
+}
+
+.menu-modal-subtitle {
+    margin-bottom: var(--spacing-xl);
+    color: var(--gray-dark);
+    line-height: 1.6;
+}
+
+.menu-modal-grid {
+    display: grid;
+    gap: var(--spacing-lg);
+}
+
+.menu-modal-section {
+    background: linear-gradient(180deg, #fffdf8 0%, #ffffff 100%);
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-lg);
+    box-shadow: 0 14px 32px rgba(26, 26, 26, 0.06);
+}
+
+.menu-modal-heading h3 {
+    margin-bottom: var(--spacing-md);
+    color: var(--dark);
+    font-size: 1.3rem;
+    font-family: var(--font-display);
+}
+
+.menu-modal-courses {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.menu-modal-course {
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+}
+
+.menu-modal-items {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.menu-modal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.95rem 1rem;
+    border-radius: var(--radius-lg);
+    background: #fffcf7;
+    border: 1px solid rgba(212, 175, 55, 0.12);
+}
+
+.menu-modal-item strong {
+    display: block;
+    color: var(--dark);
+    margin-bottom: 0.2rem;
+}
+
+.menu-modal-item p {
+    color: var(--gray-dark);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.menu-modal-item span {
+    flex-shrink: 0;
+    font-weight: 800;
+    color: #8a6d1f;
+}
+
 .form-toggle {
     text-align: center;
     font-size: 0.95rem;
@@ -206,6 +286,17 @@
 
 .step-content h3 {
     margin-bottom: var(--spacing-lg);
+    color: var(--dark);
+}
+
+.booking-form .form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.booking-form .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
     color: var(--dark);
 }
 
@@ -451,6 +542,10 @@
         padding: var(--spacing-xl);
     }
 
+    .menu-modal-courses {
+        grid-template-columns: 1fr;
+    }
+
     .step-indicator {
         margin-bottom: var(--spacing-xl);
     }
@@ -507,6 +602,10 @@
 
     .booking-form {
         padding: var(--spacing-lg);
+    }
+
+    .menu-modal-item {
+        flex-direction: column;
     }
 
     .step-indicator {

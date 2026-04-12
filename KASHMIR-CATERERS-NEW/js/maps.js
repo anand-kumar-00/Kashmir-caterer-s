@@ -4,7 +4,7 @@
 
 let map;
 let markers = [];
-const locations = [
+let locations = [
     {
         id: 'office',
         name: 'Office Location',
@@ -36,9 +36,25 @@ const locations = [
 
 // Initialize map when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    syncLocationsFromStorage();
+    renderLocationsList();
     setTimeout(() => {
         initializeMap();
     }, 500);
+});
+
+window.addEventListener('storage', (event) => {
+    if (!event.key || event.key === 'locations') {
+        syncLocationsFromStorage();
+        renderLocationsList();
+        refreshMapMarkers();
+    }
+});
+
+window.addEventListener('focus', () => {
+    syncLocationsFromStorage();
+    renderLocationsList();
+    refreshMapMarkers();
 });
 
 // ================================
@@ -74,11 +90,23 @@ function initializeMap() {
     fitMapBounds();
 }
 
+function syncLocationsFromStorage() {
+    const storedLocations = JSON.parse(localStorage.getItem('locations') || '[]');
+    if (storedLocations.length) {
+        locations = storedLocations.map((location) => ({
+            ...location,
+            fullAddress: location.fullAddress || location.address,
+        }));
+    }
+}
+
 // ================================
 // ADD MARKERS TO MAP
 // ================================
 
 function addMarkers() {
+    clearMarkers();
+
     locations.forEach((location) => {
         const marker = new google.maps.Marker({
             position: {
@@ -99,6 +127,11 @@ function addMarkers() {
         
         markers.push(marker);
     });
+}
+
+function clearMarkers() {
+    markers.forEach((marker) => marker.setMap(null));
+    markers = [];
 }
 
 // ================================
@@ -179,12 +212,35 @@ function selectLocation(index) {
     }
 }
 
+function renderLocationsList() {
+    const locationsList = document.getElementById('homepage-locations-list');
+
+    if (!locationsList) {
+        return;
+    }
+
+    if (!locations.length) {
+        locationsList.innerHTML = '<div class="menu-loading-state">No locations added yet.</div>';
+        return;
+    }
+
+    locationsList.innerHTML = locations.map((location, index) => `
+        <div class="location-card ${index === 0 ? 'active' : ''}" onclick="selectLocation(${index})">
+            <h3>${location.name}</h3>
+            <p>${location.address}</p>
+            <p class="location-address">${location.fullAddress || location.address}</p>
+            <button class="btn-secondary" onclick="event.stopPropagation(); getDirections('${location.lat},${location.lng}')">Get Directions</button>
+        </div>
+    `).join('');
+}
+
 // ================================
 // GET DIRECTIONS
 // ================================
 
 function getDirections(lat, lng) {
-    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    const destination = lng===undefined ? lat : `${lat},${lng}`;
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
     window.open(mapsUrl, '_blank');
 }
 
@@ -209,6 +265,15 @@ function fitMapBounds() {
         }
         google.maps.event.removeListener(listener);
     });
+}
+
+function refreshMapMarkers() {
+    if (!map) {
+        return;
+    }
+
+    addMarkers();
+    fitMapBounds();
 }
 
 // ================================

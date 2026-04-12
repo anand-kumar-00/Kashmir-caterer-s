@@ -29,6 +29,19 @@ const defaultEmployeeUsers = [
         advancePaid: 3000,
         createdAt: new Date().toISOString(),
     },
+    {
+        id: 'EMP-ADMIN-ANAND',
+        employeeCode: 'KC-ADMIN-9596',
+        name: 'Anand Bhagat',
+        email: 'itsanandbhagat47@gmail.com',
+        password: btoa('Anand@9596'),
+        role: 'admin',
+        jobRole: 'manager',
+        dailyRate: 0,
+        daysWorked: 0,
+        advancePaid: 0,
+        createdAt: new Date().toISOString(),
+    },
 ];
 
 let usersDatabase = JSON.parse(localStorage.getItem('usersDatabase') || '[]');
@@ -39,13 +52,38 @@ initializeAuthData();
 function initializeAuthData() {
     if (usersDatabase.length === 0) {
         usersDatabase = [...defaultEmployeeUsers];
-        localStorage.setItem('usersDatabase', JSON.stringify(usersDatabase));
     }
+    ensureDefaultEmployeeAccounts();
+    localStorage.setItem('usersDatabase', JSON.stringify(usersDatabase));
 
     if (employeesDatabase.length === 0) {
         employeesDatabase = defaultEmployeeUsers.map((user) => createEmployeeRecordFromUser(user));
-        localStorage.setItem('employeesDatabase', JSON.stringify(employeesDatabase));
     }
+    syncEmployeesDatabaseFromUsers();
+}
+
+function ensureDefaultEmployeeAccounts() {
+    defaultEmployeeUsers.forEach((defaultUser) => {
+        const existingUserIndex = usersDatabase.findIndex(
+            (user) => user.id === defaultUser.id || (user.email && user.email.toLowerCase() === defaultUser.email.toLowerCase())
+        );
+
+        if (existingUserIndex === -1) {
+            usersDatabase.push({ ...defaultUser });
+            return;
+        }
+
+        usersDatabase[existingUserIndex] = {
+            ...usersDatabase[existingUserIndex],
+            employeeCode: defaultUser.employeeCode,
+            role: defaultUser.role,
+            jobRole: defaultUser.jobRole,
+            dailyRate: defaultUser.dailyRate,
+            daysWorked: usersDatabase[existingUserIndex].daysWorked ?? defaultUser.daysWorked,
+            advancePaid: usersDatabase[existingUserIndex].advancePaid ?? defaultUser.advancePaid,
+            isActive: usersDatabase[existingUserIndex].isActive !== false,
+        };
+    });
 }
 
 function createEmployeeRecordFromUser(user) {

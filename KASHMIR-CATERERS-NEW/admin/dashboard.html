@@ -9,52 +9,72 @@
 <body>
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2>Kashmiri Caterers</h2>
+            <div class="brand-block">
+                <span class="brand-mark">✦</span>
+                <div>
+                    <p class="brand-eyebrow">Premium Control Room</p>
+                    <h2>Kashmiri Caterers</h2>
+                </div>
+            </div>
             <button class="sidebar-toggle" onclick="toggleSidebar()">Menu</button>
+        </div>
+
+        <div class="sidebar-highlight">
+            <p class="highlight-label">Service status</p>
+            <h3>Operations running smoothly</h3>
+            <div class="highlight-meta">
+                <span>◆ Events</span>
+                <span>◆ Staff</span>
+                <span>◆ Accounts</span>
+            </div>
         </div>
 
         <nav class="sidebar-nav">
             <a href="#dashboard" class="nav-item active" onclick="switchTab('dashboard')">
-                <span class="icon">DB</span>
+                <span class="icon">◈</span>
                 <span class="label">Dashboard</span>
             </a>
             <a href="#bookings" class="nav-item" onclick="switchTab('bookings')">
-                <span class="icon">BK</span>
+                <span class="icon">⌘</span>
                 <span class="label">Bookings</span>
             </a>
             <a href="#employees" class="nav-item" onclick="switchTab('employees')">
-                <span class="icon">EM</span>
+                <span class="icon">◉</span>
                 <span class="label">Employees</span>
             </a>
             <a href="#menu" class="nav-item" onclick="switchTab('menu')">
-                <span class="icon">MN</span>
+                <span class="icon">✣</span>
                 <span class="label">Menu</span>
             </a>
+            <a href="#gallery" class="nav-item" onclick="switchTab('gallery')">
+                <span class="icon">GL</span>
+                <span class="label">Gallery</span>
+            </a>
             <a href="#accounting" class="nav-item" onclick="switchTab('accounting')">
-                <span class="icon">AC</span>
+                <span class="icon">₹</span>
                 <span class="label">Accounting</span>
             </a>
             <a href="#locations" class="nav-item" onclick="switchTab('locations')">
-                <span class="icon">LC</span>
+                <span class="icon">⌖</span>
                 <span class="label">Locations</span>
             </a>
             <a href="#meetings" class="nav-item" onclick="switchTab('meetings')">
-                <span class="icon">MT</span>
+                <span class="icon">◌</span>
                 <span class="label">Meetings</span>
             </a>
             <a href="#reports" class="nav-item" onclick="switchTab('reports')">
-                <span class="icon">RP</span>
+                <span class="icon">↗</span>
                 <span class="label">Reports</span>
             </a>
             <a href="#settings" class="nav-item" onclick="switchTab('settings')">
-                <span class="icon">ST</span>
+                <span class="icon">⚙</span>
                 <span class="label">Settings</span>
             </a>
         </nav>
 
         <div class="sidebar-footer">
             <button class="btn-logout" onclick="logoutFromDashboard()">
-                <span class="icon">LO</span>
+                <span class="icon">⇥</span>
                 <span class="label">Logout</span>
             </button>
         </div>
@@ -67,6 +87,10 @@
                 <p class="header-subtitle" id="user-role-label">Employee access</p>
             </div>
             <div class="header-right">
+                <div class="header-chip">
+                    <span>✦</span>
+                    <span id="dashboard-date">Today</span>
+                </div>
                 <div class="user-info">
                     <span id="user-name">Admin User</span>
                     <div class="user-avatar">U</div>
@@ -76,70 +100,136 @@
 
         <div class="admin-content">
             <section id="dashboard-tab" class="tab-content active">
-                <div class="dashboard-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">TB</div>
-                        <div class="stat-info">
-                            <h3>Total Bookings</h3>
-                            <p class="stat-value" id="total-bookings">0</p>
-                            <small>All bookings recorded</small>
+                <div class="dashboard-hero">
+                    <div class="hero-copy">
+                        <span class="hero-tag">Executive overview</span>
+                        <h2>Plan events, monitor teams, and manage revenue from one polished workspace.</h2>
+                        <p>Track bookings, staff readiness, and financial performance in a dashboard designed for fast daily decisions.</p>
+                        <div class="hero-actions">
+                            <button class="btn-primary" onclick="switchTab('bookings')">Open Bookings</button>
+                            <button class="btn-secondary" onclick="switchTab('reports')">View Reports</button>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">CF</div>
-                        <div class="stat-info">
-                            <h3>Confirmed Bookings</h3>
-                            <p class="stat-value" id="confirmed-bookings">0</p>
-                            <small>Ready for service</small>
+                    <div class="hero-panel">
+                        <div class="hero-panel-header">
+                            <span class="panel-kicker">Today at a glance</span>
+                            <span class="panel-badge">Live</span>
                         </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">CX</div>
-                        <div class="stat-info">
-                            <h3>Cancelled Bookings</h3>
-                            <p class="stat-value" id="cancelled-bookings">0</p>
-                            <small>Cancelled events</small>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">PP</div>
-                        <div class="stat-info">
-                            <h3>Pending Payments</h3>
-                            <p class="stat-value" id="pending-payments">0</p>
-                            <small>Awaiting payment</small>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">RV</div>
-                        <div class="stat-info">
-                            <h3>Total Revenue</h3>
-                            <p class="stat-value" id="total-revenue">Rs 0</p>
-                            <small>Gross booking value</small>
+                        <div class="hero-panel-grid">
+                            <div>
+                                <strong>Guest experience</strong>
+                                <p>Prepared for bookings, meetings, and service coordination.</p>
+                            </div>
+                            <div>
+                                <strong>Finance flow</strong>
+                                <p>Income, salary, and expenses are organized in one place.</p>
+                            </div>
+                            <div>
+                                <strong>Team control</strong>
+                                <p>Employees and access roles stay visible and manageable.</p>
+                            </div>
+                            <div>
+                                <strong>Business pulse</strong>
+                                <p>Reports and activity stay clear with premium visual hierarchy.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="recent-bookings">
-                    <div class="section-header compact">
-                        <h2>Recent Bookings</h2>
+                <div class="dashboard-grid">
+                    <div class="stat-card bookings">
+                        <div class="stat-icon">◈</div>
+                        <div class="stat-info">
+                            <h3>Total Bookings</h3>
+                            <p class="stat-value" id="total-bookings">0</p>
+                            <small>All events currently recorded</small>
+                        </div>
                     </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Booking ID</th>
-                                <th>Customer</th>
-                                <th>Date</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="recent-bookings-list">
-                            <tr>
-                                <td colspan="6" class="empty-state">No bookings yet</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="stat-card confirmed">
+                        <div class="stat-icon">✓</div>
+                        <div class="stat-info">
+                            <h3>Confirmed Bookings</h3>
+                            <p class="stat-value" id="confirmed-bookings">0</p>
+                            <small>Ready for service delivery</small>
+                        </div>
+                    </div>
+                    <div class="stat-card cancelled">
+                        <div class="stat-icon">⨯</div>
+                        <div class="stat-info">
+                            <h3>Cancelled Bookings</h3>
+                            <p class="stat-value" id="cancelled-bookings">0</p>
+                            <small>Require follow-up or replacement</small>
+                        </div>
+                    </div>
+                    <div class="stat-card pending">
+                        <div class="stat-icon">◌</div>
+                        <div class="stat-info">
+                            <h3>Pending Payments</h3>
+                            <p class="stat-value" id="pending-payments">0</p>
+                            <small>Awaiting customer confirmation</small>
+                        </div>
+                    </div>
+                    <div class="stat-card revenue">
+                        <div class="stat-icon">₹</div>
+                        <div class="stat-info">
+                            <h3>Total Revenue</h3>
+                            <p class="stat-value" id="total-revenue">Rs 0</p>
+                            <small>Gross booking value collected</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-lower">
+                    <div class="quick-panel">
+                        <div class="section-header compact">
+                            <h2>Quick Actions</h2>
+                        </div>
+                        <div class="quick-actions-grid">
+                            <button class="quick-action-card" onclick="openAddEmployeeModal()">
+                                <span class="quick-action-icon">◉</span>
+                                <strong>Add Employee</strong>
+                                <small>Create access for staff and admin members</small>
+                            </button>
+                            <button class="quick-action-card" onclick="openAddExpenseModal()">
+                                <span class="quick-action-icon">₹</span>
+                                <strong>Add Expense</strong>
+                                <small>Track operations, supplies, and transport spend</small>
+                            </button>
+                            <button class="quick-action-card" onclick="openScheduleMeetingModal()">
+                                <span class="quick-action-icon">◌</span>
+                                <strong>Schedule Meeting</strong>
+                                <small>Set planning sessions with customers quickly</small>
+                            </button>
+                            <button class="quick-action-card" onclick="switchTab('reports')">
+                                <span class="quick-action-icon">↗</span>
+                                <strong>Open Reports</strong>
+                                <small>Review performance, profit, and business trends</small>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="recent-bookings premium-panel">
+                        <div class="section-header compact">
+                            <h2>Recent Bookings</h2>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-bookings-list">
+                                <tr>
+                                    <td colspan="6" class="empty-state">No bookings yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
@@ -232,6 +322,17 @@
                         <h3>Dinner</h3>
                         <div class="menu-items" id="dinner-items"></div>
                     </div>
+                </div>
+            </section>
+
+            <section id="gallery-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Gallery Management</h2>
+                    <button class="btn-primary" onclick="openAddGalleryModal()">+ Add Gallery Item</button>
+                </div>
+
+                <div class="gallery-admin-grid" id="gallery-admin-list">
+                    <div class="empty-state-panel">No gallery items added</div>
                 </div>
             </section>
 
@@ -438,6 +539,34 @@
                                 <label>Email</label>
                                 <input type="email" id="business-email" value="hello@kashmiricaterers.com">
                             </div>
+                            <div class="form-group">
+                                <label>Business Address</label>
+                                <input type="text" id="business-address" value="Main Office, Lal Chowk, Srinagar">
+                            </div>
+                            <div class="form-group">
+                                <label>UPI ID</label>
+                                <input type="text" id="business-upi-id" placeholder="kashmiricaterers@upi">
+                            </div>
+                            <div class="form-group">
+                                <label>UPI Receiver Name</label>
+                                <input type="text" id="business-upi-name" placeholder="Kashmiri Caterers">
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Account Holder</label>
+                                <input type="text" id="payment-account-holder" placeholder="Account holder name">
+                            </div>
+                            <div class="form-group">
+                                <label>Bank Account Number</label>
+                                <input type="text" id="payment-account-number" placeholder="1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label>IFSC Code</label>
+                                <input type="text" id="payment-ifsc" placeholder="SBIN0001234">
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Notes</label>
+                                <textarea id="payment-notes" rows="4" placeholder="Add account instructions, branch details, or payment notes"></textarea>
+                            </div>
                             <button type="submit" class="btn-primary">Save Changes</button>
                         </form>
                     </div>
@@ -445,6 +574,11 @@
                     <div class="settings-section">
                         <h3>Employee Login Help</h3>
                         <p>Use employee IDs like <strong>KC-ADMIN-001</strong> or <strong>KC-EMP-101</strong> with their password on the main site login form.</p>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Payment Information</h3>
+                        <p>Keep your UPI and bank account details here so dashboard payment settings stay updated after refresh.</p>
                     </div>
                 </div>
             </section>
@@ -486,6 +620,24 @@
                     <textarea required></textarea>
                 </div>
                 <button type="submit" class="btn-primary">Add Item</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="addGalleryModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2>Add Gallery Item</h2>
+            <form onsubmit="handleAddGalleryItem(event)">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-group">
+                    <label>Image URL or Path</label>
+                    <input type="text" placeholder="/KASHMIR-CATERERS-NEW/images/gallery-1.png" required>
+                </div>
+                <button type="submit" class="btn-primary">Add Gallery Item</button>
             </form>
         </div>
     </div>

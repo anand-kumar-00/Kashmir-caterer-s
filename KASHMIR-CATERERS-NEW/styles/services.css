@@ -150,3 +150,74 @@
 .service-card:hover {
     animation: cardPulse 600ms ease-in-out;
 }
+
+.menu-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.menu-card {
+    min-height: 280px;
+    justify-content: space-between;
+    background: linear-gradient(180deg, #fffdf9 0%, #f5ede2 100%);
+    padding: var(--spacing-xl);
+}
+
+.menu-card::before,
+.menu-card .service-image {
+    display: none;
+}
+
+.menu-card h3 {
+    color: var(--primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.menu-card-body p {
+    color: var(--gray-dark);
+    line-height: 1.7;
+}
+
+.menu-card-top,
+.menu-card-footer {
+    position: relative;
+    z-index: 3;
+}
+
+.menu-card-top {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.menu-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(212, 175, 55, 0.16);
+    color: var(--secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.menu-badge.secondary {
+    background: rgba(26, 26, 26, 0.08);
+    color: var(--primary);
+}
+
+.menu-card-footer strong {
+    font-size: 1.4rem;
+    color: var(--secondary);
+}
+
+.menu-loading-state {
+    width: 100%;
+    padding: var(--spacing-xl);
+    background: white;
+    border-radius: var(--radius-xl);
+    text-align: center;
+    color: var(--gray-medium);
+    box-shadow: var(--shadow-md);
+}

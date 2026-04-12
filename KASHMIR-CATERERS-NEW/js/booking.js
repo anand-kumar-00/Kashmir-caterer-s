@@ -4,7 +4,7 @@
 
 let currentStep = 1;
 const totalSteps = 4;
-const bookingMenuCatalog = [
+const defaultBookingMenuCatalog = [
     {
         meal: 'Breakfast',
         description: 'Morning selections for elegant starts and light gatherings.',
@@ -74,11 +74,17 @@ const bookingMenuCatalog = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
+    ensureMenuStorage();
     renderBookingMenuOptions();
+    prefillCustomerDetails();
 });
 
 // Step Navigation
 function goToStep(stepNumber) {
+    if (stepNumber >= 3 && !ensureCustomerLoggedIn()) {
+        return;
+    }
+
     if (stepNumber > currentStep && !validateCurrentStep()) {
         showNotification('Please complete all required fields', 'error');
         return;
@@ -125,10 +131,23 @@ function validateCurrentStep() {
         case 2:
             return validateMenuSelection();
         case 3:
-            return true;
+            return validateCustomerDetails();
         default:
             return true;
     }
+}
+
+function ensureCustomerLoggedIn() {
+    if (appState.isLoggedIn && appState.currentUser) {
+        prefillCustomerDetails();
+        return true;
+    }
+
+    showNotification('Please login or signup before booking your event', 'error');
+    if (typeof openLoginModal === 'function') {
+        openLoginModal();
+    }
+    return false;
 }
 
 function validateDateSelection() {
@@ -168,7 +187,7 @@ function renderBookingMenuOptions() {
         return;
     }
 
-    container.innerHTML = bookingMenuCatalog
+    container.innerHTML = getBookingMenuCatalog()
         .map(
             (section) => `
             <div class="category">
@@ -213,7 +232,7 @@ function renderMenuDishCard(item) {
 }
 
 function findMenuItemById(itemId) {
-    for (const section of bookingMenuCatalog) {
+    for (const section of getBookingMenuCatalog()) {
         for (const course of section.courses) {
             const item = course.items.find((dish) => dish.id === itemId);
 
@@ -230,6 +249,79 @@ function findMenuItemById(itemId) {
     return null;
 }
 
+function ensureMenuStorage() {
+    const existingMenuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+
+    if (!existingMenuItems.length) {
+        localStorage.setItem('menuItems', JSON.stringify(getDefaultMenuItems()));
+    }
+}
+
+function getDefaultMenuItems() {
+    return defaultBookingMenuCatalog.flatMap((section) =>
+        section.courses.flatMap((course) =>
+            course.items.map((item) => ({
+                id: item.id,
+                name: item.name,
+                category: section.meal.toLowerCase(),
+                type: course.title.toLowerCase().includes('main') ? 'main' : 'snacks',
+                price: item.price,
+                description: item.note,
+            }))
+        )
+    );
+}
+
+function getBookingMenuCatalog() {
+    const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+    const fallbackMenuItems = menuItems.length ? menuItems : getDefaultMenuItems();
+    const categoryConfig = [
+        { key: 'breakfast', label: 'Breakfast', description: 'Morning selections for elegant starts and light gatherings.' },
+        { key: 'lunch', label: 'Lunch', description: 'Balanced menu choices suited for family events and celebrations.' },
+        { key: 'dinner', label: 'Dinner', description: 'Refined evening dishes for premium dining and wedding service.' },
+    ];
+    const courseConfig = [
+        { key: 'snacks', label: 'Snacks' },
+        { key: 'main', label: 'Main Course' },
+    ];
+
+    return categoryConfig
+        .map((category) => {
+            const courses = courseConfig
+                .map((course) => {
+                    const items = fallbackMenuItems
+                        .filter((item) => item.category === category.key && normalizeCourseType(item.type) === course.key)
+                        .map((item) => ({
+                            id: item.id,
+                            name: item.name,
+                            price: Number(item.price || 0),
+                            note: item.description || 'Chef curated selection',
+                        }));
+
+                    return {
+                        title: course.label,
+                        items,
+                    };
+                })
+                .filter((course) => course.items.length > 0);
+
+            return {
+                meal: category.label,
+                description: category.description,
+                courses,
+            };
+        })
+        .filter((category) => category.courses.length > 0);
+}
+
+function normalizeCourseType(type) {
+    return String(type || '')
+        .toLowerCase()
+        .includes('main')
+        ? 'main'
+        : 'snacks';
+}
+
 // ================================
 // STEP 3: ADDITIONAL REQUIREMENTS
 // ================================
@@ -241,12 +333,63 @@ function saveRequirements() {
     return true;
 }
 
+function prefillCustomerDetails() {
+    const currentUser = appState.currentUser || {};
+    const customerNameInput = document.getElementById('customerName');
+    const customerEmailInput = document.getElementById('customerEmail');
+
+    if (customerNameInput && !customerNameInput.value && currentUser.name) {
+        customerNameInput.value = currentUser.name;
+    }
+
+    if (customerEmailInput && !customerEmailInput.value && currentUser.email) {
+        customerEmailInput.value = currentUser.email;
+    }
+}
+
+function validateCustomerDetails() {
+    const customerName = document.getElementById('customerName').value.trim();
+    const customerEmail = document.getElementById('customerEmail').value.trim();
+    const customerPhone = document.getElementById('customerPhone').value.trim();
+    const guestCount = Number(document.getElementById('guestCount').value || 0);
+
+    if (!customerName || customerName.length < 3) {
+        showNotification('Please enter your full name', 'error');
+        return false;
+    }
+
+    if (!validateEmail(customerEmail)) {
+        showNotification('Please enter a valid email address', 'error');
+        return false;
+    }
+
+    if (!customerPhone || customerPhone.length < 10) {
+        showNotification('Please enter a valid phone number', 'error');
+        return false;
+    }
+
+    if (!guestCount || guestCount < 1) {
+        showNotification('Please enter expected guest count', 'error');
+        return false;
+    }
+
+    appState.bookingData.customerDetails = {
+        customerName,
+        customerEmail,
+        customerPhone,
+        guestCount,
+    };
+    saveRequirements();
+    saveState();
+    return true;
+}
+
 // ================================
 // STEP 4: REVIEW & SUBMIT
 // ================================
 
 function updateReviewDisplay() {
-    saveRequirements();
+    validateCustomerDetails();
 
     const reviewDate = document.getElementById('reviewDate');
     reviewDate.textContent = formatDate(appState.bookingData.eventDate);
@@ -262,6 +405,12 @@ function updateReviewDisplay() {
 
     const reviewRequirements = document.getElementById('reviewRequirements');
     reviewRequirements.textContent = appState.bookingData.requirements || 'None';
+
+    const customerDetails = appState.bookingData.customerDetails || {};
+    document.getElementById('reviewCustomerName').textContent = customerDetails.customerName || '-';
+    document.getElementById('reviewCustomerEmail').textContent = customerDetails.customerEmail || '-';
+    document.getElementById('reviewCustomerPhone').textContent = customerDetails.customerPhone || '-';
+    document.getElementById('reviewGuestCount').textContent = customerDetails.guestCount || '-';
 
     updateEstimatedTotal();
 }
@@ -284,14 +433,27 @@ function updateEstimatedTotal() {
 // ================================
 
 async function submitBooking() {
+    if (!ensureCustomerLoggedIn()) {
+        return;
+    }
+
+    if (!validateCustomerDetails()) {
+        return;
+    }
+
     if (!appState.bookingData.eventDate || appState.bookingData.menu.length === 0) {
         showNotification('Please complete all required fields', 'error');
         return;
     }
 
+    const customerDetails = appState.bookingData.customerDetails || {};
     const booking = {
         id: generateBookingId(),
-        customerName: 'Guest',
+        customerId: appState.currentUser ? appState.currentUser.id : null,
+        customerName: customerDetails.customerName || appState.currentUser?.name || 'Guest',
+        customerEmail: customerDetails.customerEmail || appState.currentUser?.email || '',
+        customerPhone: customerDetails.customerPhone || '',
+        guestCount: customerDetails.guestCount || 0,
         eventDate: appState.bookingData.eventDate,
         menu: appState.bookingData.menu,
         requirements: appState.bookingData.requirements,
@@ -418,15 +580,21 @@ function resetBookingForm() {
     document.querySelectorAll('.menu-item').forEach((item) => {
         item.checked = false;
     });
+    document.getElementById('customerName').value = '';
+    document.getElementById('customerEmail').value = '';
+    document.getElementById('customerPhone').value = '';
+    document.getElementById('guestCount').value = '';
     document.getElementById('requirements').value = '';
 
     appState.bookingData = {
         eventDate: null,
         menu: [],
+        customerDetails: null,
         requirements: null,
     };
     saveState();
     renderBookingMenuOptions();
+    prefillCustomerDetails();
 
     const modal = document.querySelector('.modal.active');
     if (modal) {

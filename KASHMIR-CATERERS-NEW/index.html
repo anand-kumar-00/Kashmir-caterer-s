@@ -26,22 +26,23 @@
                 </div>
                 
                 <nav class="nav-menu">
-                    <a href="#menu" class="nav-link">Menu</a>
-                    <a href="#booking" class="nav-link">Booking</a>
-                    <a href="#gallery" class="nav-link">Explore</a>
+                    <a href="#" class="nav-link" id="nav-menu-link" data-key="navMenu" onclick="openMenuModal(event)">Menu</a>
+                    <a href="#booking" class="nav-link" id="nav-booking-link" data-key="navBooking">Booking</a>
+                    <a href="#gallery" class="nav-link" id="nav-explore-link" data-key="navExplore">Explore</a>
                 </nav>
 
                 <div class="header-controls">
                     <div class="language-selector">
+                        <span class="language-icon">◎</span>
                         <select id="languageSelect">
                             <option value="en">English</option>
-                            <option value="hi">Hindi</option>
-                            <option value="ur">Urdu</option>
-                            <option value="pa">Punjabi</option>
+                            <option value="hi">हिंदी</option>
+                            <option value="ur">اردو</option>
+                            <option value="pa">ਪੰਜਾਬੀ</option>
                         </select>
                     </div>
-                    <button class="btn-auth login-btn" onclick="openLoginModal()">Login</button>
-                    <button class="btn-auth signup-btn" onclick="openSignupModal()">Signup</button>
+                    <button class="btn-auth login-btn" id="login-btn-label" data-key="login" onclick="openLoginModal()">Login</button>
+                    <button class="btn-auth signup-btn" id="signup-btn-label" data-key="signup" onclick="openSignupModal()">Signup</button>
                 </div>
 
                 <button class="menu-toggle" onclick="toggleMobileMenu()">
@@ -62,49 +63,49 @@
         
         <div class="hero-content">
             <div class="greeting-animation">
-                <h1 class="greeting" id="greeting">Namaste</h1>
+                <h1 class="greeting" id="greeting" data-key="greeting">Namaste</h1>
             </div>
             
-            <p class="hero-subtitle">Premium Catering for Your Most Special Moments</p>
-            <p class="hero-tagline">Authentic Kashmiri Flavors | Impeccable Service | Unforgettable Events</p>
+            <p class="hero-subtitle" id="hero-subtitle" data-key="heroSubtitle">Premium Catering for Your Most Special Moments</p>
+            <p class="hero-tagline" id="hero-tagline" data-key="heroTagline">Authentic Kashmiri Flavors | Impeccable Service | Unforgettable Events</p>
             
-            <button class="btn-primary" onclick="scrollToSection('booking')">Book Your Event</button>
+            <button class="btn-primary" id="hero-cta" data-key="heroCta" onclick="scrollToSection('booking')">Book Your Event</button>
         </div>
     </section>
 
     <!-- Services Section -->
-    <section class="services" id="menu">
+    <section class="services" id="services">
         <div class="container">
-            <h2 class="section-title">Our Services</h2>
-            <p class="section-subtitle">Tailored catering experiences for every occasion</p>
+            <h2 class="section-title" id="services-title" data-key="servicesTitle">Our Services</h2>
+            <p class="section-subtitle" id="services-subtitle" data-key="servicesSubtitle">Tailored catering experiences for every occasion</p>
             
             <div class="services-grid">
                 <div class="service-card" style="background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,107,107,0.05))">
                     <div class="service-image">
                         <img src="/KASHMIR-CATERERS-NEW/images/service-marriage.png" alt="Marriage Catering">
                     </div>
-                    <h3>Marriage Catering</h3>
+                    <h3 id="service-marriage-title" data-key="serviceMarriage">Marriage Catering</h3>
                 </div>
 
                 <div class="service-card" style="background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(255,193,7,0.05))">
                     <div class="service-image">
                         <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=500" alt="Birthday Catering">
                     </div>
-                    <h3>Birthday Catering</h3>
+                    <h3 id="service-birthday-title" data-key="serviceBirthday">Birthday Catering</h3>
                 </div>
 
                 <div class="service-card" style="background: linear-gradient(135deg, rgba(33,150,243,0.1), rgba(33,150,243,0.05))">
                     <div class="service-image">
                         <img src="/KASHMIR-CATERERS-NEW/images/service-corporate.png" alt="Corporate Catering">
                     </div>
-                    <h3>Corporate Catering</h3>
+                    <h3 id="service-corporate-title" data-key="serviceCorporate">Corporate Catering</h3>
                 </div>
 
                 <div class="service-card" style="background: linear-gradient(135deg, rgba(244,67,54,0.1), rgba(244,67,54,0.05))">
                     <div class="service-image">
                         <img src="/KASHMIR-CATERERS-NEW/images/service-bbq.png" alt="Barbecue Catering">
                     </div>
-                    <h3>Barbecue Catering</h3>
+                    <h3 id="service-bbq-title" data-key="serviceBbq">Barbecue Catering</h3>
                 </div>
             </div>
         </div>
@@ -113,10 +114,10 @@
     <!-- Gallery Section -->
     <section class="gallery" id="gallery">
         <div class="container">
-            <h2 class="section-title">Event Gallery</h2>
-            <p class="section-subtitle">Capturing moments from our finest events</p>
+            <h2 class="section-title" id="gallery-title" data-key="galleryTitle">Event Gallery</h2>
+            <p class="section-subtitle" id="gallery-subtitle" data-key="gallerySubtitle">Photos and highlights managed from the admin dashboard</p>
             
-            <div class="gallery-grid">
+            <div class="gallery-grid" id="homepage-gallery-list">
                 <div class="gallery-item" onclick="openLightbox(this)">
                     <img src="/KASHMIR-CATERERS-NEW/images/gallery-1.png" alt="Event 1">
                     <div class="gallery-overlay">
@@ -165,15 +166,15 @@
     <!-- Locations Section -->
     <section class="locations" id="locations">
         <div class="container">
-            <h2 class="section-title">Our Locations</h2>
-            <p class="section-subtitle">Find us at multiple locations across the city</p>
+            <h2 class="section-title" id="locations-title" data-key="locationsTitle">Our Locations</h2>
+            <p class="section-subtitle" id="locations-subtitle" data-key="locationsSubtitle">Find us at multiple locations across the city</p>
             
             <div class="locations-content">
                 <div class="map-container">
                     <div id="map" style="width: 100%; height: 500px;"></div>
                 </div>
                 
-                <div class="locations-list">
+                <div class="locations-list" id="homepage-locations-list">
                     <div class="location-card active" onclick="selectLocation(0)">
                         <h3>📍 Office Location</h3>
                         <p>Srinagar, Jammu & Kashmir</p>
@@ -202,8 +203,8 @@
     <!-- Booking Section -->
     <section class="booking" id="booking">
         <div class="container">
-            <h2 class="section-title">Book Your Event</h2>
-            <p class="section-subtitle">Simple, transparent booking process</p>
+            <h2 class="section-title" id="booking-title" data-key="bookingTitle">Book Your Event</h2>
+            <p class="section-subtitle" id="booking-subtitle" data-key="bookingSubtitle">Simple, transparent booking process</p>
             
             <div class="booking-form">
                 <div class="booking-steps">
@@ -228,61 +229,96 @@
 
                     <!-- Step 1: Date Selection -->
                     <div class="step-content active" id="step1">
-                        <h3>Select Event Date</h3>
+                        <h3 id="step1-title" data-key="step1Title">Select Event Date</h3>
                         <input type="date" id="eventDate" min="" required>
-                        <button class="btn-primary" onclick="goToStep(2)">Next</button>
+                        <button class="btn-primary" id="next-step1" data-key="next" onclick="goToStep(2)">Next</button>
                     </div>
 
                     <!-- Step 2: Menu Selection -->
                     <div class="step-content" id="step2">
-                        <h3>Select Menu</h3>
-                        <p class="menu-selection-subtitle">
+                        <h3 id="step2-title" data-key="step2Title">Select Menu</h3>
+                        <p class="menu-selection-subtitle" id="menu-selection-subtitle" data-key="menuSelectionSubtitle">
                             Choose dishes by meal and course. Each item shows its rate so customers can plan clearly.
                         </p>
                         <div class="menu-categories" id="bookingMenuCategories">
                             <div class="menu-loading-state">Loading menu options...</div>
                         </div>
                         <div class="button-group">
-                            <button class="btn-secondary" onclick="goToStep(1)">Back</button>
-                            <button class="btn-primary" onclick="goToStep(3)">Next</button>
+                            <button class="btn-secondary" id="back-step2" data-key="back" onclick="goToStep(1)">Back</button>
+                            <button class="btn-primary" id="next-step2" data-key="next" onclick="goToStep(3)">Next</button>
                         </div>
                     </div>
 
-                    <!-- Step 3: Additional Details -->
+                    <!-- Step 3: Customer Details -->
                     <div class="step-content" id="step3">
-                        <h3>Additional Requirements</h3>
-                        <textarea id="requirements" placeholder="Enter any special requirements, dietary restrictions, or additional notes..." rows="6"></textarea>
+                        <h3 id="step3-title" data-key="step3Title">Customer Details</h3>
+                        <div class="form-group">
+                            <label for="customerName" data-key="customerNameLabel">Full Name</label>
+                            <input type="text" id="customerName" data-placeholder-key="customerNamePlaceholder" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerEmail" data-key="customerEmailLabel">Email Address</label>
+                            <input type="email" id="customerEmail" data-placeholder-key="customerEmailPlaceholder" placeholder="Enter your email address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone" data-key="customerPhoneLabel">Phone Number</label>
+                            <input type="tel" id="customerPhone" data-placeholder-key="customerPhonePlaceholder" placeholder="Enter your phone number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guestCount" data-key="guestCountLabel">Expected Guests</label>
+                            <input type="number" id="guestCount" min="1" data-placeholder-key="guestCountPlaceholder" placeholder="How many guests are expected?" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="requirements" data-key="requirementsLabel">Additional Requirements</label>
+                        </div>
+                        <textarea id="requirements" data-placeholder-key="requirementsPlaceholder" placeholder="Enter any special requirements, dietary restrictions, or additional notes..." rows="6"></textarea>
                         <div class="button-group">
-                            <button class="btn-secondary" onclick="goToStep(2)">Back</button>
-                            <button class="btn-primary" onclick="goToStep(4)">Next</button>
+                            <button class="btn-secondary" id="back-step3" data-key="back" onclick="goToStep(2)">Back</button>
+                            <button class="btn-primary" id="next-step3" data-key="next" onclick="goToStep(4)">Next</button>
                         </div>
                     </div>
 
                     <!-- Step 4: Review & Submit -->
                     <div class="step-content" id="step4">
-                        <h3>Review Your Booking</h3>
+                        <h3 id="step4-title" data-key="step4Title">Review Your Booking</h3>
                         <div class="review-details">
                             <div class="review-item">
-                                <span>Event Date:</span>
+                                <span id="review-label-date" data-key="reviewDate">Event Date:</span>
                                 <span id="reviewDate">-</span>
                             </div>
                             <div class="review-item">
-                                <span>Selected Menu:</span>
+                                <span id="review-label-menu" data-key="reviewMenu">Selected Menu:</span>
                                 <span id="reviewMenu">-</span>
                             </div>
                             <div class="review-item">
-                                <span>Special Requirements:</span>
+                                <span data-key="customerNameLabel">Customer Name:</span>
+                                <span id="reviewCustomerName">-</span>
+                            </div>
+                            <div class="review-item">
+                                <span data-key="customerEmailLabel">Email:</span>
+                                <span id="reviewCustomerEmail">-</span>
+                            </div>
+                            <div class="review-item">
+                                <span data-key="customerPhoneLabel">Phone:</span>
+                                <span id="reviewCustomerPhone">-</span>
+                            </div>
+                            <div class="review-item">
+                                <span data-key="guestCountLabel">Guests:</span>
+                                <span id="reviewGuestCount">-</span>
+                            </div>
+                            <div class="review-item">
+                                <span id="review-label-requirements" data-key="reviewRequirements">Special Requirements:</span>
                                 <span id="reviewRequirements">-</span>
                             </div>
                             <div class="divider"></div>
                             <div class="review-item total">
-                                <span>Estimated Total:</span>
+                                <span id="review-label-total" data-key="reviewTotal">Estimated Total:</span>
                                 <span id="estimatedTotal">₹10,000</span>
                             </div>
                         </div>
                         <div class="button-group">
-                            <button class="btn-secondary" onclick="goToStep(3)">Back</button>
-                            <button class="btn-primary" onclick="submitBooking()">Confirm & Pay</button>
+                            <button class="btn-secondary" id="back-step4" data-key="back" onclick="goToStep(3)">Back</button>
+                            <button class="btn-primary" id="confirm-pay-btn" data-key="confirmPay" onclick="submitBooking()">Confirm & Pay</button>
                         </div>
                     </div>
                 </div>
@@ -298,16 +334,27 @@
         </div>
     </div>
 
+    <div class="modal" id="menuModal" onclick="closeMenuModal(event)">
+        <div class="modal-content menu-modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeMenuModal()">&times;</button>
+            <h2 id="menu-modal-title" data-key="menuModalTitle">Our Menu</h2>
+            <p class="menu-modal-subtitle" id="menu-modal-subtitle" data-key="menuModalSubtitle">Breakfast, lunch, and dinner menu managed from the dashboard.</p>
+            <div class="menu-modal-grid" id="menu-modal-list">
+                <div class="menu-loading-state">Loading menu...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Modal -->
     <div class="modal" id="loginModal" onclick="closeLoginModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeLoginModal()">&times;</button>
-            <h2>Login</h2>
+            <h2 id="login-modal-title" data-key="loginTitle">Login</h2>
             <form onsubmit="handleLogin(event)">
-                <input type="text" placeholder="Email or Employee ID" required>
-                <input type="password" placeholder="Password" required>
-                <button type="submit" class="btn-primary">Login</button>
-                <p class="form-toggle">Don't have an account? <a href="#" onclick="switchToSignup(event)">Signup</a></p>
+                <input type="text" id="login-identifier" data-placeholder-key="loginIdentifierPlaceholder" placeholder="Email or Employee ID" required>
+                <input type="password" id="login-password" data-placeholder-key="loginPasswordPlaceholder" placeholder="Password" required>
+                <button type="submit" class="btn-primary" id="login-submit-btn" data-key="login">Login</button>
+                <p class="form-toggle"><span id="login-toggle-text" data-key="loginToggleText">Don't have an account?</span> <a href="#" id="login-toggle-link" data-key="signup" onclick="switchToSignup(event)">Signup</a></p>
             </form>
         </div>
     </div>
@@ -316,14 +363,14 @@
     <div class="modal" id="signupModal" onclick="closeSignupModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeSignupModal()">&times;</button>
-            <h2>Signup</h2>
+            <h2 id="signup-modal-title" data-key="signupTitle">Signup</h2>
             <form onsubmit="handleSignup(event)">
-                <input type="text" placeholder="Full Name" required>
-                <input type="email" placeholder="Email" required>
-                <input type="password" placeholder="Password" required>
-                <input type="password" placeholder="Confirm Password" required>
-                <button type="submit" class="btn-primary">Signup</button>
-                <p class="form-toggle">Already have an account? <a href="#" onclick="switchToLogin(event)">Login</a></p>
+                <input type="text" id="signup-name" data-placeholder-key="signupNamePlaceholder" placeholder="Full Name" required>
+                <input type="email" id="signup-email" data-placeholder-key="signupEmailPlaceholder" placeholder="Email" required>
+                <input type="password" id="signup-password" data-placeholder-key="signupPasswordPlaceholder" placeholder="Password" required>
+                <input type="password" id="signup-confirm-password" data-placeholder-key="signupConfirmPlaceholder" placeholder="Confirm Password" required>
+                <button type="submit" class="btn-primary" id="signup-submit-btn" data-key="signup">Signup</button>
+                <p class="form-toggle"><span id="signup-toggle-text" data-key="signupToggleText">Already have an account?</span> <a href="#" id="signup-toggle-link" data-key="login" onclick="switchToLogin(event)">Login</a></p>
             </form>
         </div>
     </div>
