@@ -32,11 +32,11 @@ const defaultHomepageMenuItems = [
 ];
 
 const defaultHomepageGalleryItems = [
-    { id: 'gallery-1', title: 'Wedding Service Setup', image: '/KASHMIR-CATERERS-NEW/images/gallery-1.png' },
-    { id: 'gallery-2', title: 'Celebration Decor', image: '/KASHMIR-CATERERS-NEW/images/gallery-2.png' },
-    { id: 'gallery-3', title: 'Signature Dining Layout', image: '/KASHMIR-CATERERS-NEW/images/gallery-3.png' },
-    { id: 'gallery-4', title: 'Premium Buffet Arrangement', image: '/KASHMIR-CATERERS-NEW/images/gallery-4.png' },
-    { id: 'gallery-5', title: 'Event Service Team', image: '/KASHMIR-CATERERS-NEW/images/gallery-5.png' },
+    { id: 'gallery-1', title: 'Wedding Service Setup', image: 'images/gallery-1.png' },
+    { id: 'gallery-2', title: 'Celebration Decor', image: 'images/gallery-2.png' },    
+    { id: 'gallery-3', title: 'Signature Dining Layout', image: 'images/gallery-3.png' },
+    { id: 'gallery-4', title: 'Premium Buffet Arrangement', image: 'images/gallery-4.png' },
+    { id: 'gallery-5', title: 'Event Service Team', image: 'images/gallery-5.png' },
 ];
 
 const defaultHomepageLocations = [
@@ -676,3 +676,26 @@ function handleError(error, userMessage) {
 window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
 });
+/* --- Add this at the very end of main.js --- */
+
+// Function to open the lightbox
+function openLightbox(element) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImage');
+    // Finds the image source of the item you clicked
+    const clickedImgSrc = element.querySelector('img').src;
+    
+    lightboxImg.src = clickedImgSrc;
+    lightbox.classList.add('active');
+    // Prevent scrolling when lightbox is open
+    document.body.style.overflow = 'hidden';
+}
+
+// Function to close the lightbox
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    lightbox.classList.remove('active');
+    // Restore scrolling
+    document.body.style.overflow = 'auto';
+}
+
