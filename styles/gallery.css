@@ -112,7 +112,7 @@
 }
 
 .lightbox-content {
-    position: relative;
+    position: relative;                              
     max-width: 90%;
     max-height: 90%;
     animation: scaleIn var(--transition-base);
@@ -203,5 +203,16 @@
 
     .lightbox-content img {
         max-height: 60vh;
+    }
+}
+/* --- Add this at the very end of gallery.css --- */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
