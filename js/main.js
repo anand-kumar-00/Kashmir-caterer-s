@@ -32,11 +32,11 @@ const defaultHomepageMenuItems = [
 ];
 
 const defaultHomepageGalleryItems = [
-    { id: 'gallery-1', title: 'Wedding Service Setup', image: '/KASHMIR-CATERERS-NEW/images/gallery-1.png' },
-    { id: 'gallery-2', title: 'Celebration Decor', image: '/KASHMIR-CATERERS-NEW/images/gallery-2.png' },
-    { id: 'gallery-3', title: 'Signature Dining Layout', image: '/KASHMIR-CATERERS-NEW/images/gallery-3.png' },
-    { id: 'gallery-4', title: 'Premium Buffet Arrangement', image: '/KASHMIR-CATERERS-NEW/images/gallery-4.png' },
-    { id: 'gallery-5', title: 'Event Service Team', image: '/KASHMIR-CATERERS-NEW/images/gallery-5.png' },
+    { id: 'gallery-1', title: 'Wedding Service Setup', image: '/images/gallery-1.png' },
+    { id: 'gallery-2', title: 'Celebration Decor', image: '/images/gallery-2.png' },
+    { id: 'gallery-3', title: 'Signature Dining Layout', image: '/images/gallery-3.png' },
+    { id: 'gallery-4', title: 'Premium Buffet Arrangement', image: '/images/gallery-4.png' },
+    { id: 'gallery-5', title: 'Event Service Team', image: '/images/gallery-5.png' },
 ];
 
 const defaultHomepageLocations = [
