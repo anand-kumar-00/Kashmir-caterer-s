@@ -54,6 +54,10 @@
                 <span class="icon">₹</span>
                 <span class="label">Accounting</span>
             </a>
+            <a href="#accounts" class="nav-item" onclick="switchTab('accounts')">
+                <span class="icon">AC</span>
+                <span class="label">Accounts</span>
+            </a>
             <a href="#locations" class="nav-item" onclick="switchTab('locations')">
                 <span class="icon">⌖</span>
                 <span class="label">Locations</span>
@@ -204,6 +208,11 @@
                                 <span class="quick-action-icon">↗</span>
                                 <strong>Open Reports</strong>
                                 <small>Review performance, profit, and business trends</small>
+                            </button>
+                            <button class="quick-action-card" onclick="switchTab('accounts')">
+                                <span class="quick-action-icon">AC</span>
+                                <strong>Open Accounts</strong>
+                                <small>Keep separate customer, staff, and admin folders in one place</small>
                             </button>
                         </div>
                     </div>
@@ -376,6 +385,7 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Category</th>
+                                    <th>Folder</th>
                                     <th>Description</th>
                                     <th>Amount</th>
                                     <th>Action</th>
@@ -383,7 +393,7 @@
                             </thead>
                             <tbody id="expenses-list">
                                 <tr>
-                                    <td colspan="5" class="empty-state">No expenses recorded</td>
+                                    <td colspan="6" class="empty-state">No expenses recorded</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -406,6 +416,87 @@
                             <tbody id="salary-list-body">
                                 <tr>
                                     <td colspan="7" class="empty-state">No salary data available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="accounts-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Account Center</h2>
+                    <div class="header-actions">
+                        <button class="btn-primary" onclick="openAddAccountFolderModal()">+ Create Folder</button>
+                        <button class="btn-secondary" onclick="downloadAccountFolders()">Download Folders</button>
+                    </div>
+                </div>
+
+                <div class="accounting-summary">
+                    <div class="accounting-card">
+                        <h3>Total Folders</h3>
+                        <p class="amount" id="total-account-folders">0</p>
+                    </div>
+                    <div class="accounting-card">
+                        <h3>Customer Folders</h3>
+                        <p class="amount" id="customer-account-folders">0</p>
+                    </div>
+                    <div class="accounting-card">
+                        <h3>Staff Folders</h3>
+                        <p class="amount" id="staff-account-folders">0</p>
+                    </div>
+                    <div class="accounting-card">
+                        <h3>Admin Folders</h3>
+                        <p class="amount" id="admin-account-folders">0</p>
+                    </div>
+                </div>
+
+                <div class="info-banner">
+                    Create separate folders for customers, staff members, admin records, and other account work so each file group stays easy to manage.
+                </div>
+
+                <div class="accounts-layout">
+                    <div class="premium-panel">
+                        <div class="section-header compact">
+                            <h2>Folder Buckets</h2>
+                        </div>
+                        <div class="folder-bucket-grid">
+                            <article class="folder-bucket">
+                                <span class="folder-badge">Customers</span>
+                                <strong id="customer-account-summary">0 folders</strong>
+                                <p>Booking-linked folders for each customer account.</p>
+                            </article>
+                            <article class="folder-bucket">
+                                <span class="folder-badge">Staff</span>
+                                <strong id="staff-account-summary">0 folders</strong>
+                                <p>Payroll and operational folders for staff members.</p>
+                            </article>
+                            <article class="folder-bucket">
+                                <span class="folder-badge">Admin</span>
+                                <strong id="admin-account-summary">0 folders</strong>
+                                <p>Management and internal records organized separately.</p>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div class="recent-bookings">
+                        <div class="section-header compact">
+                            <h2>All Account Folders</h2>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Folder Name</th>
+                                    <th>Type</th>
+                                    <th>Linked To</th>
+                                    <th>Records</th>
+                                    <th>Last Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="account-folders-list">
+                                <tr>
+                                    <td colspan="6" class="empty-state">No folders available</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -469,7 +560,7 @@
             <section id="reports-tab" class="tab-content">
                 <div class="section-header">
                     <h2>Reports & Analytics</h2>
-                    <button class="btn-secondary" onclick="downloadReport()">Download PDF</button>
+                    <button class="btn-secondary" onclick="downloadReport()">Download Report</button>
                 </div>
 
                 <div class="report-container">
@@ -649,11 +740,11 @@
             <form onsubmit="handleAddExpense(event)">
                 <div class="form-group">
                     <label>Date</label>
-                    <input type="date" required>
+                    <input type="date" id="expense-date" required>
                 </div>
                 <div class="form-group">
                     <label>Category</label>
-                    <select required>
+                    <select id="expense-category" required>
                         <option value="">Select Category</option>
                         <option value="ingredients">Ingredients</option>
                         <option value="utilities">Utilities</option>
@@ -663,12 +754,48 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Expense Folder</label>
+                    <select id="expense-folder-select">
+                        <option value="">No Folder</option>
+                    </select>
+                </div>
+                <div class="form-group inline-option">
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="create-expense-folder-toggle" onchange="toggleExpenseFolderCreation()">
+                        <span>Create a new folder for this expense</span>
+                    </label>
+                </div>
+                <div id="expense-folder-create-fields" class="expense-folder-create-fields">
+                    <div class="form-group">
+                        <label>New Folder Name</label>
+                        <input type="text" id="new-expense-folder-name" placeholder="Kitchen Supplies Folder">
+                    </div>
+                    <div class="form-group">
+                        <label>Folder Type</label>
+                        <select id="new-expense-folder-type">
+                            <option value="general">General</option>
+                            <option value="vendor">Vendor</option>
+                            <option value="staff">Staff</option>
+                            <option value="customer">Customer</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Linked Person or Department</label>
+                        <input type="text" id="new-expense-folder-linked-name" placeholder="Kitchen Team or supplier name">
+                    </div>
+                    <div class="form-group">
+                        <label>Folder Notes</label>
+                        <textarea id="new-expense-folder-notes" rows="3" placeholder="Optional notes for this folder"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label>Description</label>
-                    <input type="text" required>
+                    <input type="text" id="expense-description" required>
                 </div>
                 <div class="form-group">
                     <label>Amount (Rs)</label>
-                    <input type="number" required>
+                    <input type="number" id="expense-amount" required>
                 </div>
                 <button type="submit" class="btn-primary">Add Expense</button>
             </form>
@@ -783,6 +910,38 @@
                     <input type="number" required>
                 </div>
                 <button type="submit" class="btn-primary">Add Employee</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="addAccountFolderModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2>Create Account Folder</h2>
+            <form onsubmit="handleAddAccountFolder(event)">
+                <div class="form-group">
+                    <label>Folder Name</label>
+                    <input type="text" placeholder="Aarav Sharma Files" required>
+                </div>
+                <div class="form-group">
+                    <label>Folder Type</label>
+                    <select required>
+                        <option value="customer">Customer</option>
+                        <option value="staff">Staff</option>
+                        <option value="admin">Admin</option>
+                        <option value="vendor">Vendor</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Linked Person or Department</label>
+                    <input type="text" placeholder="Customer, staff member, or team name">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea rows="4" placeholder="Add account notes, references, or reminders"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Create Folder</button>
             </form>
         </div>
     </div>

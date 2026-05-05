@@ -725,6 +725,13 @@ canvas {
     font-style: italic;
 }
 
+.table-subtext {
+    margin-top: 0.35rem;
+    color: var(--gray-medium);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
 /* Status Badges */
 .status-badge {
     display: inline-block;
@@ -813,6 +820,36 @@ canvas {
     outline: none;
     border-color: var(--secondary);
     box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+.inline-option {
+    margin-top: -0.5rem;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    color: var(--dark);
+    cursor: pointer;
+}
+
+.checkbox-row input {
+    width: auto;
+}
+
+.expense-folder-create-fields {
+    display: none;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 14px;
+    background: rgba(213, 166, 74, 0.08);
+    border: 1px solid rgba(18, 32, 51, 0.08);
+}
+
+.expense-folder-create-fields.active {
+    display: block;
 }
 
 /* ================================
@@ -1003,6 +1040,50 @@ canvas {
     color: var(--success);
 }
 
+.accounts-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.4fr);
+    gap: 1.5rem;
+}
+
+.folder-bucket-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.folder-bucket {
+    padding: 1rem 1.1rem;
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, #fffefb, #f5f1e9);
+    border: 1px solid rgba(18, 32, 51, 0.08);
+}
+
+.folder-bucket strong {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--primary);
+    font-size: 1.05rem;
+}
+
+.folder-bucket p {
+    color: var(--gray-dark);
+    line-height: 1.6;
+    font-size: 0.92rem;
+}
+
+.folder-badge {
+    display: inline-flex;
+    margin-bottom: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(213, 166, 74, 0.16);
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
 /* ================================
    REPORTS
    ================================ */
@@ -1147,7 +1228,8 @@ canvas {
 
     .dashboard-hero,
     .dashboard-lower,
-    .hero-panel-grid {
+    .hero-panel-grid,
+    .accounts-layout {
         grid-template-columns: 1fr;
     }
 
