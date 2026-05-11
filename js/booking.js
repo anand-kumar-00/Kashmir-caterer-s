@@ -73,13 +73,149 @@ const defaultBookingMenuCatalog = [
     },
 ];
 
+const bookingFunctionOptions = [
+    'Marriage Catering',
+    'Birthday Catering',
+    'Corporate Catering',
+    'BBQ Catering',
+    'Indoor Catering',
+    'Outdoor Catering',
+    'Engagement Catering',
+    'Reception Catering',
+    'Private Party Catering',
+    'Other',
+];
+
 document.addEventListener('DOMContentLoaded', () => {
     ensureMenuStorage();
     renderBookingMenuOptions();
+    initializeFunctionTypeField();
+    initializeBookingRealtimeSync();
     prefillCustomerDetails();
+    applyFunctionTypeFromUrl();
+    prefillFunctionType();
+    updateBookingOverview();
 });
 
 // Step Navigation
+function initializeFunctionTypeField() {
+    const functionTypeSelect = document.getElementById('functionType');
+
+    if (!functionTypeSelect) {
+        return;
+    }
+
+    functionTypeSelect.addEventListener('change', () => {
+        setBookingFunctionType(functionTypeSelect.value);
+    });
+
+    document.querySelectorAll('.booking-function-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+            setBookingFunctionType(chip.dataset.function || '');
+        });
+    });
+}
+
+function initializeBookingRealtimeSync() {
+    const eventDateInput = document.getElementById('eventDate');
+
+    if (!eventDateInput) {
+        return;
+    }
+
+    if (appState.bookingData.eventDate) {
+        eventDateInput.value = appState.bookingData.eventDate;
+    } else if (eventDateInput.value) {
+        appState.bookingData.eventDate = eventDateInput.value;
+        saveState();
+    }
+
+    eventDateInput.addEventListener('change', () => {
+        appState.bookingData.eventDate = eventDateInput.value || null;
+        saveState();
+        updateBookingOverview();
+    });
+}
+
+function normalizeFunctionType(functionType) {
+    const normalizedValue = String(functionType || '').trim().toLowerCase();
+    const aliases = {
+        marriage: 'Marriage Catering',
+        'marriage catering': 'Marriage Catering',
+        wedding: 'Marriage Catering',
+        birthday: 'Birthday Catering',
+        'birthday catering': 'Birthday Catering',
+        corporate: 'Corporate Catering',
+        'corporate catering': 'Corporate Catering',
+        bbq: 'BBQ Catering',
+        barbecue: 'BBQ Catering',
+        'barbecue catering': 'BBQ Catering',
+        'bbq catering': 'BBQ Catering',
+        indoor: 'Indoor Catering',
+        'indoor catering': 'Indoor Catering',
+        outdoor: 'Outdoor Catering',
+        'outdoor catering': 'Outdoor Catering',
+        engagement: 'Engagement Catering',
+        'engagement catering': 'Engagement Catering',
+        reception: 'Reception Catering',
+        'reception catering': 'Reception Catering',
+        'private party': 'Private Party Catering',
+        'private party catering': 'Private Party Catering',
+        other: 'Other',
+    };
+
+    return aliases[normalizedValue] || bookingFunctionOptions.find((option) => option.toLowerCase() === normalizedValue) || '';
+}
+
+function setBookingFunctionType(functionType) {
+    const normalizedFunctionType = normalizeFunctionType(functionType);
+    const functionTypeSelect = document.getElementById('functionType');
+
+    if (!normalizedFunctionType) {
+        appState.bookingData.functionType = null;
+        if (functionTypeSelect) {
+            functionTypeSelect.value = '';
+        }
+        updateFunctionTypeChips('');
+        updateBookingOverview();
+        saveState();
+        return;
+    }
+
+    appState.bookingData.functionType = normalizedFunctionType;
+
+    if (functionTypeSelect) {
+        functionTypeSelect.value = normalizedFunctionType;
+    }
+
+    updateFunctionTypeChips(normalizedFunctionType);
+    updateBookingOverview();
+    saveState();
+}
+
+function updateFunctionTypeChips(activeFunctionType) {
+    document.querySelectorAll('.booking-function-chip').forEach((chip) => {
+        chip.classList.toggle('active', chip.dataset.function === activeFunctionType);
+    });
+}
+
+function prefillFunctionType() {
+    if (appState.bookingData.functionType) {
+        setBookingFunctionType(appState.bookingData.functionType);
+    } else {
+        updateFunctionTypeChips('');
+    }
+}
+
+function applyFunctionTypeFromUrl() {
+    const url = new URL(window.location.href);
+    const functionTypeFromUrl = url.searchParams.get('service');
+
+    if (functionTypeFromUrl) {
+        setBookingFunctionType(functionTypeFromUrl);
+    }
+}
+
 function goToStep(stepNumber) {
     if (stepNumber >= 3 && !ensureCustomerLoggedIn()) {
         return;
@@ -101,6 +237,7 @@ function goToStep(stepNumber) {
 
     updateStepIndicator(stepNumber);
     currentStep = stepNumber;
+    updateBookingOverview();
 
     if (stepNumber === 4) {
         updateReviewDisplay();
@@ -152,14 +289,22 @@ function ensureCustomerLoggedIn() {
 
 function validateDateSelection() {
     const dateInput = document.getElementById('eventDate');
+    const functionType = normalizeFunctionType(document.getElementById('functionType').value);
+
+    if (!functionType) {
+        showNotification('Please choose the function before continuing', 'error');
+        return false;
+    }
 
     if (!dateInput.value) {
         showNotification('Please select an event date', 'error');
         return false;
     }
 
+    appState.bookingData.functionType = functionType;
     appState.bookingData.eventDate = dateInput.value;
     saveState();
+    updateBookingOverview();
     return true;
 }
 
@@ -177,6 +322,7 @@ function validateMenuSelection() {
 
     appState.bookingData.menu = Array.from(selectedMenus).map((item) => item.value);
     saveState();
+    updateBookingOverview();
     return true;
 }
 
@@ -209,6 +355,18 @@ function renderBookingMenuOptions() {
         `
         )
         .join('');
+
+    document.querySelectorAll('.menu-item').forEach((menuItem) => {
+        menuItem.addEventListener('change', updateBookingMenuSelectionState);
+    });
+
+    updateBookingOverview();
+}
+
+function updateBookingMenuSelectionState() {
+    appState.bookingData.menu = Array.from(document.querySelectorAll('.menu-item:checked')).map((item) => item.value);
+    saveState();
+    updateBookingOverview();
 }
 
 function renderMenuDishCard(item) {
@@ -347,11 +505,41 @@ function prefillCustomerDetails() {
     }
 }
 
+function updateBookingOverview() {
+    const functionLabel = document.getElementById('booking-overview-function');
+    const dateLabel = document.getElementById('booking-overview-date');
+    const menuCountLabel = document.getElementById('booking-overview-menu-count');
+
+    if (!functionLabel || !dateLabel || !menuCountLabel) {
+        return;
+    }
+
+    functionLabel.textContent = appState.bookingData.functionType || 'Not selected';
+    dateLabel.textContent = appState.bookingData.eventDate ? formatBookingOverviewDate(appState.bookingData.eventDate) : 'Not selected';
+
+    const menuCount = appState.bookingData.menu.length;
+    menuCountLabel.textContent = menuCount === 1 ? '1 selected' : `${menuCount} selected`;
+}
+
+function formatBookingOverviewDate(dateString) {
+    return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+}
+
 function validateCustomerDetails() {
+    const functionType = normalizeFunctionType(document.getElementById('functionType').value);
     const customerName = document.getElementById('customerName').value.trim();
     const customerEmail = document.getElementById('customerEmail').value.trim();
     const customerPhone = document.getElementById('customerPhone').value.trim();
     const guestCount = Number(document.getElementById('guestCount').value || 0);
+
+    if (!functionType) {
+        showNotification('Please select which function this booking is for', 'error');
+        return false;
+    }
 
     if (!customerName || customerName.length < 3) {
         showNotification('Please enter your full name', 'error');
@@ -373,6 +561,7 @@ function validateCustomerDetails() {
         return false;
     }
 
+    appState.bookingData.functionType = functionType;
     appState.bookingData.customerDetails = {
         customerName,
         customerEmail,
@@ -381,6 +570,7 @@ function validateCustomerDetails() {
     };
     saveRequirements();
     saveState();
+    updateBookingOverview();
     return true;
 }
 
@@ -393,6 +583,9 @@ function updateReviewDisplay() {
 
     const reviewDate = document.getElementById('reviewDate');
     reviewDate.textContent = formatDate(appState.bookingData.eventDate);
+
+    const reviewFunction = document.getElementById('reviewFunction');
+    reviewFunction.textContent = appState.bookingData.functionType || '-';
 
     const reviewMenu = document.getElementById('reviewMenu');
     const menuList = appState.bookingData.menu
@@ -454,6 +647,7 @@ async function submitBooking() {
         customerEmail: customerDetails.customerEmail || appState.currentUser?.email || '',
         customerPhone: customerDetails.customerPhone || '',
         guestCount: customerDetails.guestCount || 0,
+        functionType: appState.bookingData.functionType,
         eventDate: appState.bookingData.eventDate,
         menu: appState.bookingData.menu,
         requirements: appState.bookingData.requirements,
@@ -580,6 +774,7 @@ function resetBookingForm() {
     document.querySelectorAll('.menu-item').forEach((item) => {
         item.checked = false;
     });
+    document.getElementById('functionType').value = '';
     document.getElementById('customerName').value = '';
     document.getElementById('customerEmail').value = '';
     document.getElementById('customerPhone').value = '';
@@ -587,6 +782,7 @@ function resetBookingForm() {
     document.getElementById('requirements').value = '';
 
     appState.bookingData = {
+        functionType: null,
         eventDate: null,
         menu: [],
         customerDetails: null,
@@ -595,6 +791,8 @@ function resetBookingForm() {
     saveState();
     renderBookingMenuOptions();
     prefillCustomerDetails();
+    updateFunctionTypeChips('');
+    updateBookingOverview();
 
     const modal = document.querySelector('.modal.active');
     if (modal) {

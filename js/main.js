@@ -8,6 +8,7 @@ const appState = {
     userRole: null, // 'customer' or 'employee'
     currentLanguage: 'en',
     bookingData: {
+        functionType: null,
         eventDate: null,
         menu: [],
         customerDetails: null,
@@ -71,6 +72,15 @@ function initializeApp() {
     if (savedState) {
         Object.assign(appState, JSON.parse(savedState));
     }
+
+    appState.bookingData = {
+        functionType: null,
+        eventDate: null,
+        menu: [],
+        customerDetails: null,
+        requirements: null,
+        ...appState.bookingData,
+    };
     
     // Setup language selector
     document.getElementById('languageSelect').addEventListener('change', (e) => {
@@ -306,16 +316,18 @@ const siteTranslations = {
         serviceBirthday: 'Birthday Catering',
         serviceCorporate: 'Corporate Catering',
         serviceBbq: 'Barbecue Catering',
+        seeMore: 'See More',
         galleryTitle: 'Event Gallery',
         gallerySubtitle: 'Photos and highlights managed from the admin dashboard',
         locationsTitle: 'Our Locations',
         locationsSubtitle: 'Find us at multiple locations across the city',
         bookingTitle: 'Book Your Event',
         bookingSubtitle: 'Simple, transparent booking process',
-        step1Title: 'Select Event Date',
+        step1Title: 'Choose Function & Event Date',
         step2Title: 'Select Menu',
-        step3Title: 'Customer Details',
+        step3Title: 'Contact & Event Details',
         step4Title: 'Review Your Booking',
+        functionTypeLabel: 'Which function is this for?',
         customerNameLabel: 'Full Name',
         customerEmailLabel: 'Email Address',
         customerPhoneLabel: 'Phone Number',
@@ -330,6 +342,7 @@ const siteTranslations = {
         next: 'Next',
         back: 'Back',
         reviewDate: 'Event Date:',
+        reviewFunction: 'Function Type:',
         reviewMenu: 'Selected Menu:',
         reviewRequirements: 'Special Requirements:',
         reviewTotal: 'Estimated Total:',
@@ -531,6 +544,28 @@ function saveState() {
 // NAVIGATION & SCROLLING
 // ================================
 
+function startBookingForService(serviceType) {
+    if (typeof setBookingFunctionType === 'function') {
+        setBookingFunctionType(serviceType);
+    } else {
+        appState.bookingData.functionType = serviceType;
+        saveState();
+    }
+
+    if (typeof goToStep === 'function') {
+        goToStep(1);
+    }
+
+    scrollToSection('booking');
+}
+
+function handleServiceCardKeydown(event, serviceType) {
+    if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        startBookingForService(serviceType);
+    }
+}
+
 function scrollToSection(sectionId) {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -638,15 +673,22 @@ function setupScrollAnimations() {
 
 function setMinDate() {
     const dateInput = document.getElementById('eventDate');
+    if (!dateInput) {
+        return;
+    }
+
     const today = new Date();
     const minDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
     
     const year = minDate.getFullYear();
     const month = String(minDate.getMonth() + 1).padStart(2, '0');
     const day = String(minDate.getDate()).padStart(2, '0');
+    const minDateValue = `${year}-${month}-${day}`;
     
-    dateInput.min = `${year}-${month}-${day}`;
-    dateInput.value = `${year}-${month}-${day}`;
+    dateInput.min = minDateValue;
+
+    const savedEventDate = appState.bookingData?.eventDate;
+    dateInput.value = savedEventDate && savedEventDate >= minDateValue ? savedEventDate : minDateValue;
 }
 
 function formatDate(dateString) {

@@ -97,6 +97,11 @@
     transform: translateY(-5px);
 }
 
+.service-card:focus-visible {
+    outline: 3px solid rgba(212, 175, 55, 0.7);
+    outline-offset: 4px;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .services-grid {

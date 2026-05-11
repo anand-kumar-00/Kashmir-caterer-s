@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kashmir Caterers | Services & Gallery</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/showcase.css">
+</head>
+<body>
+    <header class="showcase-hero">
+        <div class="showcase-hero__backdrop"></div>
+        <div class="container showcase-hero__content">
+            <a href="index.html" class="showcase-back-link">Back to Home</a>
+            <p class="showcase-eyebrow">Indoor and outdoor celebrations</p>
+            <h1>See every service and more event moments in one place.</h1>
+            <p class="showcase-lead">
+                Browse our full catering lineup, explore event visuals, and jump straight into booking with your preferred function already selected.
+            </p>
+            <div class="showcase-hero__actions">
+                <a href="#services-showcase" class="btn-primary">View Services</a>
+                <a href="#gallery-showcase" class="btn-secondary">View Gallery</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="showcase-section" id="services-showcase">
+            <div class="container">
+                <div class="showcase-section__heading">
+                    <p class="showcase-eyebrow">Service Catalog</p>
+                    <h2 class="section-title">Indoor and Outdoor Catering Services</h2>
+                    <p class="section-subtitle">
+                        From intimate indoor gatherings to large outdoor celebrations, each service can be booked directly from this page.
+                    </p>
+                </div>
+
+                <div class="showcase-filter-row">
+                    <button type="button" class="showcase-chip active" data-filter="all">All Services</button>
+                    <button type="button" class="showcase-chip" data-filter="indoor">Indoor</button>
+                    <button type="button" class="showcase-chip" data-filter="outdoor">Outdoor</button>
+                </div>
+
+                <div class="showcase-services-grid" id="showcase-services-grid">
+                    <div class="showcase-empty-state">Loading services...</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="showcase-section showcase-section--warm" id="gallery-showcase">
+            <div class="container">
+                <div class="showcase-section__heading">
+                    <p class="showcase-eyebrow">Media Gallery</p>
+                    <h2 class="section-title">Images and Videos From Our Event Style</h2>
+                    <p class="section-subtitle">
+                        A larger media view for customers who want to see service presentation, event setup, and the overall atmosphere before booking.
+                    </p>
+                </div>
+
+                <div class="showcase-media-grid" id="showcase-media-grid">
+                    <div class="showcase-empty-state">Loading gallery...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/showcase.js"></script>
+</body>
+</html>

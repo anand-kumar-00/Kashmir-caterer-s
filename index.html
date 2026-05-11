@@ -68,7 +68,7 @@
             
             <p class="hero-subtitle" id="hero-subtitle" data-key="heroSubtitle">Premium Catering for Your Most Special Moments</p>
             <p class="hero-tagline" id="hero-tagline" data-key="heroTagline">Authentic Kashmiri Flavors | Impeccable Service | Unforgettable Events</p>
-            
+
             <button class="btn-primary" id="hero-cta" data-key="heroCta" onclick="scrollToSection('booking')">Book Your Event</button>
         </div>
     </section>
@@ -80,33 +80,36 @@
             <p class="section-subtitle" id="services-subtitle" data-key="servicesSubtitle">Tailored catering experiences for every occasion</p>
             
             <div class="services-grid">
-                <div class="service-card" style="background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,107,107,0.05))">
+                <div class="service-card" style="background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,107,107,0.05))" onclick="startBookingForService('Marriage Catering')" role="button" tabindex="0" onkeydown="handleServiceCardKeydown(event, 'Marriage Catering')">
                     <div class="service-image">
                         <img src="images/service-marriage.png" alt="Marriage Catering">
                     </div>
                     <h3 id="service-marriage-title" data-key="serviceMarriage">Marriage Catering</h3>
                 </div>
 
-                <div class="service-card" style="background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(255,193,7,0.05))">
+                <div class="service-card" style="background: linear-gradient(135deg, rgba(255,193,7,0.1), rgba(255,193,7,0.05))" onclick="startBookingForService('Birthday Catering')" role="button" tabindex="0" onkeydown="handleServiceCardKeydown(event, 'Birthday Catering')">
                     <div class="service-image">
                         <img src="https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=500" alt="Birthday Catering">
                     </div>
                     <h3 id="service-birthday-title" data-key="serviceBirthday">Birthday Catering</h3>
                 </div>
 
-                <div class="service-card" style="background: linear-gradient(135deg, rgba(33,150,243,0.1), rgba(33,150,243,0.05))">
+                <div class="service-card" style="background: linear-gradient(135deg, rgba(33,150,243,0.1), rgba(33,150,243,0.05))" onclick="startBookingForService('Corporate Catering')" role="button" tabindex="0" onkeydown="handleServiceCardKeydown(event, 'Corporate Catering')">
                     <div class="service-image">
                         <img src="images/service-corporate.png" alt="Corporate Catering">
                     </div>
                     <h3 id="service-corporate-title" data-key="serviceCorporate">Corporate Catering</h3>
                 </div>
 
-                <div class="service-card" style="background: linear-gradient(135deg, rgba(244,67,54,0.1), rgba(244,67,54,0.05))">
+                <div class="service-card" style="background: linear-gradient(135deg, rgba(244,67,54,0.1), rgba(244,67,54,0.05))" onclick="startBookingForService('BBQ Catering')" role="button" tabindex="0" onkeydown="handleServiceCardKeydown(event, 'BBQ Catering')">
                     <div class="service-image">
                         <img src="images/service-bbq.png" alt="Barbecue Catering">
                     </div>
                     <h3 id="service-bbq-title" data-key="serviceBbq">Barbecue Catering</h3>
                 </div>
+            </div>
+            <div class="section-action">
+                <a href="showcase.html#services-showcase" class="btn-secondary see-more-btn" id="services-see-more" data-key="seeMore">See More</a>
             </div>
         </div>
     </section>
@@ -133,48 +136,35 @@
                 </div>
 
                 <div class="gallery-item" onclick="openLightbox(this)">
-<<<<<<< HEAD
                     <img src="images/gallery-2.png" alt="Event 3">
-=======
-                    <img src="images/gallery-3.png" alt="Event 3">
->>>>>>> dda9ae55bdb423b6b92980a148cb6530b42120ba
                     <div class="gallery-overlay">
                         <span class="view-icon">🔍</span>
                     </div>
                 </div>
 
                 <div class="gallery-item" onclick="openLightbox(this)">
-<<<<<<< HEAD
                     <img src="images/gallery-3.png" alt="Event 4">
-=======
-                    <img src="images/gallery-4.png" alt="Event 4">
->>>>>>> dda9ae55bdb423b6b92980a148cb6530b42120ba
                     <div class="gallery-overlay">
                         <span class="view-icon">🔍</span>
                     </div>
                 </div>
 
                 <div class="gallery-item" onclick="openLightbox(this)">
-<<<<<<< HEAD
                     <img src="images/gallery-4.png" alt="Event 5">
-=======
-                    <img src="images/gallery-5.png" alt="Event 5">
->>>>>>> dda9ae55bdb423b6b92980a148cb6530b42120ba
                     <div class="gallery-overlay">
                         <span class="view-icon">🔍</span>
                     </div>
                 </div>
 
                 <div class="gallery-item" onclick="openLightbox(this)">
-<<<<<<< HEAD
                     <img src="images/gallery-5.png" alt="Event 6">
-=======
-                    <img src="images/gallery-2.png" alt="Event 6">
->>>>>>> dda9ae55bdb423b6b92980a148cb6530b42120ba
                     <div class="gallery-overlay">
                         <span class="view-icon">🔍</span>
                     </div>
                 </div>
+            </div>
+            <div class="section-action">
+                <a href="showcase.html#gallery-showcase" class="btn-secondary see-more-btn" id="gallery-see-more" data-key="seeMore">See More</a>
             </div>
         </div>
     </section>
@@ -227,7 +217,7 @@
                     <div class="step-indicator">
                         <div class="step active" onclick="goToStep(1)">
                             <span>1</span>
-                            <p>Date</p>
+                            <p>Function</p>
                         </div>
                         <div class="step" onclick="goToStep(2)">
                             <span>2</span>
@@ -243,10 +233,55 @@
                         </div>
                     </div>
 
-                    <!-- Step 1: Date Selection -->
+                    <div class="booking-overview">
+                        <div class="booking-overview-item">
+                            <span>Function</span>
+                            <strong id="booking-overview-function">Not selected</strong>
+                        </div>
+                        <div class="booking-overview-item">
+                            <span>Date</span>
+                            <strong id="booking-overview-date">Not selected</strong>
+                        </div>
+                        <div class="booking-overview-item">
+                            <span>Menu Items</span>
+                            <strong id="booking-overview-menu-count">0 selected</strong>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Function & Date Selection -->
                     <div class="step-content active" id="step1">
-                        <h3 id="step1-title" data-key="step1Title">Select Event Date</h3>
-                        <input type="date" id="eventDate" min="" required>
+                        <h3 id="step1-title" data-key="step1Title">Choose Function & Event Date</h3>
+                        <p class="booking-step-helper">
+                            Start with the occasion you are planning. If you came here from a service card, we have already filled it in for you.
+                        </p>
+                        <div class="form-group">
+                            <label for="functionType" data-key="functionTypeLabel">Which function is this for?</label>
+                            <select id="functionType" required>
+                                <option value="">Select a function</option>
+                                <option value="Marriage Catering">Marriage Catering</option>
+                                <option value="Birthday Catering">Birthday Catering</option>
+                                <option value="Corporate Catering">Corporate Catering</option>
+                                <option value="BBQ Catering">BBQ Catering</option>
+                                <option value="Indoor Catering">Indoor Catering</option>
+                                <option value="Outdoor Catering">Outdoor Catering</option>
+                                <option value="Engagement Catering">Engagement Catering</option>
+                                <option value="Reception Catering">Reception Catering</option>
+                                <option value="Private Party Catering">Private Party Catering</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="booking-function-chips" id="bookingFunctionChips">
+                                <button type="button" class="booking-function-chip" data-function="Marriage Catering">Marriage</button>
+                                <button type="button" class="booking-function-chip" data-function="Birthday Catering">Birthday</button>
+                                <button type="button" class="booking-function-chip" data-function="Corporate Catering">Corporate</button>
+                                <button type="button" class="booking-function-chip" data-function="BBQ Catering">BBQ</button>
+                                <button type="button" class="booking-function-chip" data-function="Outdoor Catering">Outdoor</button>
+                                <button type="button" class="booking-function-chip" data-function="Private Party Catering">Private Party</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventDate">Event Date</label>
+                            <input type="date" id="eventDate" min="" required>
+                        </div>
                         <button class="btn-primary" id="next-step1" data-key="next" onclick="goToStep(2)">Next</button>
                     </div>
 
@@ -267,7 +302,10 @@
 
                     <!-- Step 3: Customer Details -->
                     <div class="step-content" id="step3">
-                        <h3 id="step3-title" data-key="step3Title">Customer Details</h3>
+                        <h3 id="step3-title" data-key="step3Title">Contact & Event Details</h3>
+                        <p class="booking-step-helper">
+                            Share the main contact information so our team can confirm guest count, service timing, and special requests.
+                        </p>
                         <div class="form-group">
                             <label for="customerName" data-key="customerNameLabel">Full Name</label>
                             <input type="text" id="customerName" data-placeholder-key="customerNamePlaceholder" placeholder="Enter your full name" required>
@@ -301,6 +339,10 @@
                             <div class="review-item">
                                 <span id="review-label-date" data-key="reviewDate">Event Date:</span>
                                 <span id="reviewDate">-</span>
+                            </div>
+                            <div class="review-item">
+                                <span id="review-label-function" data-key="reviewFunction">Function Type:</span>
+                                <span id="reviewFunction">-</span>
                             </div>
                             <div class="review-item">
                                 <span id="review-label-menu" data-key="reviewMenu">Selected Menu:</span>
