@@ -910,6 +910,17 @@ canvas {
     gap: 1.5rem;
 }
 
+.menu-bookings-panel {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+}
+
+.panel-subtitle {
+    margin-top: 0.35rem;
+    color: var(--gray-medium);
+    font-size: 0.92rem;
+}
+
 .category-section {
     background: rgba(255, 255, 255, 0.88);
     padding: 1.5rem;
@@ -999,6 +1010,17 @@ canvas {
 .menu-item-price {
     font-weight: 700;
     color: var(--secondary);
+}
+
+.menu-booking-preview {
+    color: var(--gray-dark);
+    line-height: 1.55;
+}
+
+.menu-booking-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 /* ================================

@@ -315,7 +315,10 @@
             <section id="menu-tab" class="tab-content">
                 <div class="section-header">
                     <h2>Menu Management</h2>
-                    <button class="btn-primary" onclick="openAddMenuModal()">+ Add Menu Item</button>
+                    <div class="header-actions">
+                        <button class="btn-primary" onclick="openAddMenuModal()">+ Add Menu Item</button>
+                        <button class="btn-secondary" onclick="downloadAllBookedMenus()">Download All Booked Menus</button>
+                    </div>
                 </div>
 
                 <div class="menu-categories">
@@ -331,6 +334,31 @@
                         <h3>Dinner</h3>
                         <div class="menu-items" id="dinner-items"></div>
                     </div>
+                </div>
+
+                <div class="premium-panel menu-bookings-panel">
+                    <div class="section-header compact">
+                        <div>
+                            <h2>Booked Menus</h2>
+                            <p class="panel-subtitle">See the menu selected in every booking and download it anytime.</p>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer</th>
+                                <th>Event Date</th>
+                                <th>Selected Menu</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booked-menus-list">
+                            <tr>
+                                <td colspan="5" class="empty-state">No booked menus yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 

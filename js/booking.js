@@ -3,7 +3,7 @@
    ================================ */
 
 let currentStep = 1;
-const totalSteps = 4;
+const totalSteps = 6;
 const defaultBookingMenuCatalog = [
     {
         meal: 'Breakfast',
@@ -239,7 +239,7 @@ function goToStep(stepNumber) {
     currentStep = stepNumber;
     updateBookingOverview();
 
-    if (stepNumber === 4) {
+    if (stepNumber === totalSteps) {
         updateReviewDisplay();
     }
 }
@@ -268,7 +268,11 @@ function validateCurrentStep() {
         case 2:
             return validateMenuSelection();
         case 3:
-            return validateCustomerDetails();
+            return validateCustomerContactStep();
+        case 4:
+            return validateCustomerEventStep();
+        case 5:
+            return saveRequirements();
         default:
             return true;
     }
@@ -333,25 +337,37 @@ function renderBookingMenuOptions() {
         return;
     }
 
-    container.innerHTML = getBookingMenuCatalog()
+    const bookingMenuCatalog = getBookingMenuCatalog();
+
+    if (!bookingMenuCatalog.length) {
+        const emptyLabel = typeof getTranslationValue === 'function' ? getTranslationValue('menuEmpty') : 'No menu items available yet.';
+        container.innerHTML = `<div class="menu-loading-state">${emptyLabel}</div>`;
+        return;
+    }
+
+    container.innerHTML = bookingMenuCatalog
         .map(
             (section) => `
-            <div class="category">
-                <h4>${section.meal}</h4>
+            <section class="menu-modal-section">
+                <div class="menu-modal-heading">
+                    <h3>${section.meal}</h3>
+                </div>
                 <p class="category-description">${section.description}</p>
-                ${section.courses
-                    .map(
-                        (course) => `
-                        <div class="menu-course">
-                            <div class="menu-course-title">${course.title}</div>
-                            <div class="menu-dish-list">
-                                ${course.items.map((item) => renderMenuDishCard(item)).join('')}
-                            </div>
-                        </div>
-                    `
-                    )
-                    .join('')}
-            </div>
+                <div class="menu-modal-courses">
+                    ${section.courses
+                        .map(
+                            (course) => `
+                            <article class="menu-modal-course">
+                                <div class="menu-course-title">${course.title}</div>
+                                <div class="menu-modal-items">
+                                    ${course.items.map((item) => renderBookingSelectableMenuItem(item)).join('')}
+                                </div>
+                            </article>
+                        `
+                        )
+                        .join('')}
+                </div>
+            </section>
         `
         )
         .join('');
@@ -369,21 +385,21 @@ function updateBookingMenuSelectionState() {
     updateBookingOverview();
 }
 
-function renderMenuDishCard(item) {
+function renderBookingSelectableMenuItem(item) {
     const isChecked = appState.bookingData.menu.includes(item.id) ? 'checked' : '';
 
     return `
-        <label class="menu-dish">
+        <label class="booking-menu-option">
             <input type="checkbox" value="${item.id}" class="menu-item" ${isChecked}>
-            <span class="menu-dish-card">
-                <span class="menu-dish-card-main">
-                    <span class="menu-dish-check"></span>
+            <span class="menu-modal-item booking-menu-option-card">
+                <span class="booking-menu-option-main">
+                    <span class="booking-menu-option-check"></span>
                     <span>
-                        <span class="menu-dish-title">${item.name}</span>
-                        <span class="menu-dish-meta">${item.note}</span>
+                        <strong>${item.name}</strong>
+                        <p>${item.note}</p>
                     </span>
                 </span>
-                <span class="menu-dish-price">Rs ${item.price.toLocaleString('en-IN')}</span>
+                <span>Rs ${item.price.toLocaleString('en-IN')}</span>
             </span>
         </label>
     `;
@@ -433,14 +449,15 @@ function getDefaultMenuItems() {
 function getBookingMenuCatalog() {
     const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
     const fallbackMenuItems = menuItems.length ? menuItems : getDefaultMenuItems();
+    const getLabel = (key, fallback) => (typeof getTranslationValue === 'function' ? getTranslationValue(key) : fallback);
     const categoryConfig = [
-        { key: 'breakfast', label: 'Breakfast', description: 'Morning selections for elegant starts and light gatherings.' },
-        { key: 'lunch', label: 'Lunch', description: 'Balanced menu choices suited for family events and celebrations.' },
-        { key: 'dinner', label: 'Dinner', description: 'Refined evening dishes for premium dining and wedding service.' },
+        { key: 'breakfast', label: getLabel('menuCategoryBreakfast', 'Breakfast'), description: 'Morning selections for elegant starts and light gatherings.' },
+        { key: 'lunch', label: getLabel('menuCategoryLunch', 'Lunch'), description: 'Balanced menu choices suited for family events and celebrations.' },
+        { key: 'dinner', label: getLabel('menuCategoryDinner', 'Dinner'), description: 'Refined evening dishes for premium dining and wedding service.' },
     ];
     const courseConfig = [
-        { key: 'snacks', label: 'Snacks' },
-        { key: 'main', label: 'Main Course' },
+        { key: 'snacks', label: getLabel('menuCourseSnacks', 'Snacks') },
+        { key: 'main', label: getLabel('menuCourseMain', 'Main Course') },
     ];
 
     return categoryConfig
@@ -481,27 +498,43 @@ function normalizeCourseType(type) {
 }
 
 // ================================
-// STEP 3: ADDITIONAL REQUIREMENTS
+// STEP 3-5: CUSTOMER DETAILS
 // ================================
 
 function saveRequirements() {
     const requirementsInput = document.getElementById('requirements');
-    appState.bookingData.requirements = requirementsInput.value || 'None';
+    appState.bookingData.requirements = requirementsInput ? requirementsInput.value || 'None' : 'None';
     saveState();
     return true;
 }
 
 function prefillCustomerDetails() {
     const currentUser = appState.currentUser || {};
+    const bookingCustomerDetails = appState.bookingData.customerDetails || {};
     const customerNameInput = document.getElementById('customerName');
     const customerEmailInput = document.getElementById('customerEmail');
+    const customerPhoneInput = document.getElementById('customerPhone');
+    const guestCountInput = document.getElementById('guestCount');
+    const requirementsInput = document.getElementById('requirements');
 
-    if (customerNameInput && !customerNameInput.value && currentUser.name) {
-        customerNameInput.value = currentUser.name;
+    if (customerNameInput && !customerNameInput.value) {
+        customerNameInput.value = bookingCustomerDetails.customerName || currentUser.name || '';
     }
 
-    if (customerEmailInput && !customerEmailInput.value && currentUser.email) {
-        customerEmailInput.value = currentUser.email;
+    if (customerEmailInput && !customerEmailInput.value) {
+        customerEmailInput.value = bookingCustomerDetails.customerEmail || currentUser.email || '';
+    }
+
+    if (customerPhoneInput && !customerPhoneInput.value && bookingCustomerDetails.customerPhone) {
+        customerPhoneInput.value = bookingCustomerDetails.customerPhone;
+    }
+
+    if (guestCountInput && !guestCountInput.value && bookingCustomerDetails.guestCount) {
+        guestCountInput.value = bookingCustomerDetails.guestCount;
+    }
+
+    if (requirementsInput && !requirementsInput.value && appState.bookingData.requirements && appState.bookingData.requirements !== 'None') {
+        requirementsInput.value = appState.bookingData.requirements;
     }
 }
 
@@ -529,12 +562,34 @@ function formatBookingOverviewDate(dateString) {
     });
 }
 
-function validateCustomerDetails() {
+function syncCustomerDetailsToState() {
     const functionType = normalizeFunctionType(document.getElementById('functionType').value);
     const customerName = document.getElementById('customerName').value.trim();
     const customerEmail = document.getElementById('customerEmail').value.trim();
     const customerPhone = document.getElementById('customerPhone').value.trim();
     const guestCount = Number(document.getElementById('guestCount').value || 0);
+
+    appState.bookingData.functionType = functionType || appState.bookingData.functionType;
+    appState.bookingData.customerDetails = {
+        customerName,
+        customerEmail,
+        customerPhone,
+        guestCount,
+    };
+    saveState();
+    updateBookingOverview();
+
+    return {
+        functionType,
+        customerName,
+        customerEmail,
+        customerPhone,
+        guestCount,
+    };
+}
+
+function validateCustomerContactStep() {
+    const { functionType, customerName, customerEmail } = syncCustomerDetailsToState();
 
     if (!functionType) {
         showNotification('Please select which function this booking is for', 'error');
@@ -551,6 +606,17 @@ function validateCustomerDetails() {
         return false;
     }
 
+    return true;
+}
+
+function validateCustomerEventStep() {
+    const { functionType, customerPhone, guestCount } = syncCustomerDetailsToState();
+
+    if (!functionType) {
+        showNotification('Please select which function this booking is for', 'error');
+        return false;
+    }
+
     if (!customerPhone || customerPhone.length < 10) {
         showNotification('Please enter a valid phone number', 'error');
         return false;
@@ -561,16 +627,6 @@ function validateCustomerDetails() {
         return false;
     }
 
-    appState.bookingData.functionType = functionType;
-    appState.bookingData.customerDetails = {
-        customerName,
-        customerEmail,
-        customerPhone,
-        guestCount,
-    };
-    saveRequirements();
-    saveState();
-    updateBookingOverview();
     return true;
 }
 
@@ -579,7 +635,8 @@ function validateCustomerDetails() {
 // ================================
 
 function updateReviewDisplay() {
-    validateCustomerDetails();
+    syncCustomerDetailsToState();
+    saveRequirements();
 
     const reviewDate = document.getElementById('reviewDate');
     reviewDate.textContent = formatDate(appState.bookingData.eventDate);
@@ -630,7 +687,7 @@ async function submitBooking() {
         return;
     }
 
-    if (!validateCustomerDetails()) {
+    if (!validateCustomerContactStep() || !validateCustomerEventStep()) {
         return;
     }
 
@@ -751,6 +808,7 @@ function completePayment(bookingId) {
 
     const confirmationModal = document.createElement('div');
     confirmationModal.className = 'modal active';
+    confirmationModal.id = 'bookingConfirmationModal';
     confirmationModal.innerHTML = `
         <div class="modal-content" style="text-align: center;" onclick="event.stopPropagation()">
             <h2 style="color: var(--secondary); margin-bottom: 1rem;">Payment Successful!</h2>
@@ -770,16 +828,21 @@ function completePayment(bookingId) {
 }
 
 function resetBookingForm() {
-    document.getElementById('eventDate').value = '';
+    const eventDateInput = document.getElementById('eventDate');
+    if (eventDateInput) {
+        eventDateInput.value = '';
+    }
+
     document.querySelectorAll('.menu-item').forEach((item) => {
         item.checked = false;
     });
-    document.getElementById('functionType').value = '';
-    document.getElementById('customerName').value = '';
-    document.getElementById('customerEmail').value = '';
-    document.getElementById('customerPhone').value = '';
-    document.getElementById('guestCount').value = '';
-    document.getElementById('requirements').value = '';
+
+    ['functionType', 'customerName', 'customerEmail', 'customerPhone', 'guestCount', 'requirements'].forEach((fieldId) => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.value = '';
+        }
+    });
 
     appState.bookingData = {
         functionType: null,
@@ -794,14 +857,23 @@ function resetBookingForm() {
     updateFunctionTypeChips('');
     updateBookingOverview();
 
-    const modal = document.querySelector('.modal.active');
-    if (modal) {
-        modal.remove();
+    const confirmationModal = document.getElementById('bookingConfirmationModal');
+    if (confirmationModal) {
+        confirmationModal.remove();
     }
 
     currentStep = 1;
     goToStep(1);
-    scrollToSection('booking');
+
+    if (typeof closeBookingModal === 'function') {
+        closeBookingModal();
+    }
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    });
+
     showNotification('Thank you for booking with us!', 'success');
 }
 

@@ -216,6 +216,48 @@ function closeMenuModal(event) {
     }
 }
 
+function openBookingModal(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
+    if (typeof renderBookingMenuOptions === 'function') {
+        renderBookingMenuOptions();
+    }
+
+    if (typeof prefillFunctionType === 'function') {
+        prefillFunctionType();
+    }
+
+    if (typeof prefillCustomerDetails === 'function') {
+        prefillCustomerDetails();
+    }
+
+    if (typeof updateBookingOverview === 'function') {
+        updateBookingOverview();
+    }
+
+    if (typeof setMinDate === 'function') {
+        setMinDate();
+    }
+
+    const modal = document.getElementById('bookingModal');
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
+
+function closeBookingModal(event) {
+    if (event && event.target !== event.currentTarget) {
+        return;
+    }
+
+    const modal = document.getElementById('bookingModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
 function renderHomepageGallery() {
     const galleryContainer = document.getElementById('homepage-gallery-list');
     if (!galleryContainer) {
@@ -325,8 +367,10 @@ const siteTranslations = {
         bookingSubtitle: 'Simple, transparent booking process',
         step1Title: 'Choose Function & Event Date',
         step2Title: 'Select Menu',
-        step3Title: 'Contact & Event Details',
-        step4Title: 'Review Your Booking',
+        step3Title: 'Contact Details',
+        step4Title: 'Phone & Guest Count',
+        step5Title: 'Anything Else?',
+        step6Title: 'Review Your Booking',
         functionTypeLabel: 'Which function is this for?',
         customerNameLabel: 'Full Name',
         customerEmailLabel: 'Email Address',
@@ -392,8 +436,10 @@ const siteTranslations = {
         bookingSubtitle: 'सरल और पारदर्शी बुकिंग प्रक्रिया',
         step1Title: 'इवेंट की तारीख चुनें',
         step2Title: 'मेन्यू चुनें',
-        step3Title: 'ग्राहक विवरण',
-        step4Title: 'अपनी बुकिंग देखें',
+        step3Title: 'संपर्क विवरण',
+        step4Title: 'फोन और मेहमानों की संख्या',
+        step5Title: 'कुछ और बताना है?',
+        step6Title: 'अपनी बुकिंग देखें',
         customerNameLabel: 'पूरा नाम',
         customerEmailLabel: 'ईमेल पता',
         customerPhoneLabel: 'फोन नंबर',
@@ -457,8 +503,10 @@ const siteTranslations = {
         bookingSubtitle: 'سادہ اور شفاف بکنگ عمل',
         step1Title: 'ایونٹ کی تاریخ منتخب کریں',
         step2Title: 'مینو منتخب کریں',
-        step3Title: 'گاہک کی تفصیل',
-        step4Title: 'اپنی بکنگ دیکھیں',
+        step3Title: 'رابطے کی تفصیل',
+        step4Title: 'فون اور مہمانوں کی تعداد',
+        step5Title: 'کچھ اور بتانا ہے؟',
+        step6Title: 'اپنی بکنگ دیکھیں',
         customerNameLabel: 'پورا نام',
         customerEmailLabel: 'ای میل پتہ',
         customerPhoneLabel: 'فون نمبر',
@@ -556,7 +604,7 @@ function startBookingForService(serviceType) {
         goToStep(1);
     }
 
-    scrollToSection('booking');
+    openBookingModal();
 }
 
 function handleServiceCardKeydown(event, serviceType) {
@@ -567,6 +615,11 @@ function handleServiceCardKeydown(event, serviceType) {
 }
 
 function scrollToSection(sectionId) {
+    if (sectionId === 'booking') {
+        openBookingModal();
+        return;
+    }
+
     const element = document.getElementById(sectionId);
     if (element) {
         const headerHeight = 70;

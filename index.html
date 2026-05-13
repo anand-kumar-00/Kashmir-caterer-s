@@ -27,7 +27,7 @@
                 
                 <nav class="nav-menu">
                     <a href="#" class="nav-link" id="nav-menu-link" data-key="navMenu" onclick="openMenuModal(event)">Menu</a>
-                    <a href="#booking" class="nav-link" id="nav-booking-link" data-key="navBooking">Booking</a>
+                    <a href="#" class="nav-link" id="nav-booking-link" data-key="navBooking" onclick="openBookingModal(event)">Booking</a>
                     <a href="#gallery" class="nav-link" id="nav-explore-link" data-key="navExplore">Explore</a>
                 </nav>
 
@@ -69,7 +69,7 @@
             <p class="hero-subtitle" id="hero-subtitle" data-key="heroSubtitle">Premium Catering for Your Most Special Moments</p>
             <p class="hero-tagline" id="hero-tagline" data-key="heroTagline">Authentic Kashmiri Flavors | Impeccable Service | Unforgettable Events</p>
 
-            <button class="btn-primary" id="hero-cta" data-key="heroCta" onclick="scrollToSection('booking')">Book Your Event</button>
+            <button class="btn-primary" id="hero-cta" data-key="heroCta" onclick="openBookingModal()">Book Your Event</button>
         </div>
     </section>
 
@@ -206,18 +206,19 @@
         </div>
     </section>
 
-    <!-- Booking Section -->
-    <section class="booking" id="booking">
-        <div class="container">
-            <h2 class="section-title" id="booking-title" data-key="bookingTitle">Book Your Event</h2>
-            <p class="section-subtitle" id="booking-subtitle" data-key="bookingSubtitle">Simple, transparent booking process</p>
-            
-            <div class="booking-form">
-                <div class="booking-steps">
+    <div class="modal" id="bookingModal" onclick="closeBookingModal(event)">
+        <div class="modal-content booking-modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+            <div class="booking-modal-body">
+                <h2 class="section-title" id="booking-title" data-key="bookingTitle">Book Your Event</h2>
+                <p class="section-subtitle" id="booking-subtitle" data-key="bookingSubtitle">Simple, transparent booking process</p>
+                
+                <div class="booking-form">
+                    <div class="booking-steps">
                     <div class="step-indicator">
                         <div class="step active" onclick="goToStep(1)">
                             <span>1</span>
-                            <p>Function</p>
+                            <p>Event</p>
                         </div>
                         <div class="step" onclick="goToStep(2)">
                             <span>2</span>
@@ -225,10 +226,18 @@
                         </div>
                         <div class="step" onclick="goToStep(3)">
                             <span>3</span>
-                            <p>Details</p>
+                            <p>Contact</p>
                         </div>
                         <div class="step" onclick="goToStep(4)">
                             <span>4</span>
+                            <p>Guests</p>
+                        </div>
+                        <div class="step" onclick="goToStep(5)">
+                            <span>5</span>
+                            <p>Notes</p>
+                        </div>
+                        <div class="step" onclick="goToStep(6)">
+                            <span>6</span>
                             <p>Review</p>
                         </div>
                     </div>
@@ -291,7 +300,7 @@
                         <p class="menu-selection-subtitle" id="menu-selection-subtitle" data-key="menuSelectionSubtitle">
                             Choose dishes by meal and course. Each item shows its rate so customers can plan clearly.
                         </p>
-                        <div class="menu-categories" id="bookingMenuCategories">
+                        <div class="menu-modal-grid booking-menu-grid" id="bookingMenuCategories">
                             <div class="menu-loading-state">Loading menu options...</div>
                         </div>
                         <div class="button-group">
@@ -300,11 +309,11 @@
                         </div>
                     </div>
 
-                    <!-- Step 3: Customer Details -->
+                    <!-- Step 3: Contact Details -->
                     <div class="step-content" id="step3">
-                        <h3 id="step3-title" data-key="step3Title">Contact & Event Details</h3>
+                        <h3 id="step3-title" data-key="step3Title">Contact Details</h3>
                         <p class="booking-step-helper">
-                            Share the main contact information so our team can confirm guest count, service timing, and special requests.
+                            Just two quick details so we know who to reach out to.
                         </p>
                         <div class="form-group">
                             <label for="customerName" data-key="customerNameLabel">Full Name</label>
@@ -314,6 +323,18 @@
                             <label for="customerEmail" data-key="customerEmailLabel">Email Address</label>
                             <input type="email" id="customerEmail" data-placeholder-key="customerEmailPlaceholder" placeholder="Enter your email address" required>
                         </div>
+                        <div class="button-group">
+                            <button class="btn-secondary" id="back-step3" data-key="back" onclick="goToStep(2)">Back</button>
+                            <button class="btn-primary" id="next-step3" data-key="next" onclick="goToStep(4)">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Phone & Guests -->
+                    <div class="step-content" id="step4">
+                        <h3 id="step4-title" data-key="step4Title">Phone & Guest Count</h3>
+                        <p class="booking-step-helper">
+                            Share your contact number and the expected number of guests.
+                        </p>
                         <div class="form-group">
                             <label for="customerPhone" data-key="customerPhoneLabel">Phone Number</label>
                             <input type="tel" id="customerPhone" data-placeholder-key="customerPhonePlaceholder" placeholder="Enter your phone number" required>
@@ -322,19 +343,31 @@
                             <label for="guestCount" data-key="guestCountLabel">Expected Guests</label>
                             <input type="number" id="guestCount" min="1" data-placeholder-key="guestCountPlaceholder" placeholder="How many guests are expected?" required>
                         </div>
+                        <div class="button-group">
+                            <button class="btn-secondary" id="back-step4" data-key="back" onclick="goToStep(3)">Back</button>
+                            <button class="btn-primary" id="next-step4" data-key="next" onclick="goToStep(5)">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Additional Requirements -->
+                    <div class="step-content" id="step5">
+                        <h3 id="step5-title" data-key="step5Title">Anything Else?</h3>
+                        <p class="booking-step-helper">
+                            Add any special requirements, dietary needs, or service notes. This step is optional.
+                        </p>
                         <div class="form-group">
                             <label for="requirements" data-key="requirementsLabel">Additional Requirements</label>
                         </div>
                         <textarea id="requirements" data-placeholder-key="requirementsPlaceholder" placeholder="Enter any special requirements, dietary restrictions, or additional notes..." rows="6"></textarea>
                         <div class="button-group">
-                            <button class="btn-secondary" id="back-step3" data-key="back" onclick="goToStep(2)">Back</button>
-                            <button class="btn-primary" id="next-step3" data-key="next" onclick="goToStep(4)">Next</button>
+                            <button class="btn-secondary" id="back-step5" data-key="back" onclick="goToStep(4)">Back</button>
+                            <button class="btn-primary" id="next-step5" data-key="next" onclick="goToStep(6)">Next</button>
                         </div>
                     </div>
 
-                    <!-- Step 4: Review & Submit -->
-                    <div class="step-content" id="step4">
-                        <h3 id="step4-title" data-key="step4Title">Review Your Booking</h3>
+                    <!-- Step 6: Review & Submit -->
+                    <div class="step-content" id="step6">
+                        <h3 id="step6-title" data-key="step6Title">Review Your Booking</h3>
                         <div class="review-details">
                             <div class="review-item">
                                 <span id="review-label-date" data-key="reviewDate">Event Date:</span>
@@ -375,14 +408,15 @@
                             </div>
                         </div>
                         <div class="button-group">
-                            <button class="btn-secondary" id="back-step4" data-key="back" onclick="goToStep(3)">Back</button>
+                            <button class="btn-secondary" id="back-step6" data-key="back" onclick="goToStep(5)">Back</button>
                             <button class="btn-primary" id="confirm-pay-btn" data-key="confirmPay" onclick="submitBooking()">Confirm & Pay</button>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Lightbox Modal -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
@@ -620,8 +654,8 @@
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
-                    <a href="#menu">Menu</a>
-                    <a href="#booking">Booking</a>
+                    <a href="#" onclick="openMenuModal(event)">Menu</a>
+                    <a href="#" onclick="openBookingModal(event)">Booking</a>
                     <a href="#gallery">Gallery</a>
                 </div>
                 <div class="footer-section">
