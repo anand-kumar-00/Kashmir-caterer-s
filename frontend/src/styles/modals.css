@@ -1,0 +1,349 @@
+/* =============================================================
+   MODALS — Booking, Menu, Login, Signup
+   ============================================================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(0,0,0,.65);
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--space-10) var(--space-4);
+    overflow-y: auto;
+}
+.modal.active {
+    display: flex;
+    animation: fadeIn var(--duration-base) var(--ease);
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: var(--radius-xl);
+    padding: var(--space-10) var(--space-10);
+    width: 100%;
+    max-width: 540px;
+    position: relative;
+    animation: scaleIn var(--duration-base) var(--ease) both;
+    box-shadow: var(--shadow-xl);
+}
+
+.modal-content h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-6);
+    color: var(--color-text);
+}
+
+.modal-close {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    width: var(--min-touch);
+    height: var(--min-touch);
+    background: var(--color-surface);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--text-2xl);
+    color: var(--color-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    line-height: 1;
+}
+.modal-close:hover {
+    background: var(--color-border);
+    color: var(--color-text);
+}
+
+/* ── MENU MODAL ─────────────────────────────────── */
+.menu-modal-content {
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.menu-modal-subtitle {
+    font-size: var(--text-base);
+    color: var(--color-muted);
+    margin-bottom: var(--space-6);
+}
+.menu-modal-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.menu-category-section h3 {
+    font-size: var(--text-xl);
+    color: var(--color-gold);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 2px solid var(--color-border);
+    text-transform: capitalize;
+}
+.menu-course-group {
+    margin-bottom: var(--space-5);
+}
+.menu-course-label {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--color-muted);
+    margin-bottom: var(--space-3);
+}
+.menu-items-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-3);
+}
+
+.menu-item-card {
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.menu-item-card:hover {
+    border-color: var(--color-gold);
+    background: #fffdf5;
+}
+.menu-item-card.selected {
+    border-color: var(--color-gold);
+    background: #fffbe6;
+}
+.menu-item-card h4 {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--space-1);
+}
+.menu-item-card p {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    margin-bottom: var(--space-3);
+}
+.menu-item-price {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-gold);
+}
+.menu-item-card.selectable {
+    cursor: pointer;
+    user-select: none;
+}
+.menu-item-card.selectable:focus {
+    outline: 2px solid var(--color-gold);
+}
+
+.menu-loading-state {
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--color-muted);
+    font-size: var(--text-lg);
+}
+
+/* ── BOOKING MODAL ──────────────────────────────── */
+.booking-modal-content {
+    max-width: 720px;
+    max-height: 92vh;
+    overflow-y: auto;
+}
+.booking-modal-body h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-2);
+}
+.booking-modal-body > p {
+    color: var(--color-muted);
+    margin-bottom: var(--space-6);
+}
+
+/* Progress steps */
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+    flex-wrap: wrap;
+}
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    min-width: 52px;
+    opacity: .4;
+    transition: opacity var(--transition-base);
+    cursor: default;
+}
+.step.active,
+.step.completed {
+    opacity: 1;
+}
+.step span {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    transition: background var(--transition-base), color var(--transition-base);
+}
+.step.active span {
+    background: var(--color-dark);
+    color: var(--color-gold-light);
+}
+.step.completed span {
+    background: var(--color-success);
+    color: #fff;
+}
+.step p {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin: 0;
+}
+
+/* Booking overview banner */
+.booking-overview {
+    display: flex;
+    gap: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+    margin-bottom: var(--space-6);
+    flex-wrap: wrap;
+}
+.booking-overview-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    flex: 1;
+    min-width: 100px;
+}
+.booking-overview-item span {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+.booking-overview-item strong {
+    font-size: var(--text-sm);
+    color: var(--color-text);
+}
+
+/* Step content */
+.step-content {
+    display: none;
+    animation: slideUp var(--duration-base) var(--ease);
+}
+.step-content.active {
+    display: block;
+}
+.step-content h3 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-2);
+}
+.booking-step-helper {
+    font-size: var(--text-base);
+    color: var(--color-muted);
+    margin-bottom: var(--space-6);
+}
+
+/* Function chips */
+.booking-function-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+}
+.booking-function-chip {
+    padding: var(--space-2) var(--space-4);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: transparent;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    color: var(--color-text);
+    transition: all var(--transition-fast);
+    min-height: var(--min-touch);
+}
+.booking-function-chip:hover,
+.booking-function-chip.active {
+    background: var(--color-dark);
+    color: var(--color-gold-light);
+    border-color: var(--color-dark);
+}
+
+/* Booking menu grid */
+.booking-menu-grid {
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: var(--space-2);
+}
+
+/* Button group */
+.button-group {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+}
+
+/* Review details */
+.review-details {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    margin-bottom: var(--space-6);
+}
+.review-item {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-base);
+    align-items: flex-start;
+}
+.review-item:last-child {
+    border-bottom: none;
+}
+.review-item span:first-child {
+    color: var(--color-muted);
+    font-weight: 500;
+    flex-shrink: 0;
+}
+.review-item span:last-child,
+.review-item strong {
+    text-align: right;
+    color: var(--color-text);
+    font-weight: 500;
+    word-break: break-word;
+}
+.review-item.total {
+    padding-top: var(--space-4);
+    font-size: var(--text-lg);
+}
+.review-item.total strong {
+    color: var(--color-gold);
+    font-size: var(--text-xl);
+}
+
+/* ── RESPONSIVE ────────────────────────────── */
+@media (max-width: 600px) {
+    .modal         { padding: var(--space-4) var(--space-3); }
+    .modal-content { padding: var(--space-8) var(--space-6); border-radius: var(--radius-lg); }
+    .button-group  { flex-direction: column; }
+}

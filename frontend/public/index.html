@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary SEO -->
+    <title>Kashmir Caterers — Premium Kashmiri Catering for Weddings & Events</title>
+    <meta name="description" content="Kashmir Caterers offers authentic Kashmiri cuisine for weddings, birthdays, corporate events and more. Serving Srinagar, Mumbai and Delhi. Book your event today.">
+    <meta name="keywords" content="Kashmir catering, Kashmiri food, wedding catering Srinagar, wazwan catering, event catering India">
+    <link rel="canonical" href="https://kashmiricaterers.com/">
+
+    <!-- Open Graph -->
+    <meta property="og:type"        content="website">
+    <meta property="og:url"         content="https://kashmiricaterers.com/">
+    <meta property="og:title"       content="Kashmir Caterers — Premium Kashmiri Catering">
+    <meta property="og:description" content="Authentic Kashmiri wazwan for weddings, birthdays and corporate events. Impeccable service across India.">
+    <meta property="og:image"       content="https://kashmiricaterers.com/images/og-preview.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="Kashmir Caterers — Premium Kashmiri Catering">
+    <meta name="twitter:description" content="Authentic Kashmiri wazwan for weddings, birthdays and corporate events.">
+    <meta name="twitter:image"       content="https://kashmiricaterers.com/images/og-preview.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/images/logo.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/header.css">
+    <link rel="stylesheet" href="/styles/hero.css">
+    <link rel="stylesheet" href="/styles/services.css">
+    <link rel="stylesheet" href="/styles/gallery.css">
+    <link rel="stylesheet" href="/styles/locations.css">
+    <link rel="stylesheet" href="/styles/footer.css">
+    <link rel="stylesheet" href="/styles/modals.css">
+    <link rel="stylesheet" href="/styles/feedback.css">
+
+    <!-- LocalBusiness + FoodEstablishment JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": ["FoodEstablishment", "LocalBusiness"],
+        "name": "Kashmir Caterers",
+        "description": "Premium authentic Kashmiri catering for weddings, birthdays, corporate events and more.",
+        "url": "https://kashmiricaterers.com",
+        "logo": "https://kashmiricaterers.com/images/logo.jpg",
+        "image": "https://kashmiricaterers.com/images/hero-bg.png",
+        "telephone": "+91-9876543210",
+        "email": "hello@kashmiricaterers.com",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Main Office, Lal Chowk",
+            "addressLocality": "Srinagar",
+            "addressRegion": "Jammu & Kashmir",
+            "addressCountry": "IN"
+        },
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 34.083651,
+            "longitude": 74.797371
+        },
+        "servesCuisine": ["Kashmiri", "Indian", "Wazwan"],
+        "priceRange": "₹₹₹",
+        "areaServed": ["Srinagar", "Mumbai", "Delhi", "India"],
+        "openingHours": "Mo-Su 08:00-22:00",
+        "sameAs": [
+            "https://www.facebook.com/kashmiricaterers",
+            "https://www.instagram.com/kashmiricaterers"
+        ]
+    }
+    </script>
+</head>
+<body>
+
+    <!-- Skip navigation for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- ════════════════════════════════════════════
+         HEADER
+    ════════════════════════════════════════════ -->
+    <header class="header" role="banner">
+        <div class="container">
+            <div class="header-content">
+
+                <a href="/" class="logo" aria-label="Kashmir Caterers — go to homepage">
+                    <img src="/images/logo.jpg" alt="Kashmir Caterers logo" width="44" height="44">
+                    <span class="logo-text">Kashmir Caterers</span>
+                </a>
+
+                <nav class="nav-menu" aria-label="Main navigation">
+                    <a href="#" class="nav-link" data-key="navMenu" onclick="openMenuModal(event)">Menu</a>
+                    <a href="#gallery" class="nav-link" data-key="navExplore">Gallery</a>
+                    <a href="#locations" class="nav-link" data-key="navLocations">Locations</a>
+                    <a href="#reviews" class="nav-link">Reviews</a>
+                </nav>
+
+                <div class="header-controls">
+                    <div class="language-selector" aria-label="Choose language">
+                        <label for="languageSelect" class="sr-only">Language</label>
+                        <select id="languageSelect" onchange="changeLanguage(this.value)" aria-label="Select language">
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी</option>
+                            <option value="ur">اردو</option>
+                            <option value="pa">ਪੰਜਾਬੀ</option>
+                        </select>
+                    </div>
+                    <button class="btn-auth login-btn" id="login-btn-label" data-key="login" onclick="openLoginModal()" aria-label="Login to your account">Login</button>
+                    <button class="btn-auth signup-btn" id="signup-btn-label" data-key="signup" onclick="openSignupModal()" aria-label="Create an account">Sign Up</button>
+                    <button class="btn-primary btn-book-header" data-key="heroCta" onclick="openBookingModal()">Book Event</button>
+                </div>
+
+                <button class="menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle mobile navigation menu" aria-expanded="false" aria-controls="nav-menu-mobile">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile nav -->
+        <nav class="mobile-nav" id="nav-menu-mobile" aria-label="Mobile navigation" hidden>
+            <a href="#" class="nav-link" data-key="navMenu" onclick="openMenuModal(event)">Menu</a>
+            <a href="#gallery" class="nav-link" data-key="navExplore">Gallery</a>
+            <a href="#locations" class="nav-link" data-key="navLocations">Locations</a>
+            <a href="#reviews" class="nav-link">Reviews</a>
+            <button class="btn-primary" onclick="openBookingModal(); toggleMobileMenu();" data-key="heroCta">Book Your Event</button>
+        </nav>
+    </header>
+
+    <!-- ════════════════════════════════════════════
+         MAIN CONTENT
+    ════════════════════════════════════════════ -->
+    <main id="main-content">
+
+        <!-- HERO ─────────────────────────────── -->
+        <section class="hero" aria-label="Hero banner">
+            <div class="hero-background" aria-hidden="true">
+                <img src="/images/hero-bg.png" alt="" role="presentation" fetchpriority="high">
+                <div class="hero-overlay"></div>
+            </div>
+
+            <div class="hero-content">
+                <div class="greeting-animation" aria-live="polite" aria-atomic="true">
+                    <h1 class="greeting" id="greeting" data-key="greeting">Namaste</h1>
+                </div>
+                <p class="hero-subtitle" data-key="heroSubtitle">Premium Catering for Your Most Special Moments</p>
+                <p class="hero-tagline" data-key="heroTagline">Authentic Kashmiri Flavors · Impeccable Service · Unforgettable Events</p>
+                <div class="hero-actions">
+                    <button class="btn-primary btn-hero-cta" data-key="heroCta" onclick="openBookingModal()">Book Your Event</button>
+                    <a href="#services" class="btn-secondary btn-hero-secondary" data-key="exploreServices">Explore Services</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SERVICES ─────────────────────────── -->
+        <section class="services" id="services" aria-labelledby="services-title">
+            <div class="container">
+                <h2 class="section-title" id="services-title" data-key="servicesTitle">Our Services</h2>
+                <p class="section-subtitle" data-key="servicesSubtitle">Tailored catering experiences for every occasion</p>
+
+                <div class="services-grid" role="list">
+
+                    <article class="service-card" role="listitem"
+                        onclick="startBookingForService('Marriage Catering')"
+                        onkeydown="handleServiceCardKeydown(event,'Marriage Catering')"
+                        tabindex="0" aria-label="Marriage Catering — click to book">
+                        <div class="service-image">
+                            <img src="/images/service-marriage.png" alt="Beautifully set tables for a wedding banquet" loading="lazy">
+                        </div>
+                        <h3 data-key="serviceMarriage">Marriage Catering</h3>
+                    </article>
+
+                    <article class="service-card" role="listitem"
+                        onclick="startBookingForService('Birthday Catering')"
+                        onkeydown="handleServiceCardKeydown(event,'Birthday Catering')"
+                        tabindex="0" aria-label="Birthday Catering — click to book">
+                        <div class="service-image">
+                            <img src="/images/service-birthday.png" alt="Festive birthday party setup with cake and decorations" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=500'">
+                        </div>
+                        <h3 data-key="serviceBirthday">Birthday Catering</h3>
+                    </article>
+
+                    <article class="service-card" role="listitem"
+                        onclick="startBookingForService('Corporate Catering')"
+                        onkeydown="handleServiceCardKeydown(event,'Corporate Catering')"
+                        tabindex="0" aria-label="Corporate Catering — click to book">
+                        <div class="service-image">
+                            <img src="/images/service-corporate.png" alt="Professional corporate catering service" loading="lazy">
+                        </div>
+                        <h3 data-key="serviceCorporate">Corporate Catering</h3>
+                    </article>
+
+                    <article class="service-card" role="listitem"
+                        onclick="startBookingForService('BBQ Catering')"
+                        onkeydown="handleServiceCardKeydown(event,'BBQ Catering')"
+                        tabindex="0" aria-label="BBQ Catering — click to book">
+                        <div class="service-image">
+                            <img src="/images/service-bbq.png" alt="Outdoor barbecue catering setup" loading="lazy">
+                        </div>
+                        <h3 data-key="serviceBbq">Barbecue Catering</h3>
+                    </article>
+
+                </div>
+
+                <div class="section-action">
+                    <a href="/showcase.html#services-showcase" class="btn-secondary" data-key="seeMore">See All Services</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY ──────────────────────────── -->
+        <section class="gallery" id="gallery" aria-labelledby="gallery-title">
+            <div class="container">
+                <h2 class="section-title" id="gallery-title" data-key="galleryTitle">Event Gallery</h2>
+                <p class="section-subtitle" data-key="gallerySubtitle">A glimpse of the events we have had the honour to serve</p>
+
+                <div class="gallery-grid" id="homepage-gallery-list" role="list">
+                    <!-- Populated by JS from API -->
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)" aria-label="View event photo 1">
+                        <img src="/images/gallery-1.png" alt="Kashmir Caterers wedding service setup" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)" aria-label="View event photo 2">
+                        <img src="/images/gallery-2.png" alt="Event celebration decor by Kashmir Caterers" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)" aria-label="View event photo 3">
+                        <img src="/images/gallery-3.png" alt="Signature Kashmiri dining layout" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)" aria-label="View event photo 4">
+                        <img src="/images/gallery-4.png" alt="Premium buffet arrangement" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)" aria-label="View event photo 5">
+                        <img src="/images/gallery-5.png" alt="Kashmir Caterers event service team" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                </div>
+
+                <div class="section-action">
+                    <a href="/showcase.html#gallery-showcase" class="btn-secondary" data-key="seeMore">See Full Gallery</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- LOCATIONS ────────────────────────── -->
+        <section class="locations" id="locations" aria-labelledby="locations-title">
+            <div class="container">
+                <h2 class="section-title" id="locations-title" data-key="locationsTitle">Our Locations</h2>
+                <p class="section-subtitle" data-key="locationsSubtitle">Find us across India — or call us to come to you</p>
+
+                <div class="locations-content">
+
+                    <!-- Static map embed (no API key needed) -->
+                    <div class="map-container" aria-label="Map showing Kashmir Caterers office location in Srinagar">
+                        <iframe
+                            src="https://maps.google.com/maps?q=Lal+Chowk,+Srinagar,+Jammu+%26+Kashmir&output=embed&z=14"
+                            width="100%"
+                            height="420"
+                            style="border:0; border-radius: var(--radius-lg);"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="Kashmir Caterers office location on Google Maps">
+                        </iframe>
+                    </div>
+
+                    <div class="locations-list" id="homepage-locations-list">
+
+                        <div class="location-card active">
+                            <h3>📍 Office Location</h3>
+                            <p>Srinagar, Jammu &amp; Kashmir</p>
+                            <p class="location-address">Main Office, Lal Chowk, Srinagar</p>
+                            <a class="btn-secondary" href="https://www.google.com/maps/dir/?api=1&destination=34.083651,74.797371" target="_blank" rel="noopener noreferrer" aria-label="Get directions to Srinagar office (opens in new tab)">
+                                Get Directions
+                            </a>
+                        </div>
+
+                        <div class="location-card">
+                            <h3>🎉 Current Event</h3>
+                            <p>Mumbai, Maharashtra</p>
+                            <p class="location-address">Royal Grand Hotel Ballroom, Mumbai</p>
+                            <a class="btn-secondary" href="https://www.google.com/maps/dir/?api=1&destination=19.0760,72.8777" target="_blank" rel="noopener noreferrer" aria-label="Get directions to Mumbai event venue (opens in new tab)">
+                                Get Directions
+                            </a>
+                        </div>
+
+                        <div class="location-card">
+                            <h3>🎊 Upcoming Event</h3>
+                            <p>Delhi</p>
+                            <p class="location-address">Garden Palace Convention Center, Delhi</p>
+                            <a class="btn-secondary" href="https://www.google.com/maps/dir/?api=1&destination=28.6139,77.2090" target="_blank" rel="noopener noreferrer" aria-label="Get directions to Delhi event venue (opens in new tab)">
+                                Get Directions
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REVIEWS ──────────────────────────── -->
+        <section class="feedback-section" id="reviews" aria-labelledby="reviews-heading">
+            <div class="feedback-container container">
+
+                <h2 class="section-title" id="reviews-heading">Customer Reviews</h2>
+
+                <div class="feedback-layout">
+
+                    <!-- Submit review form -->
+                    <div class="feedback-form-container">
+                        <h3 class="feedback-form-title">Leave Your Review</h3>
+                        <p class="feedback-form-subtitle">We value your honest feedback</p>
+
+                        <form id="reviewForm" onsubmit="submitReview(event)" novalidate>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="reviewName">Name <span aria-hidden="true">*</span></label>
+                                    <input type="text" id="reviewName" required autocomplete="name" placeholder="Your full name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="reviewEmail">Email <span aria-hidden="true">*</span></label>
+                                    <input type="email" id="reviewEmail" required autocomplete="email" placeholder="your@email.com">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="eventType">Event Type</label>
+                                <select id="eventType">
+                                    <option value="">Select event (optional)</option>
+                                    <option value="Marriage">Marriage</option>
+                                    <option value="Birthday">Birthday</option>
+                                    <option value="Corporate">Corporate</option>
+                                    <option value="Barbecue">Barbecue</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label id="star-rating-label">Rating <span aria-hidden="true">*</span></label>
+                                <div id="starRating" class="star-rating" role="radiogroup" aria-labelledby="star-rating-label">
+                                    <button type="button" class="star" data-value="1" role="radio" aria-checked="false" aria-label="1 star">★</button>
+                                    <button type="button" class="star" data-value="2" role="radio" aria-checked="false" aria-label="2 stars">★</button>
+                                    <button type="button" class="star" data-value="3" role="radio" aria-checked="false" aria-label="3 stars">★</button>
+                                    <button type="button" class="star" data-value="4" role="radio" aria-checked="false" aria-label="4 stars">★</button>
+                                    <button type="button" class="star" data-value="5" role="radio" aria-checked="false" aria-label="5 stars">★</button>
+                                </div>
+                                <input type="hidden" id="ratingValue">
+                                <div id="ratingText" class="rating-value" aria-live="polite"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reviewText">Your Review <span aria-hidden="true">*</span></label>
+                                <textarea id="reviewText" required minlength="10" rows="4" placeholder="Share your experience with Kashmir Caterers..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn-primary feedback-submit">Submit Review</button>
+
+                        </form>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="feedback-stats">
+                        <div class="stat-item">
+                            <div id="avgRating" class="stat-value" aria-label="Average rating">—</div>
+                            <div class="stat-label">Average Rating</div>
+                        </div>
+                        <div class="stat-item">
+                            <div id="totalReviews" class="stat-value" aria-label="Total reviews">0</div>
+                            <div class="stat-label">Reviews</div>
+                        </div>
+                        <div class="rating-breakdown" aria-label="Rating breakdown">
+                            <div class="rating-bar" aria-label="5 star ratings"><div class="rating-label">5 ★</div><div class="progress-bar" role="progressbar"><div id="rating5" class="progress-fill"></div></div><div id="percent5" class="rating-count">0%</div></div>
+                            <div class="rating-bar" aria-label="4 star ratings"><div class="rating-label">4 ★</div><div class="progress-bar" role="progressbar"><div id="rating4" class="progress-fill"></div></div><div id="percent4" class="rating-count">0%</div></div>
+                            <div class="rating-bar" aria-label="3 star ratings"><div class="rating-label">3 ★</div><div class="progress-bar" role="progressbar"><div id="rating3" class="progress-fill"></div></div><div id="percent3" class="rating-count">0%</div></div>
+                            <div class="rating-bar" aria-label="2 star ratings"><div class="rating-label">2 ★</div><div class="progress-bar" role="progressbar"><div id="rating2" class="progress-fill"></div></div><div id="percent2" class="rating-count">0%</div></div>
+                            <div class="rating-bar" aria-label="1 star ratings"><div class="rating-label">1 ★</div><div class="progress-bar" role="progressbar"><div id="rating1" class="progress-fill"></div></div><div id="percent1" class="rating-count">0%</div></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Filter + list -->
+                <div class="reviews-controls" role="group" aria-label="Filter reviews">
+                    <span class="filter-label">Filter:</span>
+                    <div class="filter-options">
+                        <button class="filter-btn active" onclick="filterReviews('all')">All</button>
+                        <button class="filter-btn" onclick="filterReviews(5)">5 ★</button>
+                        <button class="filter-btn" onclick="filterReviews(4)">4 ★</button>
+                        <button class="filter-btn" onclick="filterReviews(3)">3 ★</button>
+                        <button class="filter-btn" onclick="filterReviews(2)">2 ★</button>
+                        <button class="filter-btn" onclick="filterReviews(1)">1 ★</button>
+                    </div>
+                </div>
+
+                <div id="reviewsList" class="reviews-container" aria-live="polite" aria-label="Customer reviews list"></div>
+
+                <div class="section-action" style="margin-top:1.5rem;">
+                    <button id="loadMoreBtn" class="btn-secondary" onclick="loadMoreReviews()" style="display:none;">Load More Reviews</button>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ════════════════════════════════════════════
+         FOOTER
+    ════════════════════════════════════════════ -->
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+
+                <div class="footer-section">
+                    <h3>Kashmir Caterers</h3>
+                    <p>Premium authentic Kashmiri catering for your most special moments. Serving India since 1995.</p>
+                </div>
+
+                <nav class="footer-section" aria-label="Quick links">
+                    <h4>Quick Links</h4>
+                    <a href="#" onclick="openMenuModal(event)">Our Menu</a>
+                    <a href="#" onclick="openBookingModal(event)">Book an Event</a>
+                    <a href="#gallery">Gallery</a>
+                    <a href="/showcase.html">Showcase</a>
+                    <a href="#reviews">Reviews</a>
+                </nav>
+
+                <address class="footer-section">
+                    <h4>Contact</h4>
+                    <p><a href="tel:+919876543210">📞 +91 9876543210</a></p>
+                    <p><a href="mailto:hello@kashmiricaterers.com">📧 hello@kashmiricaterers.com</a></p>
+                    <p>📍 Lal Chowk, Srinagar, J&amp;K</p>
+                </address>
+
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <nav class="social-links" aria-label="Social media links">
+                        <a href="https://facebook.com/kashmiricaterers" target="_blank" rel="noopener noreferrer" aria-label="Kashmir Caterers on Facebook">Facebook</a>
+                        <a href="https://instagram.com/kashmiricaterers" target="_blank" rel="noopener noreferrer" aria-label="Kashmir Caterers on Instagram">Instagram</a>
+                        <a href="https://twitter.com/kashmiricaterers" target="_blank" rel="noopener noreferrer" aria-label="Kashmir Caterers on Twitter / X">Twitter</a>
+                    </nav>
+                </div>
+
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="footer-year">2024</span> Kashmir Caterers. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ════════════════════════════════════════════
+         MODALS
+    ════════════════════════════════════════════ -->
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image lightbox" onclick="closeLightbox()">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close image viewer">&times;</button>
+            <img id="lightboxImage" src="" alt="">
+        </div>
+    </div>
+
+    <!-- Menu Modal -->
+    <div class="modal" id="menuModal" role="dialog" aria-modal="true" aria-labelledby="menu-modal-title" onclick="closeMenuModal(event)">
+        <div class="modal-content menu-modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeMenuModal()" aria-label="Close menu">&times;</button>
+            <h2 id="menu-modal-title" data-key="menuModalTitle">Our Menu</h2>
+            <p class="menu-modal-subtitle" data-key="menuModalSubtitle">Authentic Kashmiri cuisine crafted with care</p>
+            <div class="menu-modal-grid" id="menu-modal-list" aria-live="polite">
+                <p class="menu-loading-state">Loading menu…</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div class="modal" id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="booking-title" onclick="closeBookingModal(event)">
+        <div class="modal-content booking-modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeBookingModal()" aria-label="Close booking">&times;</button>
+            <div class="booking-modal-body">
+                <h2 data-key="bookingTitle" id="booking-title">Book Your Event</h2>
+                <p data-key="bookingSubtitle">Simple, transparent booking — 6 quick steps</p>
+
+                <div class="booking-form">
+                    <div class="booking-steps">
+
+                        <div class="step-indicator" role="list" aria-label="Booking progress steps">
+                            <div class="step active" role="listitem" aria-label="Step 1: Event type"><span aria-hidden="true">1</span><p>Event</p></div>
+                            <div class="step" role="listitem" aria-label="Step 2: Menu"><span aria-hidden="true">2</span><p>Menu</p></div>
+                            <div class="step" role="listitem" aria-label="Step 3: Contact"><span aria-hidden="true">3</span><p>Contact</p></div>
+                            <div class="step" role="listitem" aria-label="Step 4: Guests"><span aria-hidden="true">4</span><p>Guests</p></div>
+                            <div class="step" role="listitem" aria-label="Step 5: Notes"><span aria-hidden="true">5</span><p>Notes</p></div>
+                            <div class="step" role="listitem" aria-label="Step 6: Review"><span aria-hidden="true">6</span><p>Review</p></div>
+                        </div>
+
+                        <div class="booking-overview" aria-live="polite" aria-label="Booking summary">
+                            <div class="booking-overview-item"><span>Function</span><strong id="booking-overview-function">Not selected</strong></div>
+                            <div class="booking-overview-item"><span>Date</span><strong id="booking-overview-date">Not selected</strong></div>
+                            <div class="booking-overview-item"><span>Menu Items</span><strong id="booking-overview-menu-count">0 selected</strong></div>
+                        </div>
+
+                        <!-- Step 1 -->
+                        <div class="step-content active" id="step1" aria-labelledby="step1-heading">
+                            <h3 id="step1-heading" data-key="step1Title">Choose Function &amp; Event Date</h3>
+                            <p class="booking-step-helper">Start with the occasion you are planning. If you came from a service card, it is pre-filled for you.</p>
+                            <div class="form-group">
+                                <label for="functionType" data-key="functionTypeLabel">Which function is this for?</label>
+                                <select id="functionType" required aria-required="true">
+                                    <option value="">Select a function</option>
+                                    <option value="Marriage Catering">Marriage Catering</option>
+                                    <option value="Birthday Catering">Birthday Catering</option>
+                                    <option value="Corporate Catering">Corporate Catering</option>
+                                    <option value="BBQ Catering">BBQ Catering</option>
+                                    <option value="Indoor Catering">Indoor Catering</option>
+                                    <option value="Outdoor Catering">Outdoor Catering</option>
+                                    <option value="Engagement Catering">Engagement Catering</option>
+                                    <option value="Reception Catering">Reception Catering</option>
+                                    <option value="Private Party Catering">Private Party Catering</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div class="booking-function-chips" id="bookingFunctionChips" role="group" aria-label="Quick-select function type">
+                                    <button type="button" class="booking-function-chip" data-function="Marriage Catering">Marriage</button>
+                                    <button type="button" class="booking-function-chip" data-function="Birthday Catering">Birthday</button>
+                                    <button type="button" class="booking-function-chip" data-function="Corporate Catering">Corporate</button>
+                                    <button type="button" class="booking-function-chip" data-function="BBQ Catering">BBQ</button>
+                                    <button type="button" class="booking-function-chip" data-function="Outdoor Catering">Outdoor</button>
+                                    <button type="button" class="booking-function-chip" data-function="Private Party Catering">Private Party</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventDate">Event Date <span aria-hidden="true">*</span></label>
+                                <input type="date" id="eventDate" min="" required aria-required="true">
+                            </div>
+                            <button class="btn-primary" data-key="next" onclick="goToStep(2)">Next</button>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="step-content" id="step2" aria-labelledby="step2-heading">
+                            <h3 id="step2-heading" data-key="step2Title">Select Menu</h3>
+                            <p data-key="menuSelectionSubtitle">Choose dishes by meal and course. Each item shows its rate so you can plan clearly.</p>
+                            <div class="menu-modal-grid booking-menu-grid" id="bookingMenuCategories" aria-live="polite">
+                                <p class="menu-loading-state">Loading menu options…</p>
+                            </div>
+                            <div class="button-group">
+                                <button class="btn-secondary" data-key="back" onclick="goToStep(1)">Back</button>
+                                <button class="btn-primary" data-key="next" onclick="goToStep(3)">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="step-content" id="step3" aria-labelledby="step3-heading">
+                            <h3 id="step3-heading" data-key="step3Title">Contact Details</h3>
+                            <p class="booking-step-helper">Just two quick details so we know who to reach.</p>
+                            <div class="form-group">
+                                <label for="customerName" data-key="customerNameLabel">Full Name <span aria-hidden="true">*</span></label>
+                                <input type="text" id="customerName" placeholder="Enter your full name" required aria-required="true" autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="customerEmail" data-key="customerEmailLabel">Email Address <span aria-hidden="true">*</span></label>
+                                <input type="email" id="customerEmail" placeholder="your@email.com" required aria-required="true" autocomplete="email">
+                            </div>
+                            <div class="button-group">
+                                <button class="btn-secondary" data-key="back" onclick="goToStep(2)">Back</button>
+                                <button class="btn-primary" data-key="next" onclick="goToStep(4)">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 4 -->
+                        <div class="step-content" id="step4" aria-labelledby="step4-heading">
+                            <h3 id="step4-heading" data-key="step4Title">Phone &amp; Guest Count</h3>
+                            <p class="booking-step-helper">Your phone number and the number of guests expected.</p>
+                            <div class="form-group">
+                                <label for="customerPhone" data-key="customerPhoneLabel">Phone Number <span aria-hidden="true">*</span></label>
+                                <input type="tel" id="customerPhone" placeholder="+91 XXXXX XXXXX" required aria-required="true" autocomplete="tel">
+                            </div>
+                            <div class="form-group">
+                                <label for="guestCount" data-key="guestCountLabel">Expected Guests <span aria-hidden="true">*</span></label>
+                                <input type="number" id="guestCount" min="1" placeholder="How many guests?" required aria-required="true">
+                            </div>
+                            <div class="button-group">
+                                <button class="btn-secondary" data-key="back" onclick="goToStep(3)">Back</button>
+                                <button class="btn-primary" data-key="next" onclick="goToStep(5)">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 5 -->
+                        <div class="step-content" id="step5" aria-labelledby="step5-heading">
+                            <h3 id="step5-heading" data-key="step5Title">Anything Else?</h3>
+                            <p class="booking-step-helper">Add special requirements, dietary needs, or service notes. This step is optional.</p>
+                            <div class="form-group">
+                                <label for="requirements" data-key="requirementsLabel">Additional Requirements</label>
+                                <textarea id="requirements" placeholder="Dietary restrictions, special arrangements, accessibility needs…" rows="5"></textarea>
+                            </div>
+                            <div class="button-group">
+                                <button class="btn-secondary" data-key="back" onclick="goToStep(4)">Back</button>
+                                <button class="btn-primary" data-key="next" onclick="goToStep(6)">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 6 -->
+                        <div class="step-content" id="step6" aria-labelledby="step6-heading">
+                            <h3 id="step6-heading" data-key="step6Title">Review Your Booking</h3>
+                            <div class="review-details" role="list">
+                                <div class="review-item" role="listitem"><span data-key="reviewDate">Event Date:</span><span id="reviewDate">—</span></div>
+                                <div class="review-item" role="listitem"><span data-key="reviewFunction">Function:</span><span id="reviewFunction">—</span></div>
+                                <div class="review-item" role="listitem"><span data-key="reviewMenu">Menu Items:</span><span id="reviewMenu">—</span></div>
+                                <div class="review-item" role="listitem"><span data-key="customerNameLabel">Name:</span><span id="reviewCustomerName">—</span></div>
+                                <div class="review-item" role="listitem"><span data-key="customerEmailLabel">Email:</span><span id="reviewCustomerEmail">—</span></div>
+                                <div class="review-item" role="listitem"><span data-key="customerPhoneLabel">Phone:</span><span id="reviewCustomerPhone">—</span></div>
+                                <div class="review-item" role="listitem"><span data-key="guestCountLabel">Guests:</span><span id="reviewGuestCount">—</span></div>
+                                <div class="review-item" role="listitem"><span data-key="reviewRequirements">Special Needs:</span><span id="reviewRequirements">—</span></div>
+                                <div class="divider" aria-hidden="true"></div>
+                                <div class="review-item total" role="listitem"><span data-key="reviewTotal">Estimated Total:</span><strong id="estimatedTotal">₹10,000</strong></div>
+                            </div>
+                            <div class="button-group">
+                                <button class="btn-secondary" data-key="back" onclick="goToStep(5)">Back</button>
+                                <button class="btn-primary" id="confirm-pay-btn" data-key="confirmPay" onclick="submitBooking()">Confirm Booking</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="login-modal-title" onclick="closeLoginModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeLoginModal()" aria-label="Close login">&times;</button>
+            <h2 id="login-modal-title" data-key="loginTitle">Login</h2>
+            <form onsubmit="handleLogin(event)" novalidate>
+                <div class="form-group">
+                    <label for="login-identifier">Email or Employee ID</label>
+                    <input type="text" id="login-identifier" placeholder="Email or Employee ID" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary" data-key="login">Login</button>
+                <p class="form-toggle">Don't have an account? <a href="#" onclick="switchToSignup(event)" data-key="signup">Sign Up</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal" role="dialog" aria-modal="true" aria-labelledby="signup-modal-title" onclick="closeSignupModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeSignupModal()" aria-label="Close signup">&times;</button>
+            <h2 id="signup-modal-title" data-key="signupTitle">Create Account</h2>
+            <form onsubmit="handleSignup(event)" novalidate>
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" placeholder="Your full name" required autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" placeholder="your@email.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="At least 6 characters" required autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" placeholder="Repeat your password" required autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn-primary" data-key="signup">Create Account</button>
+                <p class="form-toggle">Already have an account? <a href="#" onclick="switchToLogin(event)" data-key="login">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification container -->
+    <div id="notification-container" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+    <!-- Scripts (deferred so they don't block rendering) -->
+    <script src="/scripts/main.js" defer></script>
+    <script src="/scripts/animation.js" defer></script>
+    <script src="/scripts/booking.js" defer></script>
+    <script src="/scripts/auth.js" defer></script>
+    <script src="/scripts/feedback.js" defer></script>
+
+    <script>
+        document.getElementById('footer-year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services &amp; Gallery — Kashmir Caterers</title>
+    <meta name="description" content="Browse the full Kashmir Caterers service lineup — marriage, birthday, corporate, BBQ, indoor and outdoor catering — plus our full event gallery.">
+    <link rel="canonical" href="https://kashmiricaterers.com/showcase.html">
+
+    <meta property="og:title"       content="Services & Gallery — Kashmir Caterers">
+    <meta property="og:description" content="Browse all Kashmir Caterers services and event gallery.">
+    <meta property="og:url"         content="https://kashmiricaterers.com/showcase.html">
+    <meta property="og:image"       content="https://kashmiricaterers.com/images/og-preview.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/showcase.css">
+    <link rel="stylesheet" href="/styles/gallery.css">
+    <link rel="stylesheet" href="/styles/modals.css">
+</head>
+<body>
+
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Back header -->
+    <header class="showcase-back-header">
+        <div class="container">
+            <a href="/" class="showcase-back-link" aria-label="Back to Kashmir Caterers homepage">
+                ← Back to Home
+            </a>
+            <a href="#" onclick="openBookingModal(); return false;" class="btn-primary showcase-book-btn">Book Your Event</a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <header class="showcase-hero" role="banner">
+        <div class="showcase-hero__backdrop" aria-hidden="true"></div>
+        <div class="container showcase-hero__content" id="main-content">
+            <p class="showcase-eyebrow">Indoor and outdoor celebrations</p>
+            <h1>Every service. Every moment. In one place.</h1>
+            <p class="showcase-lead">
+                Browse our full catering lineup, explore event visuals, and jump straight into booking with your preferred function already selected.
+            </p>
+            <div class="showcase-hero__actions">
+                <a href="#services-showcase" class="btn-primary">View Services</a>
+                <a href="#gallery-showcase" class="btn-secondary">View Gallery</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- SERVICES ──────────────────── -->
+        <section class="showcase-section" id="services-showcase" aria-labelledby="showcase-services-heading">
+            <div class="container">
+                <div class="showcase-section__heading">
+                    <p class="showcase-eyebrow">Service Catalog</p>
+                    <h2 class="section-title" id="showcase-services-heading">Indoor and Outdoor Catering Services</h2>
+                    <p class="section-subtitle">
+                        From intimate indoor gatherings to large outdoor celebrations, each service can be booked directly from this page.
+                    </p>
+                </div>
+
+                <div class="showcase-filter-row" role="group" aria-label="Filter services">
+                    <button type="button" class="showcase-chip active" data-filter="all">All Services</button>
+                    <button type="button" class="showcase-chip" data-filter="indoor">Indoor</button>
+                    <button type="button" class="showcase-chip" data-filter="outdoor">Outdoor</button>
+                </div>
+
+                <div class="showcase-services-grid" id="showcase-services-grid">
+
+                    <article class="showcase-service-card" data-category="indoor outdoor">
+                        <div class="showcase-service-img">
+                            <img src="/images/service-marriage.png" alt="Wedding banquet setup with elegant table arrangements" loading="lazy">
+                        </div>
+                        <div class="showcase-service-body">
+                            <h3>Marriage Catering</h3>
+                            <p>Full wazwan experience for your wedding day. We handle everything — from the first course to the sweet finale.</p>
+                            <button class="btn-primary" onclick="openBookingFromShowcase('Marriage Catering')">Book This Service</button>
+                        </div>
+                    </article>
+
+                    <article class="showcase-service-card" data-category="indoor">
+                        <div class="showcase-service-img">
+                            <img src="/images/service-birthday.png" alt="Birthday celebration catering setup" loading="lazy"
+                                onerror="this.src='https://images.unsplash.com/photo-1558636508-e0db3814bd1d?w=500'">
+                        </div>
+                        <div class="showcase-service-body">
+                            <h3>Birthday Catering</h3>
+                            <p>Make every birthday unforgettable with a customised Kashmiri menu — from children's parties to milestone celebrations.</p>
+                            <button class="btn-primary" onclick="openBookingFromShowcase('Birthday Catering')">Book This Service</button>
+                        </div>
+                    </article>
+
+                    <article class="showcase-service-card" data-category="indoor">
+                        <div class="showcase-service-img">
+                            <img src="/images/service-corporate.png" alt="Corporate catering with professional service" loading="lazy">
+                        </div>
+                        <div class="showcase-service-body">
+                            <h3>Corporate Catering</h3>
+                            <p>Impress clients and reward teams with premium Kashmiri cuisine delivered with punctuality and professionalism.</p>
+                            <button class="btn-primary" onclick="openBookingFromShowcase('Corporate Catering')">Book This Service</button>
+                        </div>
+                    </article>
+
+                    <article class="showcase-service-card" data-category="outdoor">
+                        <div class="showcase-service-img">
+                            <img src="/images/service-bbq.png" alt="Outdoor BBQ catering event" loading="lazy">
+                        </div>
+                        <div class="showcase-service-body">
+                            <h3>Barbecue Catering</h3>
+                            <p>Signature grills, kebabs, and tikkas for your outdoor event. Live cooking stations make it an experience, not just a meal.</p>
+                            <button class="btn-primary" onclick="openBookingFromShowcase('BBQ Catering')">Book This Service</button>
+                        </div>
+                    </article>
+
+                    <article class="showcase-service-card" data-category="outdoor">
+                        <div class="showcase-service-img">
+                            <img src="/images/service-outdoor.png" alt="Outdoor event catering setup in open grounds" loading="lazy"
+                                onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500'">
+                        </div>
+                        <div class="showcase-service-body">
+                            <h3>Outdoor Catering</h3>
+                            <p>Garden parties, farmhouse celebrations, and open-air events — we bring the full kitchen to any outdoor venue.</p>
+                            <button class="btn-primary" onclick="openBookingFromShowcase('Outdoor Catering')">Book This Service</button>
+                        </div>
+                    </article>
+
+                    <article class="showcase-service-card" data-category="indoor outdoor">
+                        <div class="showcase-service-img">
+                            <img src="/images/service-engagement.png" alt="Engagement ceremony catering" loading="lazy"
+                                onerror="this.src='https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=500'">
+                        </div>
+                        <div class="showcase-service-body">
+                            <h3>Engagement Catering</h3>
+                            <p>Celebrate your engagement with an elegant spread that marks the start of your journey together.</p>
+                            <button class="btn-primary" onclick="openBookingFromShowcase('Engagement Catering')">Book This Service</button>
+                        </div>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY ───────────────────── -->
+        <section class="showcase-section showcase-section--warm" id="gallery-showcase" aria-labelledby="showcase-gallery-heading">
+            <div class="container">
+                <div class="showcase-section__heading">
+                    <p class="showcase-eyebrow">Event Gallery</p>
+                    <h2 class="section-title" id="showcase-gallery-heading">Our Events in Pictures</h2>
+                    <p class="section-subtitle">
+                        A visual tour of weddings, birthday parties, corporate events and outdoor celebrations we have served across India.
+                    </p>
+                </div>
+
+                <div class="gallery-grid showcase-gallery-grid" id="showcase-media-grid" role="list">
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)">
+                        <img src="/images/gallery-1.png" alt="Wedding service setup by Kashmir Caterers" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)">
+                        <img src="/images/gallery-2.png" alt="Celebration decor and dining setup" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)">
+                        <img src="/images/gallery-3.png" alt="Signature Kashmiri dining layout" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)">
+                        <img src="/images/gallery-4.png" alt="Premium buffet arrangement by Kashmir Caterers" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)">
+                        <img src="/images/gallery-5.png" alt="Kashmir Caterers service team at an event" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                    <div class="gallery-item" role="listitem" onclick="openLightbox(this)" tabindex="0" onkeydown="if(event.key==='Enter')openLightbox(this)">
+                        <img src="/images/gallery-1.png" alt="Kashmir Caterers event detail" loading="lazy">
+                        <div class="gallery-overlay" aria-hidden="true"><span class="view-icon">⤢</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image lightbox" onclick="closeLightbox()">
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close image viewer">&times;</button>
+            <img id="lightboxImage" src="" alt="">
+        </div>
+    </div>
+
+    <!-- Booking modal reused from main page -->
+    <div class="modal" id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="booking-title" onclick="closeBookingModal(event)">
+        <div class="modal-content booking-modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeBookingModal()" aria-label="Close">&times;</button>
+            <div class="booking-modal-body">
+                <h2 id="booking-title">Book Your Event</h2>
+                <p>We'll contact you within 24 hours to confirm the details.</p>
+                <div class="form-group">
+                    <label for="sc-functionType">Function Type</label>
+                    <select id="sc-functionType">
+                        <option value="Marriage Catering">Marriage Catering</option>
+                        <option value="Birthday Catering">Birthday Catering</option>
+                        <option value="Corporate Catering">Corporate Catering</option>
+                        <option value="BBQ Catering">BBQ Catering</option>
+                        <option value="Outdoor Catering">Outdoor Catering</option>
+                        <option value="Engagement Catering">Engagement Catering</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sc-name">Full Name <span aria-hidden="true">*</span></label>
+                    <input type="text" id="sc-name" required autocomplete="name" placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                    <label for="sc-email">Email <span aria-hidden="true">*</span></label>
+                    <input type="email" id="sc-email" required autocomplete="email" placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="sc-phone">Phone <span aria-hidden="true">*</span></label>
+                    <input type="tel" id="sc-phone" required autocomplete="tel" placeholder="+91 XXXXX XXXXX">
+                </div>
+                <div class="form-group">
+                    <label for="sc-date">Event Date <span aria-hidden="true">*</span></label>
+                    <input type="date" id="sc-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="sc-guests">Expected Guests</label>
+                    <input type="number" id="sc-guests" min="1" placeholder="e.g. 200">
+                </div>
+                <button class="btn-primary" onclick="submitShowcaseBooking()" style="width:100%;margin-top:.5rem">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-container" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+    <script>
+        /* ── Showcase filter ─ */
+        document.querySelectorAll('.showcase-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.showcase-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const filter = chip.dataset.filter;
+                document.querySelectorAll('.showcase-service-card').forEach(card => {
+                    const cats = card.dataset.category || '';
+                    card.hidden = filter !== 'all' && !cats.includes(filter);
+                });
+            });
+        });
+
+        /* ── Lightbox ─ */
+        function openLightbox(el) {
+            const img = el.querySelector('img');
+            if (!img) return;
+            document.getElementById('lightboxImage').src = img.src;
+            document.getElementById('lightboxImage').alt = img.alt;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox')?.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        /* ── Booking modal ─ */
+        function openBookingModal() {
+            document.getElementById('bookingModal')?.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            const d = new Date(); d.setDate(d.getDate() + 1);
+            document.getElementById('sc-date').min = d.toISOString().split('T')[0];
+        }
+        function openBookingFromShowcase(serviceType) {
+            openBookingModal();
+            const sel = document.getElementById('sc-functionType');
+            if (sel) sel.value = serviceType;
+        }
+        function closeBookingModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('bookingModal')?.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        async function submitShowcaseBooking() {
+            const functionType = document.getElementById('sc-functionType').value;
+            const name     = document.getElementById('sc-name').value.trim();
+            const email    = document.getElementById('sc-email').value.trim();
+            const phone    = document.getElementById('sc-phone').value.trim();
+            const date     = document.getElementById('sc-date').value;
+            const guests   = document.getElementById('sc-guests').value;
+
+            if (!name || !email || !phone || !date) {
+                showNotification('Please fill in all required fields', 'error'); return;
+            }
+
+            try {
+                const res = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ customerName:name, customerEmail:email, customerPhone:phone,
+                        functionType, eventDate:date, guestCount: Number(guests) || 0 }),
+                });
+                const data = await res.json();
+                if (!res.ok) { showNotification(data.error || 'Booking failed', 'error'); return; }
+                closeBookingModal();
+                showNotification(`Booking submitted! ID: ${data.bookingId}. We'll contact you shortly.`, 'success');
+            } catch (err) {
+                showNotification('Network error. Please try again.', 'error');
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const c = document.getElementById('notification-container');
+            if (!c) return;
+            const el = document.createElement('div');
+            el.className = `notification ${type}`;
+            el.textContent = message;
+            c.appendChild(el);
+            setTimeout(() => el.remove(), 4000);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { closeLightbox(); closeBookingModal(); }
+        });
+    </script>
+</body>
+</html>

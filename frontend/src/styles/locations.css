@@ -1,0 +1,86 @@
+/* =============================================================
+   LOCATIONS SECTION
+   ============================================================= */
+
+.locations {
+    background: var(--color-surface);
+}
+
+.locations-content {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: var(--space-8);
+    align-items: start;
+}
+
+.map-container {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+}
+.map-container iframe {
+    display: block;
+}
+
+.locations-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.location-card {
+    background: #fff;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    cursor: pointer;
+    transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+.location-card h3 {
+    font-size: var(--text-xl);
+    color: var(--color-text);
+    margin-bottom: var(--space-2);
+}
+.location-card p {
+    font-size: var(--text-base);
+    color: var(--color-muted);
+    margin-bottom: var(--space-2);
+}
+.location-card .location-address {
+    font-size: var(--text-sm);
+    color: var(--gray-medium);
+    margin-bottom: var(--space-4);
+}
+.location-card .btn-secondary {
+    display: inline-flex;
+    font-size: var(--text-sm);
+    padding: var(--space-2) var(--space-5);
+    min-height: var(--min-touch);
+}
+.location-card:hover,
+.location-card.active {
+    border-color: var(--color-gold);
+    box-shadow: var(--shadow-md);
+}
+.location-card.active {
+    background: #fffdf7;
+}
+
+/* ── RESPONSIVE ────────────────────────────── */
+@media (max-width: 900px) {
+    .locations-content {
+        grid-template-columns: 1fr;
+    }
+    .map-container iframe {
+        height: 320px;
+    }
+    .locations-list {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: var(--space-2);
+    }
+    .location-card {
+        min-width: 260px;
+    }
+}

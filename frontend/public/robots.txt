@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Block admin dashboard from search indexing
+Disallow: /admin/
+
+Sitemap: https://kashmiricaterers.com/sitemap.xml
