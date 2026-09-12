@@ -940,6 +940,17 @@
 <script src="../js/menu-data.js"></script>
 <script src="../js/menu-bbs.js"></script>
 
+<!-- AI Chat Widget — served by backend at /scripts/chat-widget.js
+     Falls back gracefully if the backend is not running (file:// mode) -->
+<script>
+  (function(){
+    var s = document.createElement('script');
+    s.src = '/scripts/chat-widget.js';
+    s.onerror = function(){ /* backend not running — widget simply won't appear */ };
+    document.body.appendChild(s);
+  })();
+</script>
+
 <script>
   /* Mirror summary into booking form section */
   (function () {
