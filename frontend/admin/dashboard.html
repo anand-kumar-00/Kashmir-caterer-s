@@ -204,12 +204,23 @@
             <section id="menu-tab" class="tab-content">
                 <div class="section-header">
                     <h2>Menu Management</h2>
-                    <button class="btn-primary" onclick="openAddMenuModal()">+ Add Menu Item</button>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                        <input type="search" id="menu-search" placeholder="Search items…"
+                               oninput="filterAdminMenu()"
+                               style="padding:6px 12px;border:1px solid #d4c9a8;border-radius:6px;font-size:0.85rem;width:220px">
+                        <select id="menu-cat-filter" onchange="filterAdminMenu()"
+                                style="padding:6px 12px;border:1px solid #d4c9a8;border-radius:6px;font-size:0.85rem">
+                            <option value="">All Categories</option>
+                            <option value="veg">Vegetarian Only</option>
+                            <option value="non-veg">Non-Veg Only</option>
+                        </select>
+                        <button class="btn-primary" onclick="openAddMenuModal()">+ Add Item</button>
+                        <button class="btn-primary" onclick="exportMenuCSV()" style="background:#2563eb">⬇ Export CSV</button>
+                    </div>
                 </div>
-                <div class="menu-sections">
-                    <div class="menu-section"><h3>Breakfast</h3><div id="breakfast-items"></div></div>
-                    <div class="menu-section"><h3>Lunch</h3><div id="lunch-items"></div></div>
-                    <div class="menu-section"><h3>Dinner</h3><div id="dinner-items"></div></div>
+                <p id="menu-item-count" style="margin:8px 0 16px;font-size:0.82rem;color:#6b5843"></p>
+                <div id="admin-menu-sections">
+                    <!-- rendered by loadMenuItems() -->
                 </div>
             </section>
 
@@ -302,18 +313,69 @@
          MODALS
     ══════════════════════════════════════════ -->
 
-    <!-- Add Menu Item -->
+    <!-- Add / Edit Menu Item -->
     <div class="modal" id="addMenuModal" role="dialog" aria-modal="true" aria-labelledby="add-menu-title">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
             <h2 id="add-menu-title">Add Menu Item</h2>
-            <form onsubmit="handleAddMenuItem(event)">
-                <div class="form-group"><label>Name</label><input type="text" required placeholder="Item name"></div>
-                <div class="form-group"><label>Category</label><select required><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option></select></div>
-                <div class="form-group"><label>Type</label><select required><option value="snacks">Snacks &amp; Starters</option><option value="main">Main Course</option></select></div>
-                <div class="form-group"><label>Price (₹)</label><input type="number" min="0" required placeholder="Price per person"></div>
-                <div class="form-group"><label>Description</label><textarea rows="2" placeholder="Short description"></textarea></div>
-                <button type="submit" class="btn-primary">Add Item</button>
+            <form id="add-menu-form" onsubmit="handleAddMenuItem(event)">
+                <input type="hidden" id="edit-menu-item-id" value="">
+                <div class="form-group">
+                    <label for="mi-name">Item Name *</label>
+                    <input type="text" id="mi-name" required placeholder="e.g. Paneer Tikka / Achari Paneer Tikka">
+                </div>
+                <div class="form-group">
+                    <label for="mi-category">Category *</label>
+                    <select id="mi-category" required>
+                        <option value="">— Select Category —</option>
+                        <option value="cold-beverages">Cold Beverages</option>
+                        <option value="shakes-smoothies">Shakes, Smoothies &amp; Punches</option>
+                        <option value="hot-beverages">Hot Beverages</option>
+                        <option value="soup-veg">Soup Station (Vegetarian)</option>
+                        <option value="soup-nonveg">Soup Station (Non-Vegetarian)</option>
+                        <option value="appetizers-veg">Appetizers / Starters (Veg.)</option>
+                        <option value="appetizers-nonveg">Appetizers / Starters (Non-Veg.)</option>
+                        <option value="main-course-veg">Buffet / Main Course (Veg.)</option>
+                        <option value="main-course-nonveg">Buffet / Main Course (Non-Veg.)</option>
+                        <option value="main-course-hightea">Main Course (High Tea)</option>
+                        <option value="rice-pulao">Rice, Pulao's &amp; Biryani's</option>
+                        <option value="assorted-bread">Assorted Breads (Tandoori Bahar)</option>
+                        <option value="salad-raita">Salad Station</option>
+                        <option value="raita">Raita &amp; Accompaniments</option>
+                        <option value="live-counters">Live Counters (Veg &amp; Continental)</option>
+                        <option value="live-counters-nonveg">Live Counters (Non-Veg)</option>
+                        <option value="dessert">Dessert Station &amp; Sweets</option>
+                        <option value="fruit-counter">Fruit Counter</option>
+                        <option value="specialty-counters">Specialty &amp; Additional Counters</option>
+                        <option value="arrival-drinks">As You Arrive (Koshur)</option>
+                        <option value="buffet-nonveg">Buffet Non-Veg (Koshur)</option>
+                        <option value="soft-drink">Soft Drink (High Tea)</option>
+                        <option value="wazwan-nonveg">Wazwan Non-Veg (Cloud Kitchen)</option>
+                        <option value="wazwan-veg">Wazwan Veg (Cloud Kitchen)</option>
+                        <option value="wazwan-sweet">Wazwan Sweets (Cloud Kitchen)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mi-type">Veg / Non-Veg *</label>
+                    <select id="mi-type" required>
+                        <option value="veg">Vegetarian</option>
+                        <option value="non-veg">Non-Vegetarian</option>
+                        <option value="mixed">Mixed / Both</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mi-rate">Rate / Price (optional)</label>
+                    <input type="text" id="mi-rate" placeholder="e.g. ₹1,300/kg or Price on request">
+                </div>
+                <div class="form-group">
+                    <label for="mi-note">Note (optional)</label>
+                    <input type="text" id="mi-note" placeholder="e.g. Mutton — max 2">
+                </div>
+                <div class="form-group">
+                    <label for="mi-desc">Description (optional)</label>
+                    <textarea id="mi-desc" rows="2" placeholder="Short description"></textarea>
+                </div>
+                <button type="submit" class="btn-primary" id="add-menu-submit-btn">Add Item</button>
             </form>
         </div>
     </div>
@@ -403,6 +465,8 @@
         </div>
     </div>
 
+    <!-- Load full BBS menu data before dashboard logic -->
+    <script src="/js/menu-data.js"></script>
     <script src="/scripts/admin-dashboard.js" defer></script>
 </body>
 </html>

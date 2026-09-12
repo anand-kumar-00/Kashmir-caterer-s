@@ -20,24 +20,31 @@ router.get('/', (req, res) => {
     res.json(items);
 });
 
+const VALID_CATEGORIES = [
+    'cold-beverages','shakes-smoothies','hot-beverages','soup-veg','soup-nonveg',
+    'appetizers-veg','appetizers-nonveg','main-course-veg','main-course-nonveg',
+    'main-course-hightea','rice-pulao','assorted-bread','salad-raita','raita',
+    'live-counters','live-counters-nonveg','dessert','fruit-counter','specialty-counters',
+    'arrival-drinks','buffet-nonveg','soft-drink','wazwan-nonveg','wazwan-veg','wazwan-sweet',
+];
+
 router.post('/',
     requireAdmin,
-    body('name').trim().notEmpty(),
-    body('category').isIn(['breakfast', 'lunch', 'dinner']),
-    body('type').isIn(['snacks', 'main']),
-    body('price').isFloat({ min: 0 }),
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('category').isIn(VALID_CATEGORIES).withMessage('Invalid category'),
+    body('type').isIn(['veg','non-veg','mixed']).withMessage('Type must be veg, non-veg, or mixed'),
     (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
 
-        const { name, category, type, price, description = '' } = req.body;
+        const { name, category, type, rate = '', note = '', description = '' } = req.body;
         const id = 'ITEM-' + uuidv4().replace(/-/g, '').slice(0, 8).toUpperCase();
         const db = getDb();
 
         db.prepare(`
-            INSERT INTO menu_items (id, name, category, type, price, description)
-            VALUES (?, ?, ?, ?, ?, ?)
-        `).run(id, name.trim(), category, type, Number(price), description.trim());
+            INSERT INTO menu_items (id, name, category, type, description)
+            VALUES (?, ?, ?, ?, ?)
+        `).run(id, name.trim(), category, type, `${description}${rate?' | Rate: '+rate:''}${note?' | Note: '+note:''}`);
 
         res.status(201).json({ message: 'Menu item added', id });
     }

@@ -1,5 +1,6 @@
 const defaultLocations=[{id:'office',name:'Office Location',type:'office',address:'Srinagar, Jammu & Kashmir',fullAddress:'Main Office, Lal Chowk, Srinagar',lat:34.083651,lng:74.797371},{id:'event1',name:'Current Event',type:'event',address:'Mumbai, Maharashtra',fullAddress:'Royal Grand Hotel Ballroom, Mumbai',lat:19.076,lng:72.8777}];
-const defaultMenuItems=[{id:'breakfast-kahwa',name:'Kashmiri Kahwa',category:'breakfast',type:'snacks',price:1800,description:'Traditional welcome beverage'},{id:'breakfast-bakerkhani',name:'Bakerkhani',category:'breakfast',type:'snacks',price:2200,description:'Flaky bakery special'},{id:'breakfast-harissa-bites',name:'Harissa Bites',category:'breakfast',type:'snacks',price:2600,description:'Chef-served mini portions'},{id:'breakfast-nadru-yakhni',name:'Nadru Yakhni',category:'breakfast',type:'main',price:3400,description:'Lotus stem yogurt curry'},{id:'breakfast-chaman-qaliya',name:'Chaman Qaliya',category:'breakfast',type:'main',price:3200,description:'Paneer in saffron gravy'},{id:'lunch-seekh-kebab',name:'Seekh Kebab',category:'lunch',type:'snacks',price:3000,description:'Chargrilled signature starter'},{id:'lunch-paneer-tikka',name:'Paneer Tikka',category:'lunch',type:'snacks',price:2800,description:'Smoky vegetarian classic'},{id:'lunch-rogan-josh',name:'Rogan Josh',category:'lunch',type:'main',price:4200,description:'Slow-cooked Kashmiri mutton curry'},{id:'lunch-gushtaba',name:'Gushtaba',category:'lunch',type:'main',price:4500,description:'Royal meatball delicacy'},{id:'dinner-mutton-shami',name:'Mutton Shami Kebab',category:'dinner',type:'snacks',price:3400,description:'Soft kebabs with rich aroma'},{id:'dinner-cheese-cigars',name:'Cheese Cigars',category:'dinner',type:'snacks',price:2600,description:'Crisp party starter'},{id:'dinner-rista',name:'Rista',category:'dinner',type:'main',price:4300,description:'Classic red-gravy meatballs'},{id:'dinner-yakhni',name:'Mutton Yakhni',category:'dinner',type:'main',price:4100,description:'Aromatic yogurt-based curry'}];
+/* defaultMenuItems is now sourced from KCMenuData.ITEMS at runtime — see loadMenuItems() */
+const defaultMenuItems = [];
 const defaultGalleryItems=[{id:'gallery-1',title:'Wedding Service Setup',image:'/KASHMIR-CATERERS-NEW/images/gallery-1.png'},{id:'gallery-2',title:'Celebration Decor',image:'/KASHMIR-CATERERS-NEW/images/gallery-2.png'},{id:'gallery-3',title:'Signature Dining Layout',image:'/KASHMIR-CATERERS-NEW/images/gallery-3.png'},{id:'gallery-4',title:'Premium Buffet Arrangement',image:'/KASHMIR-CATERERS-NEW/images/gallery-4.png'},{id:'gallery-5',title:'Event Service Team',image:'/KASHMIR-CATERERS-NEW/images/gallery-5.png'}];
 const defaultBusinessSettings={businessName:'Kashmiri Caterers',businessPhone:'+91 9876543210',businessEmail:'hello@kashmiricaterers.com',businessAddress:'Main Office, Lal Chowk, Srinagar',upiId:'',upiReceiverName:'Kashmiri Caterers',paymentAccountHolder:'',paymentAccountNumber:'',paymentIfsc:'',paymentNotes:''};
 document.addEventListener('DOMContentLoaded',()=>initializeDashboard());
@@ -7,7 +8,20 @@ window.addEventListener('storage',(event)=>{if(!event.key||['bookings','menuItem
 window.addEventListener('focus',syncDashboardData);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){syncDashboardData();}});
 function initializeDashboard(){ensureDashboardData();const appState=JSON.parse(localStorage.getItem('appState')||'{}');const hasDashboardAccess=appState.isLoggedIn&&(appState.userRole==='employee'||appState.userRole==='admin');if(!hasDashboardAccess){window.location.href='../index.html';return;}setDashboardDate();loadBusinessSettings();if(appState.currentUser){document.getElementById('user-name').textContent=appState.currentUser.name;document.getElementById('user-role-label').textContent=`${formatStatus(appState.currentUser.role)} access${appState.currentUser.employeeCode?` | ${appState.currentUser.employeeCode}`:''}`;const avatar=document.querySelector('.user-avatar');if(avatar){avatar.textContent=getInitials(appState.currentUser.name||appState.currentUser.role||'User');}}syncDashboardData();}
-function ensureDashboardData(){if(!JSON.parse(localStorage.getItem('locations')||'[]').length){localStorage.setItem('locations',JSON.stringify(defaultLocations));}if(!JSON.parse(localStorage.getItem('menuItems')||'[]').length){localStorage.setItem('menuItems',JSON.stringify(defaultMenuItems));}if(!JSON.parse(localStorage.getItem('galleryItems')||'[]').length){localStorage.setItem('galleryItems',JSON.stringify(defaultGalleryItems));}if(!localStorage.getItem('businessSettings')){localStorage.setItem('businessSettings',JSON.stringify(defaultBusinessSettings));}if(!localStorage.getItem('employeesDatabase')){const users=getUsers();const employees=users.filter((user)=>user.role==='employee'||user.role==='admin').map((user)=>({id:user.id,employeeCode:user.employeeCode,name:user.name,email:user.email,role:user.role,jobRole:user.jobRole||'staff',dailyRate:Number(user.dailyRate||0),daysWorked:Number(user.daysWorked||0),advancePaid:Number(user.advancePaid||0),isActive:user.isActive!==false,createdAt:user.createdAt||new Date().toISOString()}));localStorage.setItem('employeesDatabase',JSON.stringify(employees));}ensureAccountFolders();}
+function ensureDashboardData(){
+  if(!JSON.parse(localStorage.getItem('locations')||'[]').length){localStorage.setItem('locations',JSON.stringify(defaultLocations));}
+  /* Seed full BBS menu from KCMenuData if not yet stored */
+  const storedMenu=JSON.parse(localStorage.getItem('menuItems')||'[]');
+  if(!storedMenu.length){
+    const seed=(window.KCMenuData&&window.KCMenuData.ITEMS)||[];
+    const mapped=seed.map(function(it){return{id:it.id,name:it.name,category:it.section||'other',type:it.type||'veg',rate:it.rate||'',note:it.note||'',description:it.description||'',isActive:true,createdAt:new Date().toISOString()};});
+    localStorage.setItem('menuItems',JSON.stringify(mapped));
+  }
+  if(!JSON.parse(localStorage.getItem('galleryItems')||'[]').length){localStorage.setItem('galleryItems',JSON.stringify(defaultGalleryItems));}
+  if(!localStorage.getItem('businessSettings')){localStorage.setItem('businessSettings',JSON.stringify(defaultBusinessSettings));}
+  if(!localStorage.getItem('employeesDatabase')){const users=getUsers();const employees=users.filter((user)=>user.role==='employee'||user.role==='admin').map((user)=>({id:user.id,employeeCode:user.employeeCode,name:user.name,email:user.email,role:user.role,jobRole:user.jobRole||'staff',dailyRate:Number(user.dailyRate||0),daysWorked:Number(user.daysWorked||0),advancePaid:Number(user.advancePaid||0),isActive:user.isActive!==false,createdAt:user.createdAt||new Date().toISOString()}));localStorage.setItem('employeesDatabase',JSON.stringify(employees));}
+  ensureAccountFolders();
+}
 function syncDashboardData(){if(!document.getElementById('total-bookings'))return;ensureAccountFolders();loadDashboardData();loadBookings();loadMenuItems();loadBookedMenus();loadGalleryItems();loadExpenses();loadLocations();loadMeetings();loadEmployees();loadAccountFolders();generateReport();}
 function getBookings(){return JSON.parse(localStorage.getItem('bookings')||'[]');}
 function setBookings(bookings){localStorage.setItem('bookings',JSON.stringify(bookings));}
@@ -40,7 +54,118 @@ function cancelBooking(bookingId){const bookings=getBookings();const booking=boo
 function refreshBookingViews(){loadDashboardData();const hasFilter=document.getElementById('status-filter').value||document.getElementById('date-filter').value;if(hasFilter){filterBookings();}else{loadBookings();}loadBookedMenus();loadExpenses();loadEmployees();generateReport();}
 function viewBookingDetails(bookingId){const booking=getBookings().find((item)=>item.id===bookingId);if(!booking)return;alert(`Booking Details:\nID: ${booking.id}\nCustomer: ${booking.customerName||'Guest'}\nEvent Date: ${formatDate(booking.eventDate)}\nMenu: ${formatMenuList(booking.menu)}\nRequirements: ${booking.requirements||'None'}\nAmount: ${formatCurrency(booking.estimatedTotal||0)}\nStatus: ${formatStatus(booking.status)}`);}
 function getMenuItems(){return JSON.parse(localStorage.getItem('menuItems')||'[]');}
-function loadMenuItems(){const menuItems=getMenuItems();['breakfast','lunch','dinner'].forEach((category)=>{const items=menuItems.filter((item)=>item.category===category);const container=document.getElementById(`${category}-items`);if(!container)return;if(items.length===0){container.innerHTML='<p style="color: #999;">No items yet</p>';return;}container.innerHTML=items.map((item)=>`<div class="menu-item-card"><div class="menu-item-info"><h4>${item.name}</h4><p style="color: #999; font-size: 0.85rem;">${item.type}</p><p style="font-size: 0.85rem;">${item.description}</p></div><div style="text-align: right;"><div class="menu-item-price">${formatCurrency(item.price)}</div><button class="action-btn" onclick="editMenuItem('${item.id}')">Edit</button><button class="action-btn" onclick="deleteMenuItem('${item.id}')">Delete</button></div></div>`).join('');});}
+
+/* ── Category label lookup ── */
+const MENU_CAT_LABELS = {
+  'cold-beverages':'Cold Beverages','shakes-smoothies':'Shakes, Smoothies & Punches',
+  'hot-beverages':'Hot Beverages','soup-veg':'Soup Station (Veg.)','soup-nonveg':'Soup Station (Non-Veg.)',
+  'appetizers-veg':'Appetizers / Starters (Veg.)','appetizers-nonveg':'Appetizers / Starters (Non-Veg.)',
+  'main-course-veg':'Buffet / Main Course (Veg.)','main-course-nonveg':'Buffet / Main Course (Non-Veg.)',
+  'main-course-hightea':'Main Course (High Tea)','rice-pulao':"Rice, Pulao's & Biryani's",
+  'assorted-bread':'Assorted Breads (Tandoori Bahar)','salad-raita':'Salad Station',
+  'raita':'Raita & Accompaniments','live-counters':'Live Counters (Veg & Continental)',
+  'live-counters-nonveg':'Live Counters (Non-Veg)','dessert':'Dessert Station & Sweets',
+  'fruit-counter':'Fruit Counter','specialty-counters':'Specialty & Additional Counters',
+  'arrival-drinks':'As You Arrive (Koshur)','buffet-nonveg':'Buffet Non-Veg (Koshur)',
+  'soft-drink':'Soft Drink (High Tea)','wazwan-nonveg':'Wazwan Non-Veg (Cloud Kitchen)',
+  'wazwan-veg':'Wazwan Veg (Cloud Kitchen)','wazwan-sweet':'Wazwan Sweets (Cloud Kitchen)',
+};
+const MENU_CAT_ORDER = Object.keys(MENU_CAT_LABELS);
+
+function loadMenuItems(){
+  const search = (document.getElementById('menu-search')||{}).value||'';
+  const catFilter = (document.getElementById('menu-cat-filter')||{}).value||'';
+  _renderAdminMenu(search, catFilter);
+}
+
+function filterAdminMenu(){
+  const search = (document.getElementById('menu-search')||{}).value||'';
+  const catFilter = (document.getElementById('menu-cat-filter')||{}).value||'';
+  _renderAdminMenu(search, catFilter);
+}
+
+function _renderAdminMenu(search, typeFilter){
+  const container = document.getElementById('admin-menu-sections');
+  const countEl = document.getElementById('menu-item-count');
+  if(!container) return;
+  let items = getMenuItems();
+
+  /* apply filters */
+  const q = search.trim().toLowerCase();
+  if(q) items = items.filter(it => it.name.toLowerCase().includes(q) || (it.category||'').includes(q));
+  if(typeFilter === 'veg') items = items.filter(it => it.type === 'veg');
+  if(typeFilter === 'non-veg') items = items.filter(it => it.type === 'non-veg');
+
+  if(countEl) countEl.textContent = `Showing ${items.length} item${items.length!==1?'s':''} across ${new Set(items.map(i=>i.category)).size} categories`;
+
+  /* group by category */
+  const grouped = {};
+  items.forEach(it => {
+    const cat = it.category || 'other';
+    if(!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(it);
+  });
+
+  const sortedCats = MENU_CAT_ORDER.filter(k => grouped[k]).concat(
+    Object.keys(grouped).filter(k => !MENU_CAT_ORDER.includes(k))
+  );
+
+  if(!sortedCats.length){
+    container.innerHTML = '<p style="color:#999;padding:20px">No menu items found.</p>';
+    return;
+  }
+
+  container.innerHTML = sortedCats.map(cat => {
+    const catItems = grouped[cat];
+    const label = MENU_CAT_LABELS[cat] || cat;
+    const nonVegCount = catItems.filter(i=>i.type==='non-veg').length;
+    const vegCount = catItems.filter(i=>i.type==='veg').length;
+    return `
+      <div class="menu-section" style="margin-bottom:22px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;
+                    background:linear-gradient(90deg,#f1ede0,#fffdf4);border-bottom:2px solid #b5a07a;
+                    padding:10px 16px;border-radius:8px 8px 0 0">
+          <h3 style="font-size:0.98rem;color:#8B1A1A;font-weight:700;margin:0">${label}</h3>
+          <div style="display:flex;gap:8px;font-size:0.74rem;font-weight:600">
+            ${vegCount?`<span style="background:#d4edda;color:#2d6a4f;padding:2px 8px;border-radius:10px">🟢 ${vegCount} Veg</span>`:''}
+            ${nonVegCount?`<span style="background:#f8d7da;color:#721c24;padding:2px 8px;border-radius:10px">🔴 ${nonVegCount} Non-Veg</span>`:''}
+          </div>
+        </div>
+        <div style="border:1px solid #d4c9a8;border-top:none;border-radius:0 0 8px 8px;overflow:hidden">
+          ${catItems.map(item => `
+            <div class="menu-item-card" style="display:flex;align-items:flex-start;gap:12px;padding:10px 16px;
+                 border-bottom:1px solid #ede8dc;background:${item.type==='non-veg'?'#fff8f8':'#fff'}">
+              <span style="flex-shrink:0;margin-top:3px;width:12px;height:12px;border-radius:2px;border:1.5px solid ${item.type==='non-veg'?'#8b1a1a':'#2d6a4f'};background:${item.type==='non-veg'?'#f8d7da':'#d4edda'}" title="${item.type}"></span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:0.88rem;font-weight:600;color:#1c1007;line-height:1.4">${escapeHtml(item.name)}</div>
+                ${item.rate?`<div style="font-size:0.74rem;color:#3a5a3a;font-weight:600;margin-top:2px">${escapeHtml(item.rate)}</div>`:''}
+                ${item.note?`<div style="font-size:0.72rem;color:#8B1A1A;font-style:italic;margin-top:1px">${escapeHtml(item.note)}</div>`:''}
+                ${item.description?`<div style="font-size:0.78rem;color:#6b5843;margin-top:3px">${escapeHtml(item.description)}</div>`:''}
+              </div>
+              <div style="display:flex;gap:6px;flex-shrink:0">
+                <button class="action-btn" onclick="editMenuItem('${item.id}')">Edit</button>
+                <button class="action-btn" onclick="deleteMenuItem('${item.id}')" style="color:#c0392b">Delete</button>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function escapeHtml(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function exportMenuCSV(){
+  const items = getMenuItems();
+  let csv = 'ID,Name,Category,Type,Rate,Note,Description\n';
+  items.forEach(it => {
+    csv += [it.id, it.name, it.category, it.type, it.rate||'', it.note||'', it.description||'']
+      .map(v => `"${String(v).replace(/"/g,'""')}"`)
+      .join(',') + '\n';
+  });
+  downloadCSV(csv, 'kashmir-bbs-menu.csv');
+}
 function getResolvedBookingMenuItems(menu){const menuItems=getMenuItems();const menuLookup=new Map(menuItems.map((item)=>[item.id,item]));return(Array.isArray(menu)?menu:[]).map((itemId)=>{const matchedItem=menuLookup.get(itemId);if(matchedItem){return{id:matchedItem.id,name:matchedItem.name,category:matchedItem.category,type:matchedItem.type,price:Number(matchedItem.price||0),description:matchedItem.description||''};}return{id:itemId,name:itemId,category:'custom',type:'menu item',price:0,description:'Item not found in current menu list'};});}
 function formatBookedMenuPreview(menu){const items=getResolvedBookingMenuItems(menu);if(!items.length)return '-';const previewNames=items.slice(0,3).map((item)=>item.name).join(', ');return items.length>3?`${previewNames} +${items.length-3} more`:previewNames;}
 function normalizeMenuCourse(type){return String(type||'').toLowerCase().includes('main')?'main':'snacks';}
@@ -53,10 +178,47 @@ function openPreviewDocument(title,html){const previewWindow=window.open('','_bl
 function viewBookedMenu(bookingId){const booking=getBookings().find((item)=>item.id===bookingId);if(!booking)return;openPreviewDocument(`${booking.customerName||'Guest'} Menu`,buildBookingMenuHtml(booking));}
 function downloadBookedMenu(bookingId){const booking=getBookings().find((item)=>item.id===bookingId);if(!booking)return;downloadFile(buildBookingMenuHtml(booking),`${slugifyValue(`${booking.customerName||'guest'}-${booking.id}-menu`)}.html`,'text/html');}
 function downloadAllBookedMenus(){const bookings=getBookings().slice().sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));if(!bookings.length){alert('No booked menus available to download');return;}downloadFile(buildAllBookedMenusHtml(bookings),`booked-menus-${getDateStamp()}.html`,'text/html');}
-function openAddMenuModal(){document.getElementById('addMenuModal').classList.add('active');}
-function handleAddMenuItem(event){event.preventDefault();const form=event.target;const menuItem={id:'ITEM-'+Date.now(),name:form.querySelector('input[type="text"]').value,category:form.querySelectorAll('select')[0].value,type:form.querySelectorAll('select')[1].value,price:parseInt(form.querySelector('input[type="number"]').value,10),description:form.querySelector('textarea').value};const menuItems=JSON.parse(localStorage.getItem('menuItems')||'[]');menuItems.push(menuItem);localStorage.setItem('menuItems',JSON.stringify(menuItems));alert('Menu item added successfully');closeModal();loadMenuItems();loadBookedMenus();form.reset();}
-function editMenuItem(itemId){const menuItems=JSON.parse(localStorage.getItem('menuItems')||'[]');const item=menuItems.find((menuItem)=>menuItem.id===itemId);if(!item)return;const name=prompt('Item name',item.name);if(name===null)return;const price=prompt('Price',String(item.price));if(price===null)return;const description=prompt('Description',item.description);if(description===null)return;item.name=name;item.price=Number(price)||item.price;item.description=description;localStorage.setItem('menuItems',JSON.stringify(menuItems));loadMenuItems();loadBookedMenus();}
-function deleteMenuItem(itemId){if(!confirm('Are you sure you want to delete this item?'))return;let menuItems=JSON.parse(localStorage.getItem('menuItems')||'[]');menuItems=menuItems.filter((item)=>item.id!==itemId);localStorage.setItem('menuItems',JSON.stringify(menuItems));loadMenuItems();loadBookedMenus();}
+function openAddMenuModal(){
+  document.getElementById('edit-menu-item-id').value='';
+  document.getElementById('add-menu-title').textContent='Add Menu Item';
+  document.getElementById('add-menu-submit-btn').textContent='Add Item';
+  document.getElementById('add-menu-form').reset();
+  document.getElementById('addMenuModal').classList.add('active');
+}
+function handleAddMenuItem(event){
+  event.preventDefault();
+  const editId=document.getElementById('edit-menu-item-id').value.trim();
+  const name=document.getElementById('mi-name').value.trim();
+  const category=document.getElementById('mi-category').value;
+  const type=document.getElementById('mi-type').value;
+  const rate=document.getElementById('mi-rate').value.trim();
+  const note=document.getElementById('mi-note').value.trim();
+  const desc=document.getElementById('mi-desc').value.trim();
+  const menuItems=getMenuItems();
+  if(editId){const item=menuItems.find(i=>i.id===editId);if(item){item.name=name;item.category=category;item.type=type;item.rate=rate;item.note=note;item.description=desc;}}
+  else{menuItems.push({id:'ITEM-'+Date.now(),name,category,type,rate,note,description:desc,isActive:true,createdAt:new Date().toISOString()});}
+  localStorage.setItem('menuItems',JSON.stringify(menuItems));
+  closeModal();loadMenuItems();loadBookedMenus();
+}
+function editMenuItem(itemId){
+  const item=getMenuItems().find(i=>i.id===itemId);
+  if(!item)return;
+  document.getElementById('edit-menu-item-id').value=item.id;
+  document.getElementById('mi-name').value=item.name||'';
+  document.getElementById('mi-category').value=item.category||'';
+  document.getElementById('mi-type').value=item.type||'veg';
+  document.getElementById('mi-rate').value=item.rate||'';
+  document.getElementById('mi-note').value=item.note||'';
+  document.getElementById('mi-desc').value=item.description||'';
+  document.getElementById('add-menu-title').textContent='Edit Menu Item';
+  document.getElementById('add-menu-submit-btn').textContent='Save Changes';
+  document.getElementById('addMenuModal').classList.add('active');
+}
+function deleteMenuItem(itemId){
+  if(!confirm('Delete this menu item?'))return;
+  localStorage.setItem('menuItems',JSON.stringify(getMenuItems().filter(i=>i.id!==itemId)));
+  loadMenuItems();loadBookedMenus();
+}
 function loadGalleryItems(){const galleryItems=getGalleryItems();const container=document.getElementById('gallery-admin-list');if(!container)return;if(galleryItems.length===0){container.innerHTML='<div class="empty-state-panel">No gallery items added</div>';return;}container.innerHTML=galleryItems.map((item)=>`<article class="gallery-admin-card"><img src="${item.image}" alt="${item.title||'Gallery image'}"><div class="gallery-admin-content"><h4>${item.title||'Gallery Item'}</h4><p>${item.image}</p><div class="gallery-admin-actions"><button class="action-btn" onclick="editGalleryItem('${item.id}')">Edit</button><button class="action-btn" onclick="deleteGalleryItem('${item.id}')">Delete</button></div></div></article>`).join('');}
 function openAddGalleryModal(){document.getElementById('addGalleryModal').classList.add('active');}
 function handleAddGalleryItem(event){event.preventDefault();const form=event.target;const inputs=form.querySelectorAll('input');const galleryItems=getGalleryItems();galleryItems.unshift({id:'GAL-'+Date.now(),title:inputs[0].value.trim(),image:inputs[1].value.trim()});setGalleryItems(galleryItems);closeModal();form.reset();loadGalleryItems();}
