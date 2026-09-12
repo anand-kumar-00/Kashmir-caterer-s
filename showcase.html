@@ -3,66 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kashmir Caterers | Services & Gallery</title>
+
+    <!-- ===== Primary SEO ===== -->
+    <title>Kashmiri Catering Services &amp; Gallery — Wedding, BBQ, Corporate | Kashmir Caterers</title>
+    <meta name="description" content="Explore Kashmir Caterers' full lineup: Kashmiri wedding Wazwan, birthday catering, corporate lunches, and outdoor BBQ. Browse real event photos and book your date.">
+    <link rel="canonical" href="https://www.kashmiricaterers.com/showcase.html">
+
+    <!-- ===== Open Graph ===== -->
+    <meta property="og:type"        content="website">
+    <meta property="og:title"       content="Kashmiri Catering Services &amp; Event Gallery — Kashmir Caterers">
+    <meta property="og:description" content="Browse our full catering services — wedding Wazwan, BBQ, corporate — and real event photos. Book directly from this page.">
+    <meta property="og:url"         content="https://www.kashmiricaterers.com/showcase.html">
+    <meta property="og:image"       content="https://www.kashmiricaterers.com/images/hero-bg.png">
+    <meta property="og:site_name"   content="Kashmir Caterers">
+
+    <!-- ===== Twitter Card ===== -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="Kashmiri Catering Services &amp; Gallery — Kashmir Caterers">
+    <meta name="twitter:description" content="Browse our full catering services and real event photos. Kashmiri Wazwan, BBQ, corporate &amp; birthday catering across India.">
+    <meta name="twitter:image"       content="https://www.kashmiricaterers.com/images/hero-bg.png">
+
+    <!-- ===== JSON-LD — Service page ===== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Kashmir Caterers — Services & Gallery",
+      "url": "https://www.kashmiricaterers.com/showcase.html",
+      "description": "Browse all catering services and event gallery for Kashmir Caterers — authentic Kashmiri cuisine across India.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Kashmir Caterers",
+        "url": "https://www.kashmiricaterers.com"
+      }
+    }
+    </script>
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/showcase.css">
 </head>
 <body>
-    <header class="showcase-hero">
-        <div class="showcase-hero__backdrop"></div>
+
+    <!-- Sticky header for showcase page -->
+    <header class="header" role="banner"
+            style="position:sticky;top:0;z-index:1000;">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo" aria-label="Kashmir Caterers — back to home">
+                    <span class="logo-text">Kashmir Caterers</span>
+                </a>
+                <nav role="navigation" aria-label="Showcase navigation"
+                     style="display:flex;gap:1.5rem;align-items:center;">
+                    <a href="index.html" style="font-weight:600;color:var(--walnut);">← Home</a>
+                    <a href="#services-showcase" style="font-weight:600;color:var(--walnut);">Services</a>
+                    <a href="#gallery-showcase"  style="font-weight:600;color:var(--walnut);">Gallery</a>
+                    <a href="index.html#locations" style="font-weight:600;color:var(--walnut);">Contact</a>
+                    <a href="index.html"
+                       onclick="setTimeout(()=>openBookingModal(),100)"
+                       style="background:var(--gradient-secondary);color:var(--walnut);padding:0.6rem 1.3rem;border-radius:var(--radius-lg);font-weight:700;min-height:44px;display:inline-flex;align-items:center;border:2px solid var(--kesar);">
+                        Book Now
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================
+         SHOWCASE HERO
+         ============================ -->
+    <header class="showcase-hero" role="banner">
+        <div class="showcase-hero__backdrop" aria-hidden="true"></div>
         <div class="container showcase-hero__content">
-            <a href="index.html" class="showcase-back-link">Back to Home</a>
-            <p class="showcase-eyebrow">Indoor and outdoor celebrations</p>
-            <h1>See every service and more event moments in one place.</h1>
+            <p class="showcase-eyebrow">Indoor and outdoor celebrations across India</p>
+            <h1>Every catering service we offer — in one place.</h1>
             <p class="showcase-lead">
-                Browse our full catering lineup, explore event visuals, and jump straight into booking with your preferred function already selected.
+                Browse our full Kashmiri catering lineup, explore real event visuals, and start your booking with your preferred function already selected.
             </p>
             <div class="showcase-hero__actions">
-                <a href="#services-showcase" class="btn-primary">View Services</a>
-                <a href="#gallery-showcase" class="btn-secondary">View Gallery</a>
+                <a href="#services-showcase" class="btn-primary">View Catering Services</a>
+                <a href="#gallery-showcase" class="btn-secondary">Browse Event Gallery</a>
             </div>
         </div>
     </header>
 
     <main>
-        <section class="showcase-section" id="services-showcase">
+        <!-- ============================
+             SERVICES SECTION
+             ============================ -->
+        <section class="showcase-section" id="services-showcase"
+                 aria-labelledby="services-showcase-heading">
             <div class="container">
                 <div class="showcase-section__heading">
                     <p class="showcase-eyebrow">Service Catalog</p>
-                    <h2 class="section-title">Indoor and Outdoor Catering Services</h2>
+                    <h2 class="section-title" id="services-showcase-heading">
+                        Kashmiri Catering Services — Indoor &amp; Outdoor
+                    </h2>
                     <p class="section-subtitle">
-                        From intimate indoor gatherings to large outdoor celebrations, each service can be booked directly from this page.
+                        From intimate indoor gatherings to grand outdoor celebrations, every service can be booked directly from this page.
                     </p>
                 </div>
 
-                <div class="showcase-filter-row">
+                <div class="showcase-filter-row" role="group" aria-label="Filter services by type">
                     <button type="button" class="showcase-chip active" data-filter="all">All Services</button>
                     <button type="button" class="showcase-chip" data-filter="indoor">Indoor</button>
                     <button type="button" class="showcase-chip" data-filter="outdoor">Outdoor</button>
                 </div>
 
-                <div class="showcase-services-grid" id="showcase-services-grid">
-                    <div class="showcase-empty-state">Loading services...</div>
+                <div class="showcase-services-grid" id="showcase-services-grid"
+                     aria-live="polite" aria-label="Catering services">
+                    <div class="showcase-empty-state" role="status">Loading services…</div>
                 </div>
             </div>
         </section>
 
-        <section class="showcase-section showcase-section--warm" id="gallery-showcase">
+        <!-- ============================
+             GALLERY SECTION
+             ============================ -->
+        <section class="showcase-section showcase-section--warm" id="gallery-showcase"
+                 aria-labelledby="gallery-showcase-heading">
             <div class="container">
                 <div class="showcase-section__heading">
-                    <p class="showcase-eyebrow">Media Gallery</p>
-                    <h2 class="section-title">Images and Videos From Our Event Style</h2>
+                    <p class="showcase-eyebrow">Event Photo Gallery</p>
+                    <h2 class="section-title" id="gallery-showcase-heading">
+                        Real Events — Real Kashmiri Cuisine
+                    </h2>
                     <p class="section-subtitle">
-                        A larger media view for customers who want to see service presentation, event setup, and the overall atmosphere before booking.
+                        Photos of our weddings, corporate events, birthday parties, and outdoor BBQ setups across India.
                     </p>
                 </div>
 
-                <div class="showcase-media-grid" id="showcase-media-grid">
-                    <div class="showcase-empty-state">Loading gallery...</div>
+                <div class="showcase-media-grid" id="showcase-media-grid"
+                     aria-live="polite" aria-label="Event photos and videos">
+                    <div class="showcase-empty-state" role="status">Loading gallery…</div>
                 </div>
             </div>
         </section>
     </main>
+
+    <!-- Footer nav -->
+    <footer style="background:var(--walnut);padding:2rem 0;text-align:center;border-top:3px solid var(--kesar);">
+        <p style="color:rgba(245,237,214,0.65);font-size:0.9rem;">
+            &copy; 2024 Kashmir Caterers &nbsp;|&nbsp;
+            <a href="index.html" style="color:var(--kesar-light);">Return to homepage</a>
+            &nbsp;|&nbsp;
+            <a href="index.html#locations" style="color:var(--kesar-light);">Contact &amp; Locations</a>
+        </p>
+    </footer>
 
     <script src="js/showcase.js"></script>
 </body>

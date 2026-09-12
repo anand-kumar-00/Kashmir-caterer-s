@@ -88,6 +88,7 @@ const bookingFunctionOptions = [
 
 document.addEventListener('DOMContentLoaded', () => {
     ensureMenuStorage();
+    loadPreselectedMenuFromMenuPage();  // ← picks up menu-page selections
     renderBookingMenuOptions();
     initializeFunctionTypeField();
     initializeBookingRealtimeSync();
@@ -95,7 +96,57 @@ document.addEventListener('DOMContentLoaded', () => {
     applyFunctionTypeFromUrl();
     prefillFunctionType();
     updateBookingOverview();
+
+    // Auto-open booking modal if redirected from menu page
+    if (window.location.hash === '#bookingModal') {
+        setTimeout(() => {
+            if (typeof openBookingModal === 'function') {
+                openBookingModal();
+            }
+        }, 400);
+    }
 });
+
+/* ================================================================
+   PRESELECTED MENU INTEGRATION (from pages/menu.html)
+   When a customer builds their menu on the menu page and clicks
+   "Continue Booking", the selection is stored in localStorage
+   under 'kcPreselectedMenu'. We read it here and inject it into
+   appState.bookingData.menu so Step 2 already shows their choices.
+   ================================================================ */
+
+function loadPreselectedMenuFromMenuPage() {
+    try {
+        const raw = localStorage.getItem('kcPreselectedMenu');
+        if (!raw) return;
+
+        const items = JSON.parse(raw);
+        if (!Array.isArray(items) || !items.length) return;
+
+        // Convert KC selected-menu format → booking.js itemId array
+        const itemIds = items.map(i => i.id);
+        appState.bookingData.menu = itemIds;
+
+        // Also store rich menu data for review display
+        appState.bookingData.kcMenuItems = items;
+
+        // Pre-select package if one was chosen
+        const pkgId = localStorage.getItem('kcPreselectedPackage');
+        if (pkgId) {
+            appState.bookingData.kcPackage = pkgId;
+        }
+
+        saveState();
+
+        // Clear after consuming so refreshing doesn't re-inject
+        localStorage.removeItem('kcPreselectedMenu');
+        localStorage.removeItem('kcPreselectedPackage');
+
+        console.log('[KC Booking] Pre-loaded', itemIds.length, 'items from menu page.');
+    } catch (e) {
+        console.warn('[KC Booking] Could not load preselected menu:', e);
+    }
+}
 
 // Step Navigation
 function initializeFunctionTypeField() {
@@ -317,6 +368,12 @@ function validateDateSelection() {
 // ================================
 
 function validateMenuSelection() {
+    // Accept menu built on the dedicated menu page (kcMenuItems already injected)
+    if (appState.bookingData.kcMenuItems && appState.bookingData.kcMenuItems.length > 0) {
+        updateBookingOverview();
+        return true;
+    }
+
     const selectedMenus = document.querySelectorAll('.menu-item:checked');
 
     if (selectedMenus.length === 0) {
@@ -331,6 +388,21 @@ function validateMenuSelection() {
 }
 
 function renderBookingMenuOptions() {
+    // Show KC preloaded banner if applicable
+    const banner  = document.getElementById('kcPreloadedMenuBanner');
+    const summary = document.getElementById('kcPreloadedMenuSummary');
+    if (banner && summary && appState.bookingData.kcMenuItems && appState.bookingData.kcMenuItems.length) {
+        const names = appState.bookingData.kcMenuItems
+            .slice(0, 6)
+            .map(i => `${i.name}${i.quantity > 1 ? ' ×' + i.quantity : ''}`)
+            .join(', ');
+        const total = appState.bookingData.kcMenuItems.reduce((s, i) => s + (i.quantity || 1), 0);
+        summary.textContent = `${total} item${total === 1 ? '' : 's'} selected: ${names}${appState.bookingData.kcMenuItems.length > 6 ? '…' : ''}`;
+        banner.classList.remove('hidden');
+    } else if (banner) {
+        banner.classList.add('hidden');
+    }
+
     const container = document.getElementById('bookingMenuCategories');
 
     if (!container) {
@@ -645,12 +717,21 @@ function updateReviewDisplay() {
     reviewFunction.textContent = appState.bookingData.functionType || '-';
 
     const reviewMenu = document.getElementById('reviewMenu');
-    const menuList = appState.bookingData.menu
-        .map((itemId) => {
-            const menuItem = findMenuItemById(itemId);
-            return menuItem ? `${menuItem.name} (${menuItem.meal} ${menuItem.course})` : itemId;
-        })
-        .join(', ');
+
+    // Prefer the richer KC menu items (from the new menu page) if available
+    let menuList;
+    if (appState.bookingData.kcMenuItems && appState.bookingData.kcMenuItems.length) {
+        menuList = appState.bookingData.kcMenuItems
+            .map(i => `${i.name}${i.quantity > 1 ? ' ×' + i.quantity : ''}`)
+            .join(', ');
+    } else {
+        menuList = appState.bookingData.menu
+            .map((itemId) => {
+                const menuItem = findMenuItemById(itemId);
+                return menuItem ? `${menuItem.name} (${menuItem.meal} ${menuItem.course})` : itemId;
+            })
+            .join(', ');
+    }
     reviewMenu.textContent = menuList || '-';
 
     const reviewRequirements = document.getElementById('reviewRequirements');
@@ -691,7 +772,8 @@ async function submitBooking() {
         return;
     }
 
-    if (!appState.bookingData.eventDate || appState.bookingData.menu.length === 0) {
+    const hasKcMenu = appState.bookingData.kcMenuItems && appState.bookingData.kcMenuItems.length > 0;
+    if (!appState.bookingData.eventDate || (appState.bookingData.menu.length === 0 && !hasKcMenu)) {
         showNotification('Please complete all required fields', 'error');
         return;
     }
@@ -706,7 +788,12 @@ async function submitBooking() {
         guestCount: customerDetails.guestCount || 0,
         functionType: appState.bookingData.functionType,
         eventDate: appState.bookingData.eventDate,
+        package: appState.bookingData.kcPackage || null,
         menu: appState.bookingData.menu,
+        menuItems: appState.bookingData.kcMenuItems || [],  // rich items from menu page
+        totalMenuItems: hasKcMenu
+            ? appState.bookingData.kcMenuItems.reduce((s, i) => s + (i.quantity || 1), 0)
+            : appState.bookingData.menu.length,
         requirements: appState.bookingData.requirements,
         estimatedTotal: appState.bookingData.estimatedTotal,
         status: 'pending_payment',

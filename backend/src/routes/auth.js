@@ -10,14 +10,14 @@ const { getDb } = require('../models/db');
 const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
-const SALT_ROUNDS = 12;
+const SALT_ROUNDS = 10;
 
 // ── POST /api/auth/signup ────────────────────────────────────────
 router.post('/signup',
     body('name').trim().isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
     body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    (req, res) => {
+    async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ error: errors.array()[0].msg });
@@ -31,7 +31,7 @@ router.post('/signup',
             return res.status(409).json({ error: 'Email already registered' });
         }
 
-        const passwordHash = bcrypt.hashSync(password, SALT_ROUNDS);
+        const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
         const id = 'USR-' + uuidv4().replace(/-/g, '').slice(0, 12).toUpperCase();
 
         db.prepare(`
@@ -52,24 +52,30 @@ router.post('/signup',
 
 // ── POST /api/auth/login ─────────────────────────────────────────
 router.post('/login',
-    body('identifier').trim().notEmpty().withMessage('Email or employee ID is required'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    (req, res) => {
+    body('password').isLength({ min: 1 }).withMessage('Password is required'),
+    async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ error: errors.array()[0].msg });
         }
 
-        const { identifier, password } = req.body;
-        const db = getDb();
+        // Accept either { identifier } or { email } from the client
+        const identifier = (req.body.identifier || req.body.email || '').trim();
+        const { password } = req.body;
 
+        if (!identifier) {
+            return res.status(400).json({ error: 'Email or employee ID is required' });
+        }
+
+        const db = getDb();
         const normalizedId = identifier.toLowerCase();
         const user = db.prepare(`
             SELECT * FROM users
             WHERE lower(email) = ? OR lower(employee_code) = ?
         `).get(normalizedId, normalizedId);
 
-        if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+        const match = user && await bcrypt.compare(password, user.password_hash);
+        if (!match) {
             return res.status(401).json({ error: 'Invalid login details' });
         }
 
