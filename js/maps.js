@@ -35,26 +35,30 @@ let locations = [
 ];
 
 // Initialize map when DOM is ready
+// Guard: only run if google Maps API is loaded (requires a valid API key)
 document.addEventListener('DOMContentLoaded', () => {
-    syncLocationsFromStorage();
-    renderLocationsList();
-    setTimeout(() => {
-        initializeMap();
-    }, 500);
+    // Static iframe embed is used — no Maps JS API needed.
+    // renderLocationsList is skipped because locations are now hard-coded HTML.
+    if (typeof google !== 'undefined' && google.maps) {
+        syncLocationsFromStorage();
+        setTimeout(() => { initializeMap(); }, 500);
+    }
 });
 
 window.addEventListener('storage', (event) => {
     if (!event.key || event.key === 'locations') {
-        syncLocationsFromStorage();
-        renderLocationsList();
-        refreshMapMarkers();
+        if (typeof google !== 'undefined' && google.maps) {
+            syncLocationsFromStorage();
+            refreshMapMarkers();
+        }
     }
 });
 
 window.addEventListener('focus', () => {
-    syncLocationsFromStorage();
-    renderLocationsList();
-    refreshMapMarkers();
+    if (typeof google !== 'undefined' && google.maps) {
+        syncLocationsFromStorage();
+        refreshMapMarkers();
+    }
 });
 
 // ================================
@@ -62,12 +66,9 @@ window.addEventListener('focus', () => {
 // ================================
 
 function initializeMap() {
+    if (typeof google === 'undefined' || !google.maps) return;
     const mapElement = document.getElementById('map');
-    
-    if (!mapElement) {
-        console.warn('Map container not found');
-        return;
-    }
+    if (!mapElement) return;
     
     // Default center (office location)
     const defaultCenter = {
@@ -188,51 +189,20 @@ function openInfoWindow(location, marker) {
 // ================================
 
 function selectLocation(index) {
-    if (index < 0 || index >= locations.length) return;
-    
-    const location = locations[index];
-    
-    // Update active state in location cards
+    // Update active state in location cards (works even without Maps API)
     document.querySelectorAll('.location-card').forEach((card, i) => {
         card.classList.toggle('active', i === index);
     });
-    
-    // Pan map to location
-    map.panTo({
-        lat: location.lat,
-        lng: location.lng,
-    });
-    
-    // Zoom in
+
+    if (!map || typeof google === 'undefined') return;
+    if (index < 0 || index >= locations.length) return;
+    const location = locations[index];
+    map.panTo({ lat: location.lat, lng: location.lng });
     map.setZoom(12);
-    
-    // Open info window
-    if (markers[index]) {
-        openInfoWindow(location, markers[index]);
-    }
+    if (markers[index]) openInfoWindow(location, markers[index]);
 }
 
-function renderLocationsList() {
-    const locationsList = document.getElementById('homepage-locations-list');
-
-    if (!locationsList) {
-        return;
-    }
-
-    if (!locations.length) {
-        locationsList.innerHTML = '<div class="menu-loading-state">No locations added yet.</div>';
-        return;
-    }
-
-    locationsList.innerHTML = locations.map((location, index) => `
-        <div class="location-card ${index === 0 ? 'active' : ''}" onclick="selectLocation(${index})">
-            <h3>${location.name}</h3>
-            <p>${location.address}</p>
-            <p class="location-address">${location.fullAddress || location.address}</p>
-            <button class="btn-secondary" onclick="event.stopPropagation(); getDirections('${location.lat},${location.lng}')">Get Directions</button>
-        </div>
-    `).join('');
-}
+// renderLocationsList is intentionally removed — locations are now static HTML.
 
 // ================================
 // GET DIRECTIONS

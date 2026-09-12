@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kashmir Caterer's (BBS) — Menu & Booking</title>
+  <title>Kashmir Caterer's (BBS) — Menu &amp; Booking</title>
   <meta name="description" content="Browse and select from Kashmir Caterer's (BBS) full catering menu — Mega Veg, Mega Non-Veg, Mini Veg, Koshur, High Tea, and Wazwan Cloud Kitchen packages.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     /* ──────────────────────────────────────────────────
        CSS VARIABLES — PDF color extraction
@@ -27,8 +30,8 @@
       --selected-bg: #f0e6ff;
       --blue-fill:   #2563eb;     /* selection circle filled */
       --white:       #ffffff;
-      --font-h:      'Georgia', 'Times New Roman', serif;
-      --font-b:      'Segoe UI', system-ui, -apple-system, sans-serif;
+      --font-h:      'Cormorant Garamond', 'Georgia', 'Times New Roman', serif;
+      --font-b:      'Hind', 'Segoe UI', system-ui, -apple-system, sans-serif;
       --radius:      8px;
       --shadow:      0 2px 12px rgba(61,31,13,0.10);
     }
@@ -631,12 +634,15 @@
 
     /* ──────────────────────────────────────────────────
        MOBILE FLOATING CART BTN
+       Placed bottom-LEFT to avoid overlap with the
+       AI chat widget which anchors bottom-right.
     ────────────────────────────────────────────────── */
     .mob-cart-btn {
       display: none;
       position: fixed;
       bottom: 22px;
-      right: 22px;
+      left: 18px;
+      right: auto;
       background: var(--crimson);
       color: #fff;
       border-radius: 50px;
@@ -664,6 +670,40 @@
     }
     @media (max-width: 900px) {
       .mob-cart-btn { display: flex; }
+    }
+
+    /* ──────────────────────────────────────────────────
+       WHATSAPP FAB (menu page)
+    ────────────────────────────────────────────────── */
+    .wa-fab {
+      position: fixed;
+      bottom: 80px;   /* above mob-cart-btn on mobile (left) */
+      left: 18px;
+      display: none;  /* shown only on ≤900px — same breakpoint as mob cart */
+      align-items: center;
+      gap: 7px;
+      background: #25d366;
+      color: #fff;
+      padding: 11px 18px 11px 14px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(37,211,102,0.38);
+      z-index: 199;
+      transition: background .16s;
+    }
+    .wa-fab:hover { background: #1da851; color: #fff; text-decoration: none; }
+    @media (max-width: 900px) { .wa-fab { display: flex; } }
+
+    /* Desktop: fixed bottom-right (clear of chat widget which is also there on desktop) */
+    @media (min-width: 901px) {
+      .wa-fab {
+        display: flex;
+        bottom: 28px;
+        left: auto;
+        right: 28px;
+      }
     }
 
     /* ──────────────────────────────────────────────────
@@ -897,10 +937,22 @@
 
 </div><!-- /.page-wrap -->
 
-<!-- MOBILE FLOATING CART BUTTON -->
+<!-- MOBILE FLOATING CART BUTTON (bottom-left) -->
 <button class="mob-cart-btn" onclick="BBSMenu.scrollToSummary()">
   🛒 My Menu <span id="mob-badge">0</span>
 </button>
+
+<!-- WHATSAPP FAB -->
+<a href="https://wa.me/919419123005?text=Hi%2C%20I%20would%20like%20to%20enquire%20about%20catering%20for%20my%20event."
+   class="wa-fab"
+   target="_blank" rel="noopener noreferrer"
+   aria-label="Chat on WhatsApp with Kashmir Caterer's BBS">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+    <path d="M11.95 0C5.37 0 0 5.373 0 11.95c0 2.114.554 4.1 1.521 5.83L0 24l6.335-1.652A11.94 11.94 0 0 0 11.95 23.9C18.527 23.9 24 18.527 24 11.95S18.527 0 11.95 0zm0 21.818a9.862 9.862 0 0 1-5.031-1.379l-.361-.214-3.741.982 1.003-3.658-.236-.376A9.858 9.858 0 0 1 2.1 11.95c0-5.434 4.418-9.852 9.85-9.852 5.433 0 9.852 4.418 9.852 9.852 0 5.432-4.419 9.868-9.852 9.868z"/>
+  </svg>
+  WhatsApp
+</a>
 
 <!-- ══════════════════════════════════════════════════
      FOOTER
