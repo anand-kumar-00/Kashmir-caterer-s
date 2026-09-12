@@ -1,81 +1,103 @@
 /* =============================================================
    FOOTER
+   Tokens: uses --c-*, --sp-*, --f-*
    ============================================================= */
 
 .footer {
-    background: var(--color-dark);
-    color: rgba(255,255,255,.85);
-    padding: var(--space-16) 0 var(--space-8);
+  background: var(--c-dark);
+  color: rgba(255,255,255,.85);
+  padding: var(--sp-16) 0 var(--sp-8);
 }
 
+/* ── GRID ─────────────────────────────────────────────────── */
+.footer-grid,
 .footer-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: var(--space-10);
-    margin-bottom: var(--space-10);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--sp-10);
+  margin-bottom: var(--sp-10);
 }
 
+/* ── COLUMNS ──────────────────────────────────────────────── */
+.footer-col,
+.footer-section {
+  /* nothing special needed — inherits footer color */
+}
+.footer-col h3,
+.footer-col h4,
 .footer-section h3,
 .footer-section h4 {
-    font-size: var(--text-base);
-    font-weight: 700;
-    color: var(--color-gold-light);
-    margin-bottom: var(--space-4);
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--c-gold-lt);
+  margin-bottom: var(--sp-4);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-family: var(--f-body);
 }
+.footer-col p,
+.footer-col a,
 .footer-section p,
 .footer-section a {
-    font-size: var(--text-base);
-    color: rgba(255,255,255,.7);
-    line-height: 1.8;
-    display: block;
-    text-decoration: none;
-    transition: color var(--transition-fast);
+  font-size: 1rem;
+  color: rgba(255,255,255,.7);
+  line-height: 1.8;
+  display: block;
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
+.footer-col a:hover,
 .footer-section a:hover {
-    color: var(--color-gold-light);
-    text-decoration: none;
+  color: var(--c-gold-lt);
+  text-decoration: none;
 }
 
-address.footer-section {
-    font-style: normal;
+address.footer-section,
+address.footer-col {
+  font-style: normal;
 }
 
+/* ── SOCIAL LINKS ─────────────────────────────────────────── */
 .social-links {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
 }
 
+/* ── BOTTOM BAR ───────────────────────────────────────────── */
+.footer-copy,
 .footer-bottom {
-    border-top: 1px solid rgba(255,255,255,.1);
-    padding-top: var(--space-6);
-    text-align: center;
+  border-top: 1px solid rgba(255,255,255,.1);
+  padding-top: var(--sp-6);
+  text-align: center;
 }
+.footer-copy p,
 .footer-bottom p {
-    font-size: var(--text-sm);
-    color: rgba(255,255,255,.4);
-    margin: 0;
+  font-size: .875rem;
+  color: rgba(255,255,255,.4);
+  margin: 0;
 }
 
-/* ── RESPONSIVE ────────────────────────────── */
+/* ── RESPONSIVE ───────────────────────────────────────────── */
 @media (max-width: 900px) {
-    .footer-content {
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-8);
-    }
-    .footer-section:first-child {
-        grid-column: 1 / -1;
-    }
+  .footer-grid,
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-8);
+  }
+  .footer-col:first-child,
+  .footer-section:first-child {
+    grid-column: 1 / -1;
+  }
 }
 @media (max-width: 480px) {
-    .footer-content {
-        grid-template-columns: 1fr;
-        gap: var(--space-6);
-    }
-    .footer-section:first-child {
-        grid-column: auto;
-    }
+  .footer-grid,
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--sp-6);
+  }
+  .footer-col:first-child,
+  .footer-section:first-child {
+    grid-column: auto;
+  }
 }
