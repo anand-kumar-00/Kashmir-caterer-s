@@ -53,7 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScrollAnimations();
     setupScrollListener();
     setMinDate();
+    setupBookingTriggers();
 });
+
+function setupBookingTriggers() {
+    document.querySelectorAll('.nav-cta, [data-key="heroCta"]').forEach((trigger) => {
+        trigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            openBookingModal();
+        });
+    });
+}
 
 window.addEventListener('storage', (event) => {
     if (!event.key || ['menuItems', 'galleryItems', 'locations'].includes(event.key)) {
@@ -793,4 +803,3 @@ function closeLightbox() {
     // Restore scrolling
     document.body.style.overflow = 'auto';
 }
-

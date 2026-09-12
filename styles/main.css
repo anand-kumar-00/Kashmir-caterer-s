@@ -86,7 +86,9 @@ body {
     font-family: var(--font-body);
     font-size: 1rem;
     color: var(--gray-dark);
-    background-color: var(--white);
+    background:
+        radial-gradient(circle at 8% 12%, rgba(200, 134, 10, 0.08), transparent 28rem),
+        linear-gradient(180deg, #fffdf8 0%, var(--white) 38%, var(--pashmina) 100%);
     line-height: 1.65;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
@@ -354,6 +356,68 @@ section {
 @media (max-width: 480px) {
     .container { padding: 0 var(--spacing-sm); }
     section    { padding: var(--spacing-lg) 0; }
+}
+
+/* ================================
+   EXPERIENCE POLISH
+   Shared details that make the public
+   site feel calmer and easier to scan.
+   ================================ */
+
+::selection {
+    color: var(--pashmina);
+    background: var(--chinar);
+}
+
+:focus-visible {
+    outline: 3px solid rgba(200, 134, 10, 0.55);
+    outline-offset: 3px;
+}
+
+section:nth-of-type(even) {
+    background-color: rgba(245, 237, 214, 0.42);
+}
+
+.section-title {
+    letter-spacing: 0.015em;
+}
+
+.section-subtitle {
+    max-width: 700px;
+}
+
+.btn-primary,
+.btn-secondary,
+.nav-cta,
+.btn-auth {
+    min-height: 46px;
+}
+
+.btn-primary,
+.service-card,
+.menu-card,
+.gallery-card,
+.location-card {
+    will-change: transform;
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.nav-cta:active,
+.btn-auth:active {
+    transform: translateY(1px);
+}
+
+@media (max-width: 768px) {
+    body {
+        background:
+            radial-gradient(circle at 90% 4%, rgba(200, 134, 10, 0.1), transparent 18rem),
+            linear-gradient(180deg, #fffdf8 0%, var(--white) 48%, var(--pashmina) 100%);
+    }
+
+    .section-subtitle {
+        font-size: 0.95rem;
+    }
 }
 
 /* ================================

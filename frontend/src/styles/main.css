@@ -108,7 +108,9 @@ body {
   font-family: var(--f-body);
   font-size:   1rem;               /* min 16 px */
   color:       var(--c-text);
-  background:  #fff;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(201, 150, 45, .1), transparent 28rem),
+    linear-gradient(180deg, #fffdf8 0%, #fff 42%, var(--c-cream) 100%);
   line-height: 1.65;
   overflow-x:  hidden;
 }
@@ -319,6 +321,35 @@ section    { padding: var(--sp-16) 0; }
   section    { padding:var(--sp-10) 0; }
   #toast-container { bottom:var(--sp-4); right:var(--sp-4); left:var(--sp-4); }
   .toast { min-width:unset; max-width:unset; }
+}
+
+/* ── EXPERIENCE POLISH ───────────────────────────────────────── */
+::selection { color: var(--c-cream); background: #8b1a1a; }
+
+section:nth-of-type(even) {
+  background-color: rgba(253, 248, 240, .68);
+}
+
+.section-subtitle { max-width: 700px; }
+
+.btn-primary,
+.btn-secondary,
+.nav-cta,
+.btn-auth { min-height: var(--touch); }
+
+.btn-primary:active,
+.btn-secondary:active,
+.nav-cta:active,
+.btn-auth:active { transform: translateY(1px); }
+
+@media (max-width: 768px) {
+  body {
+    background:
+      radial-gradient(circle at 90% 4%, rgba(201, 150, 45, .12), transparent 18rem),
+      linear-gradient(180deg, #fffdf8 0%, #fff 48%, var(--c-cream) 100%);
+  }
+
+  .section-subtitle { font-size: .98rem; }
 }
 
 /* ── UTILITIES ──────────────────────────────────────────────── */

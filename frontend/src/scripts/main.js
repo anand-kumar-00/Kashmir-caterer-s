@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScrollAnimations();
     setupScrollListener();
     setMinDate();
+    setupBookingTriggers();
 
     // Load gallery from API
     loadHomepageGallery();
@@ -146,6 +147,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mark hero as loaded for CSS transition
     setTimeout(() => document.querySelector('.hero')?.classList.add('loaded'), 100);
 });
+
+function setupBookingTriggers() {
+    document.querySelectorAll('.btn-book-nav, [data-key="heroCta"]').forEach((trigger) => {
+        trigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            openBookingModal();
+        });
+    });
+}
 
 /* ── SCROLL HEADER ─────────────────────────────────────────── */
 function setupScrollListener() {
