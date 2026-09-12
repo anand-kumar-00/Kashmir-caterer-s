@@ -394,8 +394,8 @@
 }
 
 .menu-item-card.is-added {
-    border-color: var(--pine);
-    box-shadow: 0 0 0 2px rgba(45,74,45,0.15);
+    border-color: #1677ff;
+    box-shadow: 0 0 0 2px rgba(22,119,255,0.18);
 }
 
 .menu-item-card.is-unavailable {
@@ -479,6 +479,23 @@
     margin-bottom: 0.25rem;
 }
 
+/* The customer's choice is unmistakable: a blue tick precedes the item name. */
+.selection-tick {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 0.38rem;
+    border-radius: 50%;
+    background: #1677ff;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1;
+    vertical-align: 0.05em;
+
 .menu-item-desc {
     font-size: 0.75rem;
     color: var(--gray-mid);
@@ -551,8 +568,8 @@
 }
 
 .btn-add-item.added {
-    border-color: var(--pine);
-    background: var(--pine);
+    border-color: #1677ff;
+    background: #1677ff;
     color: var(--white);
     cursor: default;
 }

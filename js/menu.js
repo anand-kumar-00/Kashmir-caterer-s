@@ -202,8 +202,14 @@
 
     // If a package is active, further filter to only items allowed in that package
     if (_activePackageId && !_searchQuery) {
+      const activePackage = KCPackageRules.getPackage(_activePackageId);
       const pkgItems = KCMenuData.getByPackage(_activePackageId);
-      const pkgIds   = new Set(pkgItems.map(i => i.id));
+      // A dish with the same name may occur in another PDF section (for
+      // example Wazwan and High Tea). Keep only the sections printed for the
+      // currently selected package.
+      const pkgIds   = new Set(pkgItems
+        .filter(i => activePackage && activePackage.categoryOrder.includes(i.category))
+        .map(i => i.id));
 
       if (_activeCategory === 'all') {
         items = items.filter(i => pkgIds.has(i.id));
@@ -291,7 +297,7 @@
         <div class="menu-item-body">
           ${menuItem.subcategory
             ? `<span class="menu-item-sub">${escHtml(menuItem.subcategory)}</span>` : ''}
-          <h3 class="menu-item-name">${escHtml(menuItem.name)}</h3>
+          <h3 class="menu-item-name">${isAdded ? '<span class="selection-tick" aria-hidden="true">✓</span>' : ''}${escHtml(menuItem.name)}</h3>
           ${menuItem.description
             ? `<p class="menu-item-desc">${escHtml(menuItem.description)}</p>` : ''}
           <div class="menu-item-price">
@@ -308,9 +314,9 @@
                   data-item-id="${menuItem.id}"
                   ${atLimit ? 'disabled aria-disabled="true"' : ''}
                   onclick="window._kcMenuAddItem('${menuItem.id}')"
-                  aria-label="${isAdded ? 'Added: ' : 'Add '}${escHtml(menuItem.name)} to your menu">
+                  aria-label="${isAdded ? 'Remove ' : 'Select '}${escHtml(menuItem.name)} ${isAdded ? 'from' : 'for'} your menu">
             ${isAdded
-              ? `<span class="btn-add-icon" aria-hidden="true">✓</span> Added`
+              ? `<span class="btn-add-icon" aria-hidden="true">✓</span> Selected`
               : atLimit
                 ? `Limit Reached`
                 : `<span class="btn-add-icon" aria-hidden="true">+</span> Add`
@@ -326,6 +332,13 @@
   window._kcMenuAddItem = function (itemId) {
     const menuItem = KCMenuData.getById(itemId);
     if (!menuItem) return;
+
+    // Choosing an already-selected item removes it. The tick is therefore a
+    // reliable on/off selection indicator rather than a quantity control.
+    if (KCSelectedMenu.has(itemId)) {
+      KCSelectedMenu.remove(itemId);
+      return;
+    }
 
     const catKey = menuItem.category;
 
@@ -591,12 +604,16 @@
 
       const btn = card.querySelector('.btn-add-item');
       if (!btn) return;
+      const name = card.querySelector('.menu-item-name');
+      const tick = name && name.querySelector('.selection-tick');
 
       if (isAdded) {
         btn.classList.add('added');
         btn.disabled = false;
         btn.setAttribute('aria-disabled', 'false');
-        btn.innerHTML = `<span class="btn-add-icon" aria-hidden="true">✓</span> Added`;
+        btn.innerHTML = `<span class="btn-add-icon" aria-hidden="true">✓</span> Selected`;
+        btn.setAttribute('aria-label', `Remove ${menuItem.name} from your menu`);
+        if (name && !tick) name.insertAdjacentHTML('afterbegin', '<span class="selection-tick" aria-hidden="true">✓</span>');
         card.classList.add('is-added');
         // brief animation
         card.classList.remove('just-added');
@@ -608,12 +625,16 @@
         btn.disabled = true;
         btn.setAttribute('aria-disabled', 'true');
         btn.innerHTML = `Limit Reached`;
+        btn.setAttribute('aria-label', `${menuItem.name}: package limit reached`);
+        if (tick) tick.remove();
         card.classList.remove('is-added');
       } else {
         btn.classList.remove('added');
         btn.disabled = false;
         btn.setAttribute('aria-disabled', 'false');
         btn.innerHTML = `<span class="btn-add-icon" aria-hidden="true">+</span> Add`;
+        btn.setAttribute('aria-label', `Select ${menuItem.name} for your menu`);
+        if (tick) tick.remove();
         card.classList.remove('is-added');
       }
     });

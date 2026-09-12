@@ -483,14 +483,14 @@
 }
 
 .booking-menu-option input[type="checkbox"]:checked + .booking-menu-option-card {
-    border-color: rgba(212, 175, 55, 0.8);
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(255, 255, 255, 1));
-    box-shadow: 0 14px 34px rgba(212, 175, 55, 0.16);
+    border-color: rgba(22, 119, 255, 0.7);
+    background: linear-gradient(135deg, rgba(22, 119, 255, 0.1), rgba(255, 255, 255, 1));
+    box-shadow: 0 14px 34px rgba(22, 119, 255, 0.14);
 }
 
 .booking-menu-option input[type="checkbox"]:checked + .booking-menu-option-card .booking-menu-option-check {
-    background: var(--secondary);
-    border-color: var(--secondary);
+    background: #1677ff;
+    border-color: #1677ff;
 }
 
 .booking-menu-option input[type="checkbox"]:checked + .booking-menu-option-card .booking-menu-option-check::after {

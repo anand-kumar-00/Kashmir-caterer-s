@@ -453,12 +453,26 @@ function renderBookingMenuOptions() {
 
 function updateBookingMenuSelectionState() {
     appState.bookingData.menu = Array.from(document.querySelectorAll('.menu-item:checked')).map((item) => item.value);
+    // Booking and the dedicated Book Menu page now share the exact same PDF
+    // catalog and rich selection payload.
+    appState.bookingData.kcMenuItems = appState.bookingData.menu
+        .map((itemId) => window.KCMenuData && window.KCMenuData.getById(itemId))
+        .filter(Boolean)
+        .map((item) => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            type: item.type,
+            quantity: 1,
+            price: item.price || null,
+        }));
     saveState();
     updateBookingOverview();
 }
 
 function renderBookingSelectableMenuItem(item) {
     const isChecked = appState.bookingData.menu.includes(item.id) ? 'checked' : '';
+    const price = item.price ? `₹${item.price.toLocaleString('en-IN')}` : 'Price on request';
 
     return `
         <label class="booking-menu-option">
@@ -468,10 +482,10 @@ function renderBookingSelectableMenuItem(item) {
                     <span class="booking-menu-option-check"></span>
                     <span>
                         <strong>${item.name}</strong>
-                        <p>${item.note}</p>
+                        <p>${item.note || 'PDF menu selection'}</p>
                     </span>
                 </span>
-                <span>Rs ${item.price.toLocaleString('en-IN')}</span>
+                <span>${price}</span>
             </span>
         </label>
     `;
@@ -519,43 +533,22 @@ function getDefaultMenuItems() {
 }
 
 function getBookingMenuCatalog() {
-    const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-    const fallbackMenuItems = menuItems.length ? menuItems : getDefaultMenuItems();
-    const getLabel = (key, fallback) => (typeof getTranslationValue === 'function' ? getTranslationValue(key) : fallback);
-    const categoryConfig = [
-        { key: 'breakfast', label: getLabel('menuCategoryBreakfast', 'Breakfast'), description: 'Morning selections for elegant starts and light gatherings.' },
-        { key: 'lunch', label: getLabel('menuCategoryLunch', 'Lunch'), description: 'Balanced menu choices suited for family events and celebrations.' },
-        { key: 'dinner', label: getLabel('menuCategoryDinner', 'Dinner'), description: 'Refined evening dishes for premium dining and wedding service.' },
-    ];
-    const courseConfig = [
-        { key: 'snacks', label: getLabel('menuCourseSnacks', 'Snacks') },
-        { key: 'main', label: getLabel('menuCourseMain', 'Main Course') },
-    ];
+    if (!window.KCMenuData) return [];
 
-    return categoryConfig
+    return window.KCMenuData.CATEGORIES
+        .filter((category) => category.key !== 'all')
         .map((category) => {
-            const courses = courseConfig
-                .map((course) => {
-                    const items = fallbackMenuItems
-                        .filter((item) => item.category === category.key && normalizeCourseType(item.type) === course.key)
-                        .map((item) => ({
-                            id: item.id,
-                            name: item.name,
-                            price: Number(item.price || 0),
-                            note: item.description || 'Chef curated selection',
-                        }));
-
-                    return {
-                        title: course.label,
-                        items,
-                    };
-                })
-                .filter((course) => course.items.length > 0);
+            const items = window.KCMenuData.getByCategory(category.key).map((item) => ({
+                id: item.id,
+                name: item.name,
+                price: Number(item.price || 0),
+                note: item.subcategory || item.description || (item.type === 'veg' ? 'Vegetarian' : 'Non-vegetarian'),
+            }));
 
             return {
                 meal: category.label,
-                description: category.description,
-                courses,
+                description: 'Selections from the supplied Kashmir Caterers menu card.',
+                courses: items.length ? [{ title: category.label, items }] : [],
             };
         })
         .filter((category) => category.courses.length > 0);

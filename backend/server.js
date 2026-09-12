@@ -18,6 +18,7 @@ const menuRoutes    = require('./src/routes/menu');
 const galleryRoutes = require('./src/routes/gallery');
 const reviewRoutes  = require('./src/routes/reviews');
 const adminRoutes   = require('./src/routes/admin');
+const chatRoutes    = require('./src/routes/chat');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -76,6 +77,7 @@ app.use('/api/menu',     menuRoutes);
 app.use('/api/gallery',  galleryRoutes);
 app.use('/api/reviews',  reviewRoutes);
 app.use('/api/admin',    adminRoutes);
+app.use('/api/chat',     chatRoutes);
 
 // ── Serve frontend static files ──────────────────────────────────
 app.use(express.static(path.join(FRONTEND_DIR, 'public')));

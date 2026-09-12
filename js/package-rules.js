@@ -23,13 +23,14 @@ window.KCPackageRules = (function () {
         'veg-main':         4,
         'rice-biryani':     2,
         raita:              2,
-        salads:             4,
-        breads:             2,
+        salads:             3,
+        'live-counters':    4,
+        breads:             null, // assorted bread is included
         desserts:           3,
       },
       categoryOrder: [
         'beverages','soups','veg-appetizers','veg-main',
-        'rice-biryani','breads','raita','salads','desserts',
+        'rice-biryani','breads','raita','salads','live-counters','desserts',
       ],
     },
     {
@@ -42,12 +43,12 @@ window.KCPackageRules = (function () {
         beverages:          4,   // any four cold beverages
         soups:              2,
         'veg-appetizers':   6,
-        'veg-main':         6,
+        'veg-main':         5,
         'rice-biryani':     2,
         raita:              2,
         salads:             5,
-        breads:             3,
-        'live-counters':    2,
+        breads:             null, // assorted bread is included
+        'live-counters':    6,
         desserts:           4,
       },
       categoryOrder: [
@@ -64,15 +65,15 @@ window.KCPackageRules = (function () {
       selectionRules: {
         beverages:           4,  // any four cold beverages
         soups:               2,
-        'veg-appetizers':    3,
+        'veg-appetizers':    4,
         'nonveg-appetizers': 4,
-        'veg-main':          3,
+        'veg-main':          4,
         'nonveg-main':       4,
         'rice-biryani':      2,
         raita:               2,
         salads:              5,
-        breads:              3,
-        'live-counters':     2,
+        breads:              null, // assorted bread is included
+        'live-counters':     4,
         desserts:            4,
       },
       categoryOrder: [
@@ -88,19 +89,22 @@ window.KCPackageRules = (function () {
       type:        'non-veg',
       description: 'Authentic Kashmiri Wazwan-style non-vegetarian banquet for 250+ guests — the true taste of Kashmir.',
       selectionRules: {
-        beverages:           2,
-        soups:               1,
-        'nonveg-appetizers': 4,
-        'veg-main':          2,
-        'nonveg-main':       5,
-        'rice-biryani':      2,
-        raita:               2,
-        salads:              4,
-        breads:              2,
-        desserts:            3,
+        // The Koshur PDF is a fixed, included menu rather than an
+        // "any N" package.  Its available PDF items are selectable.
+        beverages:           null,
+        soups:               null,
+        'nonveg-appetizers': null,
+        'veg-appetizers':    null,
+        'veg-main':          null,
+        'nonveg-main':       null,
+        'rice-biryani':      null,
+        raita:               null,
+        salads:              null,
+        breads:              null,
+        desserts:            null,
       },
       categoryOrder: [
-        'beverages','soups','nonveg-appetizers','veg-main',
+        'beverages','soups','veg-appetizers','nonveg-appetizers','veg-main',
         'nonveg-main','rice-biryani','breads','raita','salads','desserts',
       ],
     },
@@ -111,11 +115,11 @@ window.KCPackageRules = (function () {
       type:        'veg',
       description: 'An elegant vegetarian high tea experience for 50+ guests — perfect for corporate and afternoon events.',
       selectionRules: {
-        beverages:          3,
-        'veg-appetizers':   3,
-        'live-counters':    2,
-        breads:             1,
-        desserts:           3,
+        beverages:          2,
+        'veg-appetizers':   4,
+        'live-counters':    1,
+        breads:             null,
+        desserts:           1,
         'high-tea':         null,
       },
       categoryOrder: [
@@ -129,11 +133,11 @@ window.KCPackageRules = (function () {
       type:        'non-veg',
       description: 'A premium non-vegetarian high tea for 50+ guests — grilled dishes, wraps and sweet finishes.',
       selectionRules: {
-        beverages:           3,
-        'nonveg-appetizers': 3,
+        beverages:           2,
+        'nonveg-appetizers': 4,
         'high-tea':          null,
-        breads:              1,
-        desserts:            3,
+        breads:              null,
+        desserts:            1,
       },
       categoryOrder: [
         'beverages','nonveg-appetizers','high-tea','breads','desserts',
