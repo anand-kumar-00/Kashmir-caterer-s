@@ -1,9 +1,0 @@
-User-agent: *
-Allow: /
-
-# Do not index admin dashboard
-Disallow: /admin/
-Disallow: /frontend/admin/
-
-# Sitemap
-Sitemap: https://www.kashmiricaterers.com/sitemap.xml
