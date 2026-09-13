@@ -380,12 +380,14 @@
           <a href="#" onclick="openBookingModal(event)">Book an Event</a>
           <a href="#gallery">Gallery</a>
           <a href="/showcase.html">Showcase</a>
+          <a href="/lost-found.html">Lost &amp; Found</a>
         </nav>
         <address class="footer-col">
           <h4>Contact</h4>
-          <p><a href="tel:+919876543210">📞 +91 98765 43210</a></p>
-          <p><a href="mailto:hello@kashmiricaterers.com">📧 hello@kashmiricaterers.com</a></p>
-          <p>📍 Lal Chowk, Srinagar, J&amp;K</p>
+          <p><a href="tel:9419123005">📞 94191 23005</a></p>
+          <p><a href="tel:9419221447">📞 94192 21447</a></p>
+          <p><a href="mailto:kashmircaterersblb@gmail.com">📧 kashmircaterersblb@gmail.com</a></p>
+          <p>📍 Akalpur Morh, Gajansoo Road, Jammu</p>
         </address>
         <div class="footer-col">
           <h4>Follow Us</h4>
@@ -437,6 +439,7 @@
         <div class="step"        role="listitem"><span>4</span><p>Guests</p></div>
         <div class="step"        role="listitem"><span>5</span><p>Notes</p></div>
         <div class="step"        role="listitem"><span>6</span><p>Review</p></div>
+        <div class="step"        role="listitem"><span>7</span><p>Payment</p></div>
       </div>
 
       <!-- Live overview banner -->
@@ -560,10 +563,95 @@
           <div class="rv-row total"><dt data-key="reviewTotal">Estimated Total:</dt><dd id="estimatedTotal">₹10,000</dd></div>
         </dl>
         <div class="btn-row">
-          <button class="btn-outline-dark" onclick="goToStep(5)" data-key="back">← Back</button>
-          <button class="btn-primary" id="confirm-pay-btn" data-key="confirmPay" onclick="submitBooking()">Confirm Booking</button>
+         <button class="btn-outline-dark" onclick="goToStep(5)" data-key="back">← Back</button>
+         <button class="btn-primary" id="confirm-pay-btn" onclick="submitBooking()">Confirm &amp; Pay Advance →</button>
         </div>
       </div>
+
+      <!-- Step 7 — Payment -->
+      <div class="step-panel" id="step7" aria-labelledby="s7h">
+        <h3 id="s7h">Advance Payment</h3>
+
+        <div class="payment-form-area">
+          <div class="payment-booking-ref">
+            Booking ID: <strong id="payment-booking-id">—</strong>
+          </div>
+
+          <div class="payment-info-banner">
+            <p>We accept advance payments via UPI, Bank Transfer, Cash or Cheque. A minimum advance confirms your slot. Pay the balance on the event day.</p>
+          </div>
+
+          <!-- UPI / Bank details -->
+          <div class="payment-methods-display">
+            <div class="pay-method-block">
+              <div class="pay-method-icon">📱</div>
+              <div>
+                <strong>UPI</strong>
+                <p>UPI ID: <code>kashmircaterers@upi</code></p>
+                <p>Name: Kashmir Caterers</p>
+              </div>
+            </div>
+            <div class="pay-method-block">
+              <div class="pay-method-icon">🏦</div>
+              <div>
+                <strong>Bank Transfer (NEFT/RTGS)</strong>
+                <p>Account: <code>XXXX XXXX XXXX</code></p>
+                <p>IFSC: <code>XXXXXXXXX</code></p>
+                <p>Bank: J&amp;K Bank</p>
+              </div>
+            </div>
+            <div class="pay-method-block">
+              <div class="pay-method-icon">💵</div>
+              <div>
+                <strong>Cash / Cheque</strong>
+                <p>Pay at our office or on-site</p>
+                <p>Contact: <a href="tel:9419123005">94191 23005</a></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="payment-total-row">
+            Estimated Total: <strong id="payment-total-display">₹10,000</strong>
+          </div>
+
+          <form onsubmit="submitPaymentProof(event)" novalidate>
+            <div class="form-group">
+              <label for="pay-method">Payment Method <span aria-hidden="true">*</span></label>
+              <select id="pay-method" required>
+                <option value="">— Select method —</option>
+                <option value="upi">UPI</option>
+                <option value="bank_transfer">Bank Transfer (NEFT/RTGS)</option>
+                <option value="cash">Cash</option>
+                <option value="cheque">Cheque</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="pay-advance">Advance Amount (₹) <span aria-hidden="true">*</span></label>
+              <input type="number" id="pay-advance" min="0" placeholder="e.g. 5000" required>
+            </div>
+            <div class="form-group">
+              <label for="pay-proof-file">Upload Payment Screenshot / Receipt <small>(optional — JPEG, PNG, PDF, max 8 MB)</small></label>
+              <input type="file" id="pay-proof-file" accept="image/jpeg,image/png,image/webp,application/pdf">
+            </div>
+            <div class="btn-row">
+              <button type="button" class="btn-outline-dark" onclick="skipPayment()">Skip — Pay Later</button>
+              <button type="submit" class="btn-primary" id="pay-proof-btn">Submit Payment Info →</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="payment-success-area hidden">
+          <div class="payment-success-card">
+            <div class="pay-success-icon">✓</div>
+            <h3>Payment Info Received!</h3>
+            <p>Booking ID: <strong id="payment-success-booking-id"></strong></p>
+            <p>Our team will verify your payment and send a confirmation to your email within 24 hours.</p>
+            <p>Questions? Call us: <a href="tel:9419123005">94191 23005</a></p>
+          </div>
+          <button class="btn-primary w-full" onclick="closeBookingModal(); resetBookingForm();" style="margin-top:1.5rem">Done — Close</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -619,11 +707,13 @@
   <div id="toast-container" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
   <!-- Scripts — deferred so they never block paint -->
-  <script src="/scripts/main.js"      defer></script>
-  <script src="/scripts/animation.js" defer></script>
-  <script src="/scripts/booking.js"   defer></script>
-  <script src="/scripts/auth.js"      defer></script>
-  <script src="/scripts/feedback.js"  defer></script>
+  <script src="/scripts/main.js"            defer></script>
+  <script src="/scripts/animation.js"       defer></script>
+  <script src="/scripts/booking.js"         defer></script>
+  <script src="/scripts/auth.js"            defer></script>
+  <script src="/scripts/feedback.js"        defer></script>
+  <!-- Emergency contact widget — loads contacts on demand -->
+  <script src="/scripts/emergency-widget.js" defer></script>
 
   <script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
 </body>

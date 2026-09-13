@@ -247,40 +247,59 @@ function closeMenuModal(event) {
     document.body.style.overflow = '';
 }
 
+/* ── Category display names (matches DB VALID_CATEGORIES) ── */
+const CAT_LABELS = {
+    'cold-beverages':        'Cold Beverages',
+    'shakes-smoothies':      'Shakes, Smoothies & Punches',
+    'hot-beverages':         'Hot Beverages',
+    'soup-veg':              'Soup Station (Veg)',
+    'soup-nonveg':           'Soup Station (Non-Veg)',
+    'appetizers-veg':        'Appetizers (Veg)',
+    'appetizers-nonveg':     'Appetizers (Non-Veg)',
+    'main-course-veg':       'Main Course (Veg)',
+    'main-course-nonveg':    'Main Course (Non-Veg)',
+    'main-course-hightea':   'Main Course (High Tea)',
+    'rice-pulao':            'Rice, Pulao & Biryani',
+    'assorted-bread':        'Assorted Breads',
+    'salad-raita':           'Salad Station',
+    'raita':                 'Raita & Accompaniments',
+    'live-counters':         'Live Counters (Veg)',
+    'live-counters-nonveg':  'Live Counters (Non-Veg)',
+    'dessert':               'Dessert & Sweets',
+    'fruit-counter':         'Fruit Counter',
+    'specialty-counters':    'Specialty Counters',
+    'arrival-drinks':        'As You Arrive (Koshur)',
+    'buffet-nonveg':         'Buffet Non-Veg (Koshur)',
+    'soft-drink':            'Soft Drink (High Tea)',
+    'wazwan-nonveg':         'Wazwan Non-Veg',
+    'wazwan-veg':            'Wazwan Veg',
+    'wazwan-sweet':          'Wazwan Sweets',
+    // legacy fallbacks
+    'breakfast': 'Breakfast', 'lunch': 'Lunch', 'dinner': 'Dinner',
+};
+
 function renderMenuGrid(container, items, selectable = false, selectedIds = []) {
     if (!items.length) {
         container.innerHTML = '<p class="menu-loading-state">No menu items available.</p>';
         return;
     }
 
-    // Group by category → type
+    // Group by category (preserve insertion order = DB sort order)
     const grouped = {};
     items.forEach(item => {
-        if (!grouped[item.category]) grouped[item.category] = {};
-        if (!grouped[item.category][item.type]) grouped[item.category][item.type] = [];
-        grouped[item.category][item.type].push(item);
+        const cat = item.category || 'other';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(item);
     });
 
-    const catOrder = ['breakfast', 'lunch', 'dinner'];
-    container.innerHTML = catOrder
-        .filter(cat => grouped[cat])
-        .map(cat => {
-            const typesSections = Object.entries(grouped[cat]).map(([type, catItems]) => `
-                <div class="menu-course-group">
-                    <p class="menu-course-label">${type === 'main' ? 'Main Course' : 'Snacks & Starters'}</p>
-                    <div class="menu-items-list">
-                        ${catItems.map(item => renderMenuItem(item, selectable, selectedIds)).join('')}
-                    </div>
-                </div>
-            `).join('');
-
-            return `
-                <div class="menu-category-section">
-                    <h3>${capitalize(cat)}</h3>
-                    ${typesSections}
-                </div>
-            `;
-        }).join('');
+    container.innerHTML = Object.entries(grouped).map(([cat, catItems]) => `
+        <div class="menu-category-section">
+            <h3>${escHtml(CAT_LABELS[cat] || capitalize(cat.replace(/-/g, ' ')))}</h3>
+            <div class="menu-items-list">
+                ${catItems.map(item => renderMenuItem(item, selectable, selectedIds)).join('')}
+            </div>
+        </div>
+    `).join('');
 }
 
 function renderMenuItem(item, selectable, selectedIds) {

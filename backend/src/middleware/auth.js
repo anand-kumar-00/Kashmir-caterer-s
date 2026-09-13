@@ -1,5 +1,9 @@
 /**
- * Auth middleware — requires a valid session
+ * Auth middleware
+ *
+ * requireAuth   — any logged-in user (customer, employee, admin)
+ * requireStaff  — employee OR admin (can access admin dashboard but with limited write ops)
+ * requireAdmin  — admin role only (full management capabilities)
  */
 
 function requireAuth(req, res, next) {
@@ -10,13 +14,30 @@ function requireAuth(req, res, next) {
 }
 
 /**
- * Role guard — requires employee or admin role
+ * requireStaff — employee or admin.
+ * Used for read-only admin views that employees should also see.
  */
-function requireAdmin(req, res, next) {
+function requireStaff(req, res, next) {
     if (!req.session || !['employee', 'admin'].includes(req.session.role)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return res.status(403).json({ error: 'Staff access required' });
     }
     next();
 }
 
-module.exports = { requireAuth, requireAdmin };
+/**
+ * requireAdmin — admin role only.
+ * Write operations (add/edit/delete employees, expenses, settings, etc.)
+ * are locked to this role.
+ *
+ * IMPORTANT: The legacy code used requireAdmin to allow 'employee' too.
+ * This has been tightened: only 'admin' passes. Routes that employees
+ * legitimately need are switched to requireStaff.
+ */
+function requireAdmin(req, res, next) {
+    if (!req.session || req.session.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
+    }
+    next();
+}
+
+module.exports = { requireAuth, requireStaff, requireAdmin };

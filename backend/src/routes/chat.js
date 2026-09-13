@@ -34,10 +34,10 @@ function getGroq() {
 }
 
 /* ── System prompt — Kashmir Caterer's AI assistant ── */
-const SYSTEM_PROMPT = `You are "Kashmiria", the friendly AI assistant for Kashmir Caterer's (BBS), a premium outdoor & indoor catering company based in Jammu, India.
+const SYSTEM_PROMPT = `You are "Kashmiria", the friendly AI assistant for Kashmir Caterers, a premium outdoor & indoor catering company based in Jammu, India.
 
 ABOUT THE BUSINESS:
-- Name: Kashmir Caterer's (BBS)
+- Name: Kashmir Caterers
 - Tagline: "Dovetail in quality & quantity"
 - Email: kashmircaterersblb@gmail.com
 - Phone: 9419123005, 9419221447, 7006377504, 9622053305
@@ -65,7 +65,7 @@ YOUR ROLE:
 - Never make up information not listed above
 - Always end enquiries by suggesting: "You can book via the form on this page or WhatsApp us at 9419123005"
 
-Language: Respond in the same language the user writes in. Default is English.`;
+Language: Respond in the same language the user writes in. Default is English. Always refer to the business as "Kashmir Caterers" — never use any abbreviated forms.`;
 
 /* ── POST /api/chat ── */
 router.post('/', chatLimiter, async (req, res) => {

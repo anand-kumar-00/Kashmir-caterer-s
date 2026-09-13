@@ -6,6 +6,7 @@ const { body, validationResult } = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
 const { getDb } = require('../models/db');
 const { requireAdmin } = require('../middleware/auth');
+const { createNotification } = require('../models/notificationHelper');
 
 const router = express.Router();
 
@@ -28,10 +29,16 @@ router.post('/',
         const { name, email, rating, review, eventType = null, verified = false } = req.body;
         const id = 'REV-' + uuidv4().replace(/-/g, '').slice(0, 8).toUpperCase();
 
-        getDb().prepare(`
+        const db = getDb();
+        db.prepare(`
             INSERT INTO reviews (id, name, email, event_type, rating, review, verified)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `).run(id, name.trim(), email, eventType, Number(rating), review.trim(), verified ? 1 : 0);
+
+        createNotification(db, 'review_new',
+            `New ${rating}★ review from ${name.trim()}`,
+            review.trim().slice(0, 200),
+            id);
 
         res.status(201).json({ message: 'Review submitted', id });
     }

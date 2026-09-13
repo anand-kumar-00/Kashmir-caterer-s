@@ -1,9 +1,9 @@
 /**
  * Bookings routes
- * POST /api/bookings           — submit booking (public)
- * GET  /api/bookings           — list all bookings (admin only)
- * GET  /api/bookings/:id       — single booking (owner or admin)
- * PATCH /api/bookings/:id      — update status/details (admin only)
+ * POST   /api/bookings         — submit booking (public)
+ * GET    /api/bookings         — list all bookings (staff + admin)
+ * GET    /api/bookings/:id     — single booking (owner or staff)
+ * PATCH  /api/bookings/:id     — update status/details (admin only)
  * DELETE /api/bookings/:id     — cancel booking (admin only)
  */
 
@@ -11,7 +11,8 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
 const { getDb } = require('../models/db');
-const { requireAuth, requireAdmin } = require('../middleware/auth');
+const { requireAuth, requireStaff, requireAdmin } = require('../middleware/auth');
+const { createNotification } = require('../models/notificationHelper');
 
 const router = express.Router();
 
@@ -63,6 +64,12 @@ router.post('/',
             JSON.stringify(menuItemIds), requirements, estimatedTotal
         );
 
+        // Notify admins
+        createNotification(db, 'booking_new',
+            'New booking received',
+            `${customerName} booked ${functionType} on ${eventDate} for ${guestCount} guests`,
+            id);
+
         res.status(201).json({
             message: 'Booking submitted successfully',
             bookingId: id,
@@ -72,7 +79,7 @@ router.post('/',
 );
 
 // ── GET /api/bookings ───────────────────────────────────────────
-router.get('/', requireAdmin, (req, res) => {
+router.get('/', requireStaff, (req, res) => {
     const db = getDb();
     const { status, date } = req.query;
 
@@ -96,7 +103,7 @@ router.get('/:id', requireAuth, (req, res) => {
 
     const isOwner = booking.customer_id === req.session.userId ||
                     booking.customer_email === req.session.email;
-    const isStaff = ['employee', 'admin'].includes(req.session.role);
+    const isStaff = ['employee', 'admin'].includes(req.session.role);  // staff read allowed
 
     if (!isOwner && !isStaff) {
         return res.status(403).json({ error: 'Access denied' });
@@ -106,28 +113,42 @@ router.get('/:id', requireAuth, (req, res) => {
 });
 
 // ── PATCH /api/bookings/:id ─────────────────────────────────────
-router.patch('/:id', requireAdmin, (req, res) => {
-    const db = getDb();
-    const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(req.params.id);
-    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+router.patch('/:id', requireAdmin,
+    body('payment_status').optional().isIn(['unpaid','advance_paid','paid','refunded']),
+    body('advance_amount').optional().isFloat({ min: 0 }),
+    body('balance_amount').optional().isFloat({ min: 0 }),
+    body('payment_method').optional().trim().isLength({ max: 50 }),
+    (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
 
-    const allowed = ['status', 'customer_name', 'event_date', 'requirements', 'estimated_total', 'guest_count'];
-    const updates = {};
-    for (const key of allowed) {
-        if (req.body[key] !== undefined) updates[key] = req.body[key];
+        const db = getDb();
+        const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(req.params.id);
+        if (!booking) return res.status(404).json({ error: 'Booking not found' });
+
+        const allowed = [
+            'status', 'customer_name', 'event_date', 'requirements',
+            'estimated_total', 'guest_count',
+            'payment_status', 'advance_amount', 'balance_amount',
+            'payment_method', 'payment_proof', 'payment_notes',
+        ];
+        const updates = {};
+        for (const key of allowed) {
+            if (req.body[key] !== undefined) updates[key] = req.body[key];
+        }
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({ error: 'No valid fields to update' });
+        }
+
+        updates.updated_at = new Date().toISOString();
+        const setClauses = Object.keys(updates).map(k => `${k} = ?`).join(', ');
+        db.prepare(`UPDATE bookings SET ${setClauses} WHERE id = ?`)
+          .run(...Object.values(updates), req.params.id);
+
+        res.json({ message: 'Booking updated', bookingId: req.params.id });
     }
-
-    if (Object.keys(updates).length === 0) {
-        return res.status(400).json({ error: 'No valid fields to update' });
-    }
-
-    updates.updated_at = new Date().toISOString();
-    const setClauses = Object.keys(updates).map(k => `${k} = ?`).join(', ');
-    db.prepare(`UPDATE bookings SET ${setClauses} WHERE id = ?`)
-      .run(...Object.values(updates), req.params.id);
-
-    res.json({ message: 'Booking updated', bookingId: req.params.id });
-});
+);
 
 // ── DELETE /api/bookings/:id ────────────────────────────────────
 router.delete('/:id', requireAdmin, (req, res) => {
@@ -141,7 +162,7 @@ router.delete('/:id', requireAdmin, (req, res) => {
 function parseBooking(b) {
     return {
         ...b,
-        menuItems: JSON.parse(b.menu_items || '[]'),
+        menuItems:      JSON.parse(b.menu_items || '[]'),
         customerName:   b.customer_name,
         customerEmail:  b.customer_email,
         customerPhone:  b.customer_phone,
@@ -149,6 +170,12 @@ function parseBooking(b) {
         eventDate:      b.event_date,
         guestCount:     b.guest_count,
         estimatedTotal: b.estimated_total,
+        advanceAmount:  b.advance_amount,
+        balanceAmount:  b.balance_amount,
+        paymentMethod:  b.payment_method,
+        paymentStatus:  b.payment_status,
+        paymentProof:   b.payment_proof,
+        paymentNotes:   b.payment_notes,
         createdAt:      b.created_at,
         updatedAt:      b.updated_at,
     };

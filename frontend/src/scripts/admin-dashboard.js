@@ -53,7 +53,13 @@ async function syncDashboard() {
         loadMeetings(),
         loadSettings(),
         loadReports(),
+        loadLostFound(),
+        loadEmergencyContacts(),
+        loadPayments(),
     ]);
+    // Poll for unread notifications every 60 s
+    pollNotifications();
+    setInterval(pollNotifications, 60_000);
 }
 
 /* ── TAB SWITCHING ─────────────────────────────────────────── */
@@ -70,7 +76,9 @@ function switchTab(tabName) {
     const titles = {
         dashboard:'Dashboard', bookings:'Booking Management', employees:'Employee Management',
         menu:'Menu Management', gallery:'Gallery Management', accounting:'Accounting & Salary',
-        accounts:'Account Center', reports:'Reports', locations:'Locations', meetings:'Meetings', settings:'Settings',
+        accounts:'Account Center', reports:'Reports', locations:'Locations', meetings:'Meetings',
+        settings:'Settings', 'lost-found':'Lost & Found', emergency:'Emergency Contacts',
+        payments:'Payment Management',
     };
     const titleEl = document.getElementById('page-title');
     if (titleEl) titleEl.textContent = titles[tabName] || 'Dashboard';
@@ -535,6 +543,247 @@ async function saveSettings(event) {
 async function loadReports() {
     // Stats already loaded by loadDashboardStats
     // Could render charts here if needed
+}
+
+/* ── LOST & FOUND ───────────────────────────────────────────── */
+async function loadLostFound() {
+    const res   = await apiFetch('/api/lost-found');
+    const tbody = document.getElementById('lost-found-tbody');
+    if (!tbody) return;
+    if (!res.ok) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Failed to load</td></tr>'; return; }
+    const items = await res.json();
+    if (!items.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No reports yet</td></tr>'; return; }
+    tbody.innerHTML = items.map(item => `
+        <tr>
+            <td><code>${escHtml(item.ref_id)}</code></td>
+            <td><span class="badge badge-${item.type === 'lost' ? 'warning' : 'success'}">${escHtml(item.type)}</span></td>
+            <td>${escHtml(item.item_name)}</td>
+            <td>${escHtml(item.location)}</td>
+            <td>${escHtml(item.contact_name)}<br><small>${escHtml(item.contact_phone)}</small></td>
+            <td><span class="badge badge-${item.status === 'open' ? 'info' : item.status === 'resolved' ? 'success' : 'muted'}">${escHtml(item.status)}</span></td>
+            <td class="action-cell">
+                <button class="action-btn" onclick="resolveLostFound('${item.id}','${item.status}')">
+                    ${item.status === 'open' ? 'Resolve' : 'Reopen'}
+                </button>
+                <button class="action-btn danger" onclick="deleteLostFound('${item.id}')">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function resolveLostFound(id, currentStatus) {
+    const newStatus = currentStatus === 'open' ? 'resolved' : 'open';
+    const res = await apiFetch(`/api/lost-found/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus }),
+    });
+    if (res.ok) { await loadLostFound(); showDashboardNotification(`Marked as ${newStatus}`); }
+    else { const d = await res.json(); showDashboardNotification(d.error, 'error'); }
+}
+
+async function deleteLostFound(id) {
+    if (!confirm('Permanently delete this report?')) return;
+    await apiFetch(`/api/lost-found/${id}`, { method: 'DELETE' });
+    await loadLostFound();
+}
+
+/* ── EMERGENCY CONTACTS ────────────────────────────────────── */
+async function loadEmergencyContacts() {
+    const res   = await apiFetch('/api/emergency/all');
+    const tbody = document.getElementById('emergency-tbody');
+    if (!tbody) return;
+    if (!res.ok) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Failed to load</td></tr>'; return; }
+    const contacts = await res.json();
+    if (!contacts.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No contacts configured</td></tr>'; return; }
+    tbody.innerHTML = contacts.map(c => `
+        <tr>
+            <td>${escHtml(c.name)}</td>
+            <td>${escHtml(c.role)}</td>
+            <td><a href="tel:${escHtml(c.phone)}">${escHtml(c.phone)}</a>${c.phone_alt ? `<br><small>${escHtml(c.phone_alt)}</small>` : ''}</td>
+            <td><span class="badge badge-${c.category}">${escHtml(c.category)}</span></td>
+            <td>${c.is_active ? '✓ Active' : '✗ Inactive'}</td>
+            <td class="action-cell">
+                <button class="action-btn" onclick="toggleEmergencyContact('${c.id}',${c.is_active})">
+                    ${c.is_active ? 'Deactivate' : 'Activate'}
+                </button>
+                <button class="action-btn danger" onclick="deleteEmergencyContact('${c.id}')">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function openAddEmergencyModal() {
+    document.getElementById('addEmergencyModal')?.classList.add('active');
+}
+
+async function handleAddEmergency(event) {
+    event.preventDefault();
+    const form = event.target;
+    const body = {
+        name:      form.querySelector('#ec-name').value.trim(),
+        role:      form.querySelector('#ec-role').value.trim(),
+        phone:     form.querySelector('#ec-phone').value.trim(),
+        phoneAlt:  form.querySelector('#ec-phone-alt').value.trim(),
+        category:  form.querySelector('#ec-category').value,
+        sortOrder: Number(form.querySelector('#ec-sort').value || 0),
+    };
+    const res = await apiFetch('/api/emergency', { method: 'POST', body: JSON.stringify(body) });
+    if (res.ok) { closeModal(); form.reset(); await loadEmergencyContacts(); }
+    else { const d = await res.json(); showDashboardNotification(d.error || 'Failed to add', 'error'); }
+}
+
+async function toggleEmergencyContact(id, isActive) {
+    await apiFetch(`/api/emergency/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_active: isActive ? 0 : 1 }),
+    });
+    await loadEmergencyContacts();
+}
+
+async function deleteEmergencyContact(id) {
+    if (!confirm('Delete this emergency contact?')) return;
+    await apiFetch(`/api/emergency/${id}`, { method: 'DELETE' });
+    await loadEmergencyContacts();
+}
+
+/* ── NOTIFICATIONS BELL ─────────────────────────────────────── */
+async function pollNotifications() {
+    try {
+        const res  = await apiFetch('/api/notifications/unread');
+        const data = await res.json();
+        const bell = document.getElementById('notif-bell');
+        const badge = document.getElementById('notif-badge');
+        if (!bell || !badge) return;
+        const count = data.count || 0;
+        badge.textContent  = count > 9 ? '9+' : String(count);
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    } catch (_) {}
+}
+
+async function openNotificationsPanel() {
+    const panel = document.getElementById('notifications-panel');
+    if (!panel) return;
+    panel.classList.toggle('active');
+    if (!panel.classList.contains('active')) return;
+
+    const res    = await apiFetch('/api/notifications');
+    const items  = await res.json();
+    const list   = document.getElementById('notif-list');
+    if (!list) return;
+
+    if (!items.length) {
+        list.innerHTML = '<li class="notif-empty">No notifications</li>';
+        return;
+    }
+    list.innerHTML = items.map(n => `
+        <li class="notif-item${n.is_read ? '' : ' unread'}" onclick="markNotifRead('${n.id}',this)">
+            <span class="notif-type">${escHtml(n.type.replace(/_/g,' '))}</span>
+            <strong>${escHtml(n.title)}</strong>
+            <p>${escHtml(n.body)}</p>
+            <small>${formatDate(n.created_at)}</small>
+        </li>
+    `).join('');
+}
+
+async function markNotifRead(id, el) {
+    await apiFetch(`/api/notifications/${id}/read`, { method: 'PATCH' });
+    el?.classList.remove('unread');
+    pollNotifications();
+}
+
+async function markAllNotifsRead() {
+    await apiFetch('/api/notifications/mark-all-read', { method: 'PATCH' });
+    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+    const badge = document.getElementById('notif-badge');
+    if (badge) badge.style.display = 'none';
+}
+
+/* ── PAYMENTS ───────────────────────────────────────────────── */
+
+const PAYMENT_STATUS_LABELS = {
+    unpaid:       { label: 'Unpaid',        cls: 'badge-warning' },
+    advance_paid: { label: 'Advance Paid',  cls: 'badge-info' },
+    paid:         { label: 'Fully Paid',    cls: 'badge-success' },
+    refunded:     { label: 'Refunded',      cls: 'badge-muted' },
+};
+
+async function loadPayments() {
+    // Load payment summary cards
+    const sumRes = await apiFetch('/api/payments/summary');
+    if (sumRes.ok) {
+        const s = await sumRes.json();
+        setText('pay-stat-unpaid',    s.unpaid?.count ?? '—');
+        setText('pay-stat-advance',   s.advance_paid?.count ?? '—');
+        setText('pay-stat-paid',      s.paid?.count ?? '—');
+        setText('pay-pending-value',  formatCurrency((s.unpaid?.totalBalance || 0) + (s.advance_paid?.totalBalance || 0)));
+        setText('pay-collected',      formatCurrency(s.advance_paid?.totalAdvance || 0));
+        setText('pay-full-collected', formatCurrency(s.paid?.totalValue || 0));
+    }
+
+    // Load payment rows (all bookings, sorted by payment_status)
+    const bRes = await apiFetch('/api/bookings');
+    const tbody = document.getElementById('payments-tbody');
+    if (!tbody) return;
+    if (!bRes.ok) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Failed to load</td></tr>'; return; }
+    const bookings = await bRes.json();
+    if (!bookings.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No bookings yet</td></tr>'; return; }
+
+    tbody.innerHTML = bookings.map(b => {
+        const ps = PAYMENT_STATUS_LABELS[b.paymentStatus || 'unpaid'] || PAYMENT_STATUS_LABELS.unpaid;
+        const proofHtml = b.paymentProof
+            ? `<a href="${escHtml(b.paymentProof)}" target="_blank" rel="noopener" class="action-btn" style="text-decoration:none">View Proof</a>`
+            : '<span style="color:#aaa;font-size:.78rem">No proof</span>';
+        return `
+        <tr>
+            <td><code style="font-size:.8rem">${escHtml(b.id)}</code></td>
+            <td>${escHtml(b.customerName || '—')}<br><small>${escHtml(b.customerPhone || '')}</small></td>
+            <td>${formatDate(b.eventDate)}<br><small>${escHtml(b.functionType || '—')}</small></td>
+            <td>${formatCurrency(b.estimatedTotal)}</td>
+            <td>${formatCurrency(b.advanceAmount || 0)}</td>
+            <td>${formatCurrency(b.balanceAmount || 0)}</td>
+            <td>
+                <span class="badge ${ps.cls}">${ps.label}</span>
+                ${b.paymentMethod ? `<br><small>${escHtml(b.paymentMethod)}</small>` : ''}
+            </td>
+            <td class="action-cell">
+                ${proofHtml}
+                <button class="action-btn" onclick="openPaymentUpdateModal('${b.id}','${b.paymentStatus || 'unpaid'}',${b.advanceAmount || 0},${b.balanceAmount || 0},'${escHtml(b.paymentMethod || '')}')">Update</button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function openPaymentUpdateModal(bookingId, payStatus, advance, balance, method) {
+    const modal = document.getElementById('paymentUpdateModal');
+    if (!modal) return;
+    document.getElementById('pu-booking-id').value   = bookingId;
+    document.getElementById('pu-payment-status').value = payStatus;
+    document.getElementById('pu-advance').value        = advance;
+    document.getElementById('pu-balance').value        = balance;
+    document.getElementById('pu-method').value         = method;
+    document.getElementById('pu-notes').value          = '';
+    modal.classList.add('active');
+}
+
+async function handlePaymentUpdate(event) {
+    event.preventDefault();
+    const id      = document.getElementById('pu-booking-id').value;
+    const body = {
+        payment_status: document.getElementById('pu-payment-status').value,
+        advance_amount: Number(document.getElementById('pu-advance').value || 0),
+        balance_amount: Number(document.getElementById('pu-balance').value || 0),
+        payment_method: document.getElementById('pu-method').value,
+        payment_notes:  document.getElementById('pu-notes').value.trim(),
+    };
+    const res = await apiFetch(`/api/payments/${id}`, { method: 'PATCH', body: JSON.stringify(body) });
+    if (res.ok) {
+        closeModal();
+        await loadPayments();
+        showDashboardNotification('Payment updated');
+    } else {
+        const d = await res.json();
+        showDashboardNotification(d.error || 'Update failed', 'error');
+    }
 }
 
 /* ── LOGOUT ────────────────────────────────────────────────── */

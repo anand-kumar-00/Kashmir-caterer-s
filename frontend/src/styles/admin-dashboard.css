@@ -1485,3 +1485,197 @@ body {
     .quick-actions-grid { grid-template-columns: 1fr; }
     .admin-header h1 { font-size: 1.5rem; }
 }
+
+/* ================================
+   NOTIFICATIONS BELL
+   ================================ */
+
+.notif-bell-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    padding: 6px 8px;
+    border-radius: 8px;
+    position: relative;
+    transition: background 200ms;
+}
+.notif-bell-btn:hover { background: rgba(18,32,51,.08); }
+
+.notif-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #c0392b;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #fff;
+}
+
+.notif-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 340px;
+    background: #fff;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    z-index: 5000;
+    max-height: 420px;
+    overflow-y: auto;
+}
+.notif-panel.active { display: block; }
+
+.notif-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-light);
+    position: sticky;
+    top: 0;
+    background: #fff;
+}
+.notif-mark-all {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: .8rem;
+    color: var(--info);
+    text-decoration: underline;
+}
+
+.notif-list { list-style: none; padding: 0; margin: 0; }
+.notif-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 150ms;
+}
+.notif-item:hover { background: #f7f8fa; }
+.notif-item.unread { background: #f0f7ff; border-left: 3px solid var(--info); }
+.notif-item .notif-type {
+    font-size: .7rem;
+    text-transform: uppercase;
+    color: var(--gray-medium);
+    letter-spacing: .05em;
+}
+.notif-item strong { display: block; font-size: .85rem; margin: 2px 0; }
+.notif-item p { font-size: .8rem; color: var(--gray-dark); margin: 0 0 4px; line-height: 1.4; }
+.notif-item small { font-size: .72rem; color: var(--gray-medium); }
+.notif-empty { padding: 20px; text-align: center; color: var(--gray-medium); font-size: .9rem; }
+
+/* ================================
+   BADGE UTILITIES
+   ================================ */
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: .72rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+.badge-warning  { background: #fff3cd; color: #856404; }
+.badge-success  { background: #d1fadf; color: #155724; }
+.badge-info     { background: #d0ebff; color: #1c4a72; }
+.badge-muted    { background: #e9ecef; color: #495057; }
+.badge-staff    { background: #e3e8f0; color: #2c3e50; }
+.badge-medical  { background: #fde8e8; color: #922b21; }
+.badge-fire     { background: #fdebd0; color: #784212; }
+.badge-police   { background: #d6eaf8; color: #1a5276; }
+.badge-utility  { background: #d5f5e3; color: #1e8449; }
+.badge-other    { background: #f2f3f4; color: #5d6d7e; }
+
+/* ================================
+   INFO BANNER
+   ================================ */
+
+.info-banner {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    padding: .75rem 1rem;
+    border-radius: 8px;
+    font-size: .85rem;
+    margin-bottom: 1.25rem;
+}
+.info-banner code {
+    background: #dbeafe;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: .82rem;
+}
+
+/* ================================
+   ACTION BUTTON DANGER VARIANT
+   ================================ */
+
+.action-btn.danger {
+    background: #fff0f0;
+    color: var(--danger);
+    border-color: #ffc5c5;
+}
+.action-btn.danger:hover {
+    background: var(--danger);
+    color: #fff;
+}
+
+/* ================================
+   PAYMENT MANAGEMENT TAB
+   ================================ */
+
+.payments-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.pay-summary-card {
+    background: #fff;
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.4rem;
+    border: 1px solid rgba(18,32,51,.07);
+    box-shadow: var(--shadow-sm);
+    transition: transform 200ms, box-shadow 200ms;
+}
+.pay-summary-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.pay-card-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: .5rem;
+}
+.pay-card-icon { font-size: 1.2rem; }
+.pay-card-label { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--gray-medium); }
+.pay-card-count { font-size: 1.7rem; font-weight: 700; color: var(--primary); margin: 4px 0 2px; line-height: 1; }
+.pay-card-sub   { font-size: .73rem; color: var(--gray-medium); }
+
+/* Card color variants */
+.pay-summary-card.unpaid       { border-top: 3px solid var(--warning); }
+.pay-summary-card.advance      { border-top: 3px solid var(--info); }
+.pay-summary-card.paid         { border-top: 3px solid var(--success); }
+.pay-summary-card.pending-value{ border-top: 3px solid #e67e22; }
+.pay-summary-card.collected    { border-top: 3px solid var(--info); }
+.pay-summary-card.fully-collected { border-top: 3px solid var(--success); }
+
+.pay-summary-card.unpaid        .pay-card-count { color: var(--warning); }
+.pay-summary-card.advance       .pay-card-count { color: var(--info); }
+.pay-summary-card.paid          .pay-card-count { color: var(--success); }
+.pay-summary-card.pending-value .pay-card-count { color: #e67e22; }
+.pay-summary-card.collected     .pay-card-count { color: var(--info); font-size: 1.2rem; }
+.pay-summary-card.fully-collected .pay-card-count { color: var(--success); font-size: 1.2rem; }
+

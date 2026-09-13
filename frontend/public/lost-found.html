@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost &amp; Found — Kashmir Caterers</title>
+    <meta name="description" content="Report or look up lost and found items at Kashmir Caterers events using your reference ID.">
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/header.css">
+    <link rel="stylesheet" href="/styles/footer.css">
+    <link rel="stylesheet" href="/styles/modals.css">
+    <style>
+        .lf-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fdf8f0 0%, #fff 60%);
+            padding: 120px 20px 60px;
+        }
+        .lf-container {
+            max-width: 740px;
+            margin: 0 auto;
+        }
+        .lf-page-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .lf-page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: #122033;
+            margin-bottom: .5rem;
+        }
+        .lf-page-header p {
+            color: #57606a;
+            font-size: 1rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* ── Tabs ── */
+        .lf-tabs {
+            display: flex;
+            gap: 4px;
+            background: #f0ebe3;
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 2rem;
+        }
+        .lf-tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 11px;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: .9rem;
+            color: #57606a;
+            transition: all 200ms;
+            font-family: 'Inter', sans-serif;
+        }
+        .lf-tab.active {
+            background: #fff;
+            color: #122033;
+            box-shadow: 0 2px 8px rgba(18,32,51,.1);
+        }
+
+        /* ── Card ── */
+        .lf-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem 2.5rem;
+            box-shadow: 0 4px 24px rgba(18,32,51,.08);
+            border: 1px solid #e9e3da;
+        }
+
+        /* ── Lookup result ── */
+        .lf-result {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid #d4e6d8;
+            background: #f0fff4;
+        }
+        .lf-result.show { display: block; }
+        .lf-result.error {
+            border-color: #fcc;
+            background: #fff5f5;
+        }
+        .lf-result-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: .9rem;
+        }
+        .lf-result-row strong { min-width: 120px; color: #122033; }
+        .lf-result-row span { color: #444; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: .78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-open     { background: #dbeafe; color: #1e40af; }
+        .status-resolved { background: #d1fadf; color: #155724; }
+        .status-expired  { background: #e9ecef; color: #495057; }
+
+        /* ── Form ── */
+        .lf-form .form-group { margin-bottom: 1.1rem; }
+        .lf-form label { display: block; font-weight: 600; font-size: .85rem; margin-bottom: 4px; color: #122033; }
+        .lf-form input, .lf-form textarea, .lf-form select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d4c9a8;
+            border-radius: 10px;
+            font-size: .9rem;
+            font-family: 'Inter', sans-serif;
+            background: #fdfaf5;
+            transition: border-color 200ms;
+        }
+        .lf-form input:focus, .lf-form textarea:focus, .lf-form select:focus {
+            outline: none;
+            border-color: #d5a64a;
+            background: #fff;
+        }
+        .lf-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 580px) { .lf-form .form-row { grid-template-columns: 1fr; } }
+
+        .lf-submit {
+            width: 100%;
+            padding: 12px;
+            background: #122033;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 200ms;
+            margin-top: .5rem;
+        }
+        .lf-submit:hover { background: #1e3a5c; }
+        .lf-submit:disabled { background: #74808d; cursor: not-allowed; }
+
+        .ref-notice {
+            margin-top: 1.25rem;
+            padding: 12px 16px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            font-size: .85rem;
+            color: #92400e;
+        }
+        .ref-notice strong { display: block; margin-bottom: 3px; }
+
+        /* Lookup section */
+        .lookup-input-row {
+            display: flex;
+            gap: 10px;
+        }
+        .lookup-input-row input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1.5px solid #d4c9a8;
+            border-radius: 10px;
+            font-size: .95rem;
+            font-family: 'Inter', sans-serif;
+            background: #fdfaf5;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .lookup-input-row input:focus { outline: none; border-color: #d5a64a; }
+        .lookup-input-row button {
+            padding: 10px 20px;
+            background: #122033;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+        .lookup-input-row button:hover { background: #1e3a5c; }
+
+        .alert-msg {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: .87rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        .alert-msg.show { display: block; }
+        .alert-success { background: #d1fadf; color: #155724; border: 1px solid #6fcf97; }
+        .alert-error   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER (simplified) -->
+    <header class="header" role="banner" style="position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(18,32,51,.95);backdrop-filter:blur(10px)">
+        <div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:12px 24px">
+            <a href="/" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff">
+                <img src="/images/logo.jpg" alt="Kashmir Caterers" width="36" height="36" style="border-radius:8px">
+                <span style="font-family:'Playfair Display',serif;font-size:1.1rem">Kashmir Caterers</span>
+            </a>
+            <a href="/" style="color:rgba(255,255,255,.75);font-size:.9rem;text-decoration:none">← Back to website</a>
+        </div>
+    </header>
+
+    <div class="lf-page">
+        <div class="lf-container">
+            <div class="lf-page-header">
+                <h1>Lost &amp; Found</h1>
+                <p>Report a lost or found item, or look up an existing report using your reference ID.</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="lf-tabs" role="tablist">
+                <button class="lf-tab active" role="tab" aria-selected="true"  onclick="showTab('lookup')">🔍 Check Status</button>
+                <button class="lf-tab"        role="tab" aria-selected="false" onclick="showTab('report')">📋 Submit Report</button>
+            </div>
+
+            <!-- ── LOOKUP TAB ── -->
+            <div id="lookup-panel" class="lf-card" role="tabpanel">
+                <h2 style="font-size:1.2rem;margin-bottom:1rem;color:#122033">Check your report status</h2>
+                <p style="font-size:.87rem;color:#57606a;margin-bottom:1.25rem">
+                    Enter the reference ID you received when you submitted your report (e.g. <code>LF-20240615-A3X4</code>).
+                </p>
+                <div class="lookup-input-row">
+                    <input type="text" id="lookup-ref" placeholder="LF-YYYYMMDD-XXXX" maxlength="20"
+                           oninput="this.value = this.value.toUpperCase()"
+                           onkeydown="if(event.key==='Enter') lookupReport()">
+                    <button onclick="lookupReport()" id="lookup-btn">Look Up</button>
+                </div>
+
+                <div id="lookup-result" class="lf-result" aria-live="polite"></div>
+            </div>
+
+            <!-- ── REPORT TAB ── -->
+            <div id="report-panel" class="lf-card" style="display:none" role="tabpanel">
+                <h2 style="font-size:1.2rem;margin-bottom:1.5rem;color:#122033">Submit a report</h2>
+
+                <div id="report-alert" class="alert-msg" aria-live="polite"></div>
+
+                <form class="lf-form" id="lf-form" onsubmit="submitReport(event)" novalidate>
+
+                    <div class="form-group">
+                        <label>Report Type *</label>
+                        <select id="lf-type" required>
+                            <option value="lost">I lost an item</option>
+                            <option value="found">I found an item</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lf-item-name">Item Name *</label>
+                        <input type="text" id="lf-item-name" required placeholder="e.g. Black leather wallet, Samsung phone" maxlength="120">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lf-description">Description *</label>
+                        <textarea id="lf-description" rows="3" required placeholder="Describe the item — colour, brand, any distinguishing features…" maxlength="1000"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lf-location">Where was it lost / found? *</label>
+                        <input type="text" id="lf-location" required placeholder="e.g. Main dining hall, near the buffet counter" maxlength="200">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lf-event-date">Event Date (if known)</label>
+                        <input type="date" id="lf-event-date">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="lf-contact-name">Your Name *</label>
+                            <input type="text" id="lf-contact-name" required placeholder="Full name" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="lf-contact-phone">Phone Number *</label>
+                            <input type="tel" id="lf-contact-phone" required placeholder="10-digit mobile number" maxlength="15">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lf-contact-email">Email (optional)</label>
+                        <input type="email" id="lf-contact-email" placeholder="For status updates by email">
+                    </div>
+
+                    <button type="submit" class="lf-submit" id="lf-submit-btn">Submit Report</button>
+                </form>
+
+                <div id="submission-success" style="display:none">
+                    <div class="ref-notice">
+                        <strong>✓ Report submitted successfully!</strong>
+                        Your reference ID: <strong id="new-ref-id" style="font-family:monospace;font-size:1rem;letter-spacing:.05em"></strong>
+                        <p style="margin-top:8px">Save this ID — you'll need it to check the status of your report. Our team will contact you.</p>
+                    </div>
+                    <button onclick="resetForm()" class="lf-submit" style="margin-top:1rem;background:#2f8f64">Submit Another Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ── Tab switching ── */
+        function showTab(name) {
+            document.getElementById('lookup-panel').style.display = name === 'lookup' ? 'block' : 'none';
+            document.getElementById('report-panel').style.display = name === 'report'  ? 'block' : 'none';
+            document.querySelectorAll('.lf-tab').forEach((t, i) => {
+                const isActive = (i === 0 && name === 'lookup') || (i === 1 && name === 'report');
+                t.classList.toggle('active', isActive);
+                t.setAttribute('aria-selected', String(isActive));
+            });
+        }
+
+        /* ── Lookup ── */
+        async function lookupReport() {
+            const refId  = document.getElementById('lookup-ref').value.trim();
+            const result = document.getElementById('lookup-result');
+            const btn    = document.getElementById('lookup-btn');
+
+            if (!refId) { showResult(result, 'Enter a reference ID first.', true); return; }
+
+            btn.disabled = true;
+            btn.textContent = 'Looking up…';
+
+            try {
+                const res  = await fetch(`/api/lost-found/lookup/${encodeURIComponent(refId)}`);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showResult(result, data.error || 'Report not found. Check your reference ID.', true);
+                    return;
+                }
+
+                const statusClass = data.status === 'open' ? 'status-open'
+                                  : data.status === 'resolved' ? 'status-resolved'
+                                  : 'status-expired';
+
+                result.innerHTML = `
+                    <div class="lf-result-row"><strong>Reference ID</strong><span><code>${esc(data.refId)}</code></span></div>
+                    <div class="lf-result-row"><strong>Type</strong><span>${esc(data.type)}</span></div>
+                    <div class="lf-result-row"><strong>Item</strong><span>${esc(data.itemName)}</span></div>
+                    <div class="lf-result-row"><strong>Description</strong><span>${esc(data.description)}</span></div>
+                    <div class="lf-result-row"><strong>Location</strong><span>${esc(data.location)}</span></div>
+                    ${data.eventDate ? `<div class="lf-result-row"><strong>Event Date</strong><span>${esc(data.eventDate)}</span></div>` : ''}
+                    <div class="lf-result-row"><strong>Reported By</strong><span>${esc(data.contactName)}</span></div>
+                    <div class="lf-result-row"><strong>Reported On</strong><span>${new Date(data.reportedAt).toLocaleDateString('en-IN')}</span></div>
+                    <div class="lf-result-row"><strong>Status</strong><span><span class="status-badge ${statusClass}">${esc(data.status)}</span></span></div>
+                    ${data.status === 'open' ? '<p style="margin-top:10px;font-size:.85rem;color:#555">Our team is reviewing this report and will contact you.</p>' : ''}
+                `;
+                result.className = 'lf-result show';
+            } catch (_) {
+                showResult(result, 'Network error. Please try again.', true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Look Up';
+            }
+        }
+
+        function showResult(el, msg, isError) {
+            el.className = `lf-result show${isError ? ' error' : ''}`;
+            el.innerHTML = `<p>${esc(msg)}</p>`;
+        }
+
+        /* ── Submit report ── */
+        async function submitReport(event) {
+            event.preventDefault();
+            const alert = document.getElementById('report-alert');
+            const btn   = document.getElementById('lf-submit-btn');
+
+            const body = {
+                type:         document.getElementById('lf-type').value,
+                itemName:     document.getElementById('lf-item-name').value.trim(),
+                description:  document.getElementById('lf-description').value.trim(),
+                location:     document.getElementById('lf-location').value.trim(),
+                eventDate:    document.getElementById('lf-event-date').value || null,
+                contactName:  document.getElementById('lf-contact-name').value.trim(),
+                contactPhone: document.getElementById('lf-contact-phone').value.trim(),
+                contactEmail: document.getElementById('lf-contact-email').value.trim() || null,
+            };
+
+            // Client-side validation
+            if (!body.itemName || !body.description || !body.location ||
+                !body.contactName || !body.contactPhone) {
+                showAlert(alert, 'Please fill in all required fields.', true);
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Submitting…';
+
+            try {
+                const res  = await fetch('/api/lost-found', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showAlert(alert, data.error || 'Submission failed. Please try again.', true);
+                    return;
+                }
+
+                // Show success
+                document.getElementById('lf-form').style.display = 'none';
+                document.getElementById('new-ref-id').textContent = data.refId;
+                document.getElementById('submission-success').style.display = 'block';
+                alert.style.display = 'none';
+            } catch (_) {
+                showAlert(alert, 'Network error. Please try again.', true);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Submit Report';
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('lf-form').reset();
+            document.getElementById('lf-form').style.display = 'block';
+            document.getElementById('submission-success').style.display = 'none';
+        }
+
+        function showAlert(el, msg, isError) {
+            el.textContent = msg;
+            el.className = `alert-msg show ${isError ? 'alert-error' : 'alert-success'}`;
+        }
+
+        function esc(str) {
+            return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+    </script>
+</body>
+</html>
