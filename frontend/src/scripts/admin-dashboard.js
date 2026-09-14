@@ -182,30 +182,128 @@ async function promptCancelBooking(id) {
 }
 
 /* ── MENU ──────────────────────────────────────────────────── */
+const ADMIN_MENU_LABELS = {
+    'cold-beverages': 'Cold Beverages',
+    'shakes-smoothies': 'Shakes, Smoothies & Punches',
+    'hot-beverages': 'Hot Beverages',
+    'soup-veg': 'Soup Station (Veg)',
+    'soup-nonveg': 'Soup Station (Non-Veg)',
+    'appetizers-veg': 'Appetizers (Veg)',
+    'appetizers-nonveg': 'Appetizers (Non-Veg)',
+    'main-course-veg': 'Main Course (Veg)',
+    'main-course-nonveg': 'Main Course (Non-Veg)',
+    'main-course-hightea': 'Main Course (High Tea)',
+    'rice-pulao': 'Rice, Pulao & Biryani',
+    'assorted-bread': 'Assorted Breads',
+    'salad-raita': 'Salad Station',
+    'raita': 'Raita & Accompaniments',
+    'live-counters': 'Live Counters (Veg)',
+    'live-counters-nonveg': 'Live Counters (Non-Veg)',
+    'dessert': 'Dessert & Sweets',
+    'fruit-counter': 'Fruit Counter',
+    'specialty-counters': 'Specialty Counters',
+    'arrival-drinks': 'As You Arrive (Koshur)',
+    'buffet-nonveg': 'Buffet Non-Veg (Koshur)',
+    'soft-drink': 'Soft Drink (High Tea)',
+    'wazwan-nonveg': 'Wazwan Non-Veg',
+    'wazwan-veg': 'Wazwan Veg',
+    'wazwan-sweet': 'Wazwan Sweets',
+};
+
+function getAdminMenuCategoryLabel(category) {
+    return ADMIN_MENU_LABELS[category] || category.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
 async function loadMenuItems() {
     const res   = await apiFetch('/api/menu');
     const items = await res.json();
+    window.__adminMenuItems = items;
+    const container = document.getElementById('admin-menu-sections');
+    if (!container) return;
 
-    ['breakfast','lunch','dinner'].forEach(cat => {
-        const container = document.getElementById(`${cat}-items`);
-        if (!container) return;
-        const catItems = items.filter(i => i.category === cat);
-        if (!catItems.length) { container.innerHTML = '<p style="color:var(--color-muted)">No items yet</p>'; return; }
-        container.innerHTML = catItems.map(item => `
-            <div class="menu-item-card">
-                <div class="menu-item-info">
-                    <h4>${escHtml(item.name)}</h4>
-                    <p style="color:var(--color-muted);font-size:.85rem">${escHtml(item.type)}</p>
-                    <p style="font-size:.85rem">${escHtml(item.description || '')}</p>
-                </div>
-                <div style="text-align:right">
-                    <div class="menu-item-price">${formatCurrency(item.price)}</div>
-                    <button class="action-btn" onclick="promptEditMenuItem('${item.id}','${escHtml(item.name)}',${item.price},'${escHtml(item.description || '')}')">Edit</button>
-                    <button class="action-btn" onclick="deleteMenuItem('${item.id}')">Delete</button>
+    const grouped = {};
+    items.forEach(item => {
+        const cat = item.category || 'other';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(item);
+    });
+
+    const categories = Object.keys(grouped);
+    container.innerHTML = categories.length
+        ? categories.map(cat => `
+            <div class="menu-admin-section">
+                <h3>${escHtml(getAdminMenuCategoryLabel(cat))}</h3>
+                <div class="menu-admin-list">
+                    ${grouped[cat].map(item => `
+                        <div class="menu-item-card">
+                            <div class="menu-item-info">
+                                <h4>${escHtml(item.name)}</h4>
+                                <p style="color:var(--color-muted);font-size:.85rem">${escHtml(item.type)}</p>
+                                <p style="font-size:.85rem">${escHtml(item.description || '')}</p>
+                            </div>
+                            <div style="text-align:right">
+                                <div class="menu-item-price">${formatCurrency(Number(item.price || 0))}</div>
+                                <button class="action-btn" onclick="promptEditMenuItem('${item.id}','${escHtml(item.name)}',${Number(item.price || 0)},'${escHtml(item.description || '').replace(/'/g, "\\'")}' )">Edit</button>
+                                <button class="action-btn" onclick="deleteMenuItem('${item.id}')">Delete</button>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
-        `).join('');
+        `).join('')
+        : '<p class="empty-state-panel">No menu items added yet.</p>';
+
+    const countEl = document.getElementById('menu-item-count');
+    if (countEl) countEl.textContent = `${items.length} menu items`;
+}
+
+function filterAdminMenu() {
+    const query = (document.getElementById('menu-search')?.value || '').trim().toLowerCase();
+    const type = document.getElementById('menu-cat-filter')?.value || '';
+    const container = document.getElementById('admin-menu-sections');
+    if (!container) return;
+
+    const items = (window.__adminMenuItems || []);
+    const filtered = items.filter(item => {
+        const matchesQuery = !query || item.name.toLowerCase().includes(query) || (item.description || '').toLowerCase().includes(query);
+        const matchesType = !type || item.type === type;
+        return matchesQuery && matchesType;
     });
+
+    const grouped = {};
+    filtered.forEach(item => {
+        const cat = item.category || 'other';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(item);
+    });
+
+    const categories = Object.keys(grouped);
+    container.innerHTML = categories.length
+        ? categories.map(cat => `
+            <div class="menu-admin-section">
+                <h3>${escHtml(getAdminMenuCategoryLabel(cat))}</h3>
+                <div class="menu-admin-list">
+                    ${grouped[cat].map(item => `
+                        <div class="menu-item-card">
+                            <div class="menu-item-info">
+                                <h4>${escHtml(item.name)}</h4>
+                                <p style="color:var(--color-muted);font-size:.85rem">${escHtml(item.type)}</p>
+                                <p style="font-size:.85rem">${escHtml(item.description || '')}</p>
+                            </div>
+                            <div style="text-align:right">
+                                <div class="menu-item-price">${formatCurrency(Number(item.price || 0))}</div>
+                                <button class="action-btn" onclick="promptEditMenuItem('${item.id}','${escHtml(item.name)}',${Number(item.price || 0)},'${escHtml(item.description || '').replace(/'/g, "\\'")}' )">Edit</button>
+                                <button class="action-btn" onclick="deleteMenuItem('${item.id}')">Delete</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('')
+        : '<p class="empty-state-panel">No matching menu items found.</p>';
+
+    const countEl = document.getElementById('menu-item-count');
+    if (countEl) countEl.textContent = `${filtered.length} item${filtered.length === 1 ? '' : 's'} shown`;
 }
 
 function openAddMenuModal() { document.getElementById('addMenuModal')?.classList.add('active'); }
@@ -213,16 +311,32 @@ function openAddMenuModal() { document.getElementById('addMenuModal')?.classList
 async function handleAddMenuItem(event) {
     event.preventDefault();
     const form = event.target;
+    const name = form.querySelector('#mi-name')?.value.trim();
+    const category = form.querySelector('#mi-category')?.value;
+    const type = form.querySelector('#mi-type')?.value;
+    const priceValue = form.querySelector('#mi-rate')?.value;
+    const description = form.querySelector('#mi-desc')?.value.trim();
+    const note = form.querySelector('#mi-note')?.value.trim();
+
     const body = {
-        name:        form.querySelector('input[type="text"]').value,
-        category:    form.querySelectorAll('select')[0].value,
-        type:        form.querySelectorAll('select')[1].value,
-        price:       parseInt(form.querySelector('input[type="number"]').value, 10),
-        description: form.querySelector('textarea').value,
+        name,
+        category,
+        type,
+        price: Number(priceValue || 0),
+        description,
+        note,
     };
+
     const res = await apiFetch('/api/menu', { method:'POST', body: JSON.stringify(body) });
-    if (res.ok) { closeModal(); form.reset(); await loadMenuItems(); showDashboardNotification('Menu item added', 'success'); }
-    else { const d = await res.json(); alert(d.error); }
+    if (res.ok) {
+        closeModal(); form.reset();
+        const all = await apiFetch('/api/menu');
+        window.__adminMenuItems = await all.json();
+        await loadMenuItems();
+        showDashboardNotification('Menu item added', 'success');
+    } else {
+        const d = await res.json(); alert(d.error);
+    }
 }
 
 async function promptEditMenuItem(id, name, price, description) {
@@ -233,13 +347,35 @@ async function promptEditMenuItem(id, name, price, description) {
     const newDesc  = prompt('Description', description);
     if (newDesc === null) return;
     await apiFetch(`/api/menu/${id}`, { method:'PATCH', body: JSON.stringify({ name:newName, price:Number(newPrice), description:newDesc }) });
+    const all = await apiFetch('/api/menu');
+    window.__adminMenuItems = await all.json();
     await loadMenuItems();
 }
 
 async function deleteMenuItem(id) {
     if (!confirm('Delete this menu item?')) return;
     await apiFetch(`/api/menu/${id}`, { method:'DELETE' });
+    const all = await apiFetch('/api/menu');
+    window.__adminMenuItems = await all.json();
     await loadMenuItems();
+}
+
+function exportMenuCSV() {
+    const items = window.__adminMenuItems || [];
+    if (!items.length) return;
+    const rows = [['Name','Category','Type','Price','Description']].concat(items.map(item => [
+        item.name,
+        item.category,
+        item.type,
+        Number(item.price || 0),
+        item.description || ''
+    ]));
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'kashmir-caterers-menu.csv'; a.click();
+    URL.revokeObjectURL(url);
 }
 
 /* ── GALLERY ───────────────────────────────────────────────── */

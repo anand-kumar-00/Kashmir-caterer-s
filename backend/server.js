@@ -47,6 +47,7 @@ const uploadRoutes       = require('./src/routes/upload');
 const paymentRoutes      = require('./src/routes/payments');
 
 const app  = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 const FRONTEND_DIR = path.resolve(__dirname, '../frontend');
 

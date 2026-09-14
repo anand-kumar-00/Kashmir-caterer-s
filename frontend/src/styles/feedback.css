@@ -4,14 +4,16 @@
    ============================================================= */
 
 .feedback-section {
-  background: var(--c-surface);
+  background:
+    radial-gradient(circle at top right, rgba(201, 150, 45, 0.08), transparent 25%),
+    var(--c-surface);
 }
 
 /* ── TWO-COLUMN LAYOUT ────────────────────────────────────── */
 .feedback-layout,
 .feedback-layout-wrap {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
   gap: var(--sp-10);
   margin-bottom: var(--sp-10);
   align-items: start;
@@ -20,18 +22,20 @@
 /* ── FORM PANEL ───────────────────────────────────────────── */
 .feedback-form-wrap,
 .feedback-form-container {
-  background: #fff;
+  background: rgba(255,255,255,0.9);
   border-radius: var(--radius-xl);
   padding: var(--sp-8);
-  box-shadow: var(--sh-sm);
-  border: 1px solid var(--c-border);
+  box-shadow: var(--sh-md);
+  border: 1px solid rgba(201,150,45,0.12);
 }
+
 .fb-form-title,
 .feedback-form-title {
   font-size: clamp(1.4rem, 3vw, 1.9rem);
   margin-bottom: var(--sp-2);
   color: var(--c-text);
 }
+
 .fb-form-sub,
 .feedback-form-subtitle {
   font-size: 1rem;
@@ -45,13 +49,14 @@
   gap: var(--sp-2);
   margin-bottom: var(--sp-2);
 }
+
 .star {
   background: none;
   border: none;
   font-size: 1.75rem;
   cursor: pointer;
   color: var(--c-border);
-  transition: color var(--transition-fast), transform var(--transition-fast);
+  transition: color var(--transition-fast), transform var(--transition-fast), text-shadow var(--transition-fast);
   min-width: var(--touch);
   min-height: var(--touch);
   display: flex;
@@ -60,11 +65,14 @@
   border-radius: var(--radius-sm);
   padding: 0;
 }
+
 .star:hover,
 .star.active {
   color: #f0b429;
   transform: scale(1.15);
+  text-shadow: 0 6px 18px rgba(240,180,41,0.25);
 }
+
 .rating-label-text,
 .rating-value {
   font-size: .875rem;
@@ -88,6 +96,7 @@
   transition: all var(--transition-base);
   width: 100%;
 }
+
 .feedback-submit:hover {
   transform: translateY(-2px);
   box-shadow: var(--sh-md);
@@ -96,11 +105,11 @@
 /* ── STATS PANEL ──────────────────────────────────────────── */
 .feedback-stats-wrap,
 .feedback-stats {
-  background: #fff;
+  background: rgba(255,255,255,0.92);
   border-radius: var(--radius-xl);
   padding: var(--sp-8);
-  box-shadow: var(--sh-sm);
-  border: 1px solid var(--c-border);
+  box-shadow: var(--sh-md);
+  border: 1px solid rgba(201,150,45,0.12);
   display: flex;
   flex-direction: column;
   gap: var(--sp-6);
@@ -109,7 +118,11 @@
 .stat-box,
 .stat-item {
   text-align: center;
+  padding: var(--sp-3) var(--sp-2);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(201,150,45,0.06), rgba(255,255,255,0.12));
 }
+
 .stat-num,
 .stat-value {
   font-family: var(--f-display);
@@ -117,6 +130,7 @@
   font-weight: 700;
   color: var(--c-gold);
 }
+
 .stat-lbl,
 .stat-label {
   font-size: .8125rem;
@@ -133,18 +147,21 @@
   flex-direction: column;
   gap: var(--sp-2);
 }
+
 .r-bar,
 .rating-bar {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
 }
+
 .rating-label {
   font-size: .875rem;
   color: var(--c-muted);
   min-width: 28px;
   font-weight: 600;
 }
+
 .bar-track,
 .progress-bar {
   flex: 1;
@@ -153,14 +170,16 @@
   border-radius: var(--radius-full);
   overflow: hidden;
 }
+
 .bar-fill,
 .progress-fill {
   height: 100%;
-  background: var(--g-gold);
+  background: linear-gradient(90deg, #d4a83d 0%, #f0b429 100%);
   border-radius: var(--radius-full);
   transition: width var(--dur-slow) var(--ease);
   width: 0%;
 }
+
 .rating-count {
   font-size: .75rem;
   color: var(--c-muted);
@@ -176,17 +195,20 @@
   margin-bottom: var(--sp-6);
   flex-wrap: wrap;
 }
+
 .filter-label {
   font-size: 1rem;
   font-weight: 600;
   color: var(--c-text);
 }
+
 .filter-opts,
 .filter-options {
   display: flex;
   gap: var(--sp-2);
   flex-wrap: wrap;
 }
+
 .filter-btn {
   min-height: var(--touch);
   padding: var(--sp-2) var(--sp-4);
@@ -200,11 +222,13 @@
   color: var(--c-muted);
   transition: all var(--transition-fast);
 }
+
 .filter-btn:hover,
 .filter-btn.active {
   background: var(--c-dark);
   color: var(--c-gold-lt);
   border-color: var(--c-dark);
+  box-shadow: 0 8px 18px rgba(26,26,26,0.12);
 }
 
 /* ── REVIEWS LIST ─────────────────────────────────────────── */
@@ -214,15 +238,21 @@
   flex-direction: column;
   gap: var(--sp-5);
 }
+
 .review-card {
-  background: #fff;
-  border-radius: var(--radius-lg);
+  background: rgba(255,255,255,0.96);
+  border-radius: 1.15rem;
   padding: var(--sp-6);
-  border: 1px solid var(--c-border);
+  border: 1px solid rgba(26,26,26,0.06);
   box-shadow: var(--sh-sm);
-  transition: box-shadow var(--transition-base);
+  transition: box-shadow var(--transition-base), transform var(--transition-base), border-color var(--transition-base);
 }
-.review-card:hover { box-shadow: var(--sh-md); }
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sh-md);
+  border-color: rgba(201,150,45,0.18);
+}
 
 .review-card-header {
   display: flex;
@@ -231,12 +261,14 @@
   gap: var(--sp-4);
   margin-bottom: var(--sp-3);
 }
+
 .reviewer-info h4 {
   font-size: 1rem;
   font-weight: 700;
   color: var(--c-text);
   font-family: var(--f-body);
 }
+
 .reviewer-meta {
   font-size: .875rem;
   color: var(--c-muted);
@@ -246,11 +278,13 @@
   margin-top: var(--sp-1);
   flex-wrap: wrap;
 }
+
 .review-stars {
   color: #f0b429;
   font-size: 1rem;
   letter-spacing: .02em;
 }
+
 .verified-badge {
   background: #e8f5e9;
   color: var(--c-success);
@@ -261,20 +295,35 @@
   text-transform: uppercase;
   letter-spacing: .04em;
 }
+
 .review-text {
   font-size: 1rem;
   color: var(--c-muted);
   line-height: 1.7;
 }
 
+#loadMoreBtn {
+  margin-top: 0.75rem;
+}
+
 /* ── RESPONSIVE ───────────────────────────────────────────── */
 @media (max-width: 900px) {
   .feedback-layout,
-  .feedback-layout-wrap { grid-template-columns: 1fr; }
+  .feedback-layout-wrap {
+    grid-template-columns: 1fr;
+  }
 }
+
 @media (max-width: 600px) {
   .feedback-form-wrap,
   .feedback-form-container,
   .feedback-stats-wrap,
-  .feedback-stats { padding: var(--sp-6); }
+  .feedback-stats {
+    padding: var(--sp-6);
+  }
+
+  .review-card-header {
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
 }

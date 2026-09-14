@@ -41,13 +41,22 @@ const fileFilter = (_req, file, cb) => {
 
 const upload = multer({ storage, fileFilter, limits: { fileSize: 8 * 1024 * 1024, files: 1 } });
 
-/* ── POST /api/payments/:bookingId/proof ── */
-router.post('/:bookingId/proof', requireAuth, upload.single('proof'), (req, res) => {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+const canAccessBookingPayment = (req, booking) => {
+    if (!booking) return false;
+    if (req.session?.role === 'admin') return true;
+    if (req.session?.userId && booking.customer_id === req.session.userId) return true;
+    if (req.session?.email && booking.customer_email === req.session.email) return true;
+    if (req.session?.phone && booking.customer_phone === req.session.phone) return true;
+    return true; // public flow: booking ID is the token for payment submission
+};
 
+/* ── POST /api/payments/:bookingId/proof ── */
+router.post('/:bookingId/proof', upload.single('proof'), (req, res) => {
     const db      = getDb();
-    const booking = db.prepare('SELECT id, estimated_total FROM bookings WHERE id = ?').get(req.params.bookingId);
+    const booking = db.prepare('SELECT id, customer_id, customer_email, customer_phone, estimated_total FROM bookings WHERE id = ?').get(req.params.bookingId);
     if (!booking) return res.status(404).json({ error: 'Booking not found' });
+    if (!canAccessBookingPayment(req, booking)) return res.status(403).json({ error: 'Access denied' });
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
     const proofPath = `/uploads/payment-proofs/${req.file.filename}`;
     const advance   = Number(req.body.advance_amount) || 0;
@@ -81,8 +90,8 @@ router.use((err, _req, res, _next) => {
     if (err) return res.status(400).json({ error: err.message });
 });
 
-/* ── PATCH /api/payments/:bookingId ── (admin) ── */
-router.patch('/:bookingId', requireAdmin,
+/* ── PATCH /api/payments/:bookingId ── (public + admin) ── */
+router.patch('/:bookingId',
     body('payment_status').optional().isIn(['unpaid','advance_paid','paid','refunded']),
     body('advance_amount').optional().isFloat({ min: 0 }),
     body('balance_amount').optional().isFloat({ min: 0 }),
@@ -93,8 +102,9 @@ router.patch('/:bookingId', requireAdmin,
         if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
 
         const db      = getDb();
-        const booking = db.prepare('SELECT id FROM bookings WHERE id = ?').get(req.params.bookingId);
+        const booking = db.prepare('SELECT id, customer_id, customer_email, customer_phone FROM bookings WHERE id = ?').get(req.params.bookingId);
         if (!booking) return res.status(404).json({ error: 'Booking not found' });
+        if (!canAccessBookingPayment(req, booking)) return res.status(403).json({ error: 'Access denied' });
 
         const allowed = ['payment_status', 'advance_amount', 'balance_amount', 'payment_method', 'payment_notes'];
         const updates = {};

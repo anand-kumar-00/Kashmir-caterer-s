@@ -37,30 +37,56 @@ router.post('/',
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
 
-        const { name, category, type, rate = '', note = '', description = '' } = req.body;
+        const { name, category, type, price, rate = '', note = '', description = '' } = req.body;
+        const parsedPrice = Number(price ?? rate ?? 0);
+        if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
+            return res.status(400).json({ error: 'Valid price is required' });
+        }
+
         const id = 'ITEM-' + uuidv4().replace(/-/g, '').slice(0, 8).toUpperCase();
         const db = getDb();
+        const cleanDescription = [
+            description,
+            parsedPrice > 0 ? `Price: ₹${parsedPrice}` : '',
+            rate && price === undefined ? `Rate: ${rate}` : '',
+            note,
+        ].filter(Boolean).join(' | ');
 
         db.prepare(`
-            INSERT INTO menu_items (id, name, category, type, description)
-            VALUES (?, ?, ?, ?, ?)
-        `).run(id, name.trim(), category, type, `${description}${rate?' | Rate: '+rate:''}${note?' | Note: '+note:''}`);
+            INSERT INTO menu_items (id, name, category, type, price, description)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `).run(id, name.trim(), category, type, parsedPrice, cleanDescription);
 
-        res.status(201).json({ message: 'Menu item added', id });
+        res.status(201).json({ message: 'Menu item added', id, price: parsedPrice });
     }
 );
 
 router.patch('/:id', requireAdmin,
-    body('price').optional().isFloat({ min: 0 }),
+    body('price').optional().custom((value) => {
+        if (value === undefined || value === null || value === '') return true;
+        const num = Number(value);
+        if (!Number.isFinite(num) || num < 0) throw new Error('Price must be a valid non-negative number');
+        return true;
+    }),
     (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
+
         const db = getDb();
         const item = db.prepare('SELECT id FROM menu_items WHERE id = ?').get(req.params.id);
         if (!item) return res.status(404).json({ error: 'Item not found' });
 
-        const allowed = ['name', 'category', 'type', 'price', 'description', 'is_active'];
+        const allowed = ['name', 'category', 'type', 'description', 'is_active'];
         const updates = {};
         for (const key of allowed) {
             if (req.body[key] !== undefined) updates[key] = req.body[key];
+        }
+        if (req.body.price !== undefined || req.body.rate !== undefined) {
+            const parsedPrice = Number(req.body.price ?? req.body.rate ?? 0);
+            if (!Number.isFinite(parsedPrice) || parsedPrice < 0) {
+                return res.status(400).json({ error: 'Price must be a valid non-negative number' });
+            }
+            updates.price = parsedPrice;
         }
         if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'Nothing to update' });
 

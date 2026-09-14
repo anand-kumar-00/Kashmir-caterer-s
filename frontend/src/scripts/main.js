@@ -357,12 +357,20 @@ function handleServiceCardKeydown(event, serviceType) {
 
 /* ── MOBILE MENU ───────────────────────────────────────────── */
 function toggleMobileMenu() {
-    const nav = document.getElementById('nav-menu-mobile');
+    const nav = document.getElementById('mobile-nav');
     const btn = document.querySelector('.menu-toggle');
     if (!nav || !btn) return;
-    const isOpen = !nav.hidden;
+
+    const isOpen = nav.hidden === false;
     nav.hidden = isOpen;
     btn.setAttribute('aria-expanded', String(!isOpen));
+    document.body.style.overflow = isOpen ? '' : 'hidden';
+
+    if (!isOpen) {
+        nav.setAttribute('aria-hidden', 'false');
+    } else {
+        nav.setAttribute('aria-hidden', 'true');
+    }
 }
 
 /* ── LIGHTBOX ──────────────────────────────────────────────── */
