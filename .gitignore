@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Environment files
+.env
+.env.*
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Runtime data
+*.log
+npm-debug.log*
+logs/
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+backend/uploads/
+frontend/public/uploads/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Build / cache
+.cache/
+coverage/
+
+# Local backup artifacts
+*.bak
+*.tmp
