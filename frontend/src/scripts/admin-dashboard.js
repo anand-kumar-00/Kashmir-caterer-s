@@ -45,6 +45,7 @@ async function syncDashboard() {
     await Promise.allSettled([
         loadDashboardStats(),
         loadBookings(),
+        loadMenuCategories(),
         loadMenuItems(),
         loadGalleryItems(),
         loadEmployees(),
@@ -179,6 +180,24 @@ async function promptCancelBooking(id) {
     await apiFetch(`/api/bookings/${id}`, { method: 'DELETE' });
     await syncDashboard();
     showDashboardNotification('Booking cancelled', 'success');
+}
+
+async function loadMenuCategories() {
+    const select = document.getElementById('mi-category');
+    if (!select) return;
+
+    try {
+        const res = await apiFetch('/api/menu/categories');
+        const categories = await res.json();
+        if (!Array.isArray(categories) || !categories.length) return;
+        select.innerHTML = '<option value="">— Select Category —</option>' + categories.map(cat => `
+            <option value="${escHtml(cat.slug)}">${escHtml(cat.name)}</option>
+        `).join('');
+    } catch (_) {
+        select.innerHTML = '<option value="">— Select Category —</option>' + Object.entries(ADMIN_MENU_LABELS).map(([key, label]) => `
+            <option value="${escHtml(key)}">${escHtml(label)}</option>
+        `).join('');
+    }
 }
 
 /* ── MENU ──────────────────────────────────────────────────── */

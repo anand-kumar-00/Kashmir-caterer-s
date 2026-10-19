@@ -11,22 +11,39 @@ const { body, validationResult } = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
 const { getDb } = require('../models/db');
 const { requireAdmin } = require('../middleware/auth');
+const { MENU_CATEGORY_SEED, ensureDefaultMenuCategories, getCategoryLabel } = require('../models/menuCatalog');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/categories', (req, res) => {
     const db = getDb();
-    const items = db.prepare('SELECT * FROM menu_items WHERE is_active = 1 ORDER BY category, type').all();
-    res.json(items);
+    ensureDefaultMenuCategories(db);
+    const categories = db.prepare(`
+        SELECT slug, name, sort_order
+        FROM menu_categories
+        WHERE is_active = 1
+        ORDER BY sort_order ASC, name ASC
+    `).all();
+    res.json(categories);
 });
 
-const VALID_CATEGORIES = [
-    'cold-beverages','shakes-smoothies','hot-beverages','soup-veg','soup-nonveg',
-    'appetizers-veg','appetizers-nonveg','main-course-veg','main-course-nonveg',
-    'main-course-hightea','rice-pulao','assorted-bread','salad-raita','raita',
-    'live-counters','live-counters-nonveg','dessert','fruit-counter','specialty-counters',
-    'arrival-drinks','buffet-nonveg','soft-drink','wazwan-nonveg','wazwan-veg','wazwan-sweet',
-];
+router.get('/', (req, res) => {
+    const db = getDb();
+    ensureDefaultMenuCategories(db);
+    const items = db.prepare(`
+        SELECT m.*, c.name as category_name
+        FROM menu_items m
+        LEFT JOIN menu_categories c ON c.slug = m.category
+        WHERE m.is_active = 1
+        ORDER BY c.sort_order, m.name ASC
+    `).all();
+    res.json(items.map(item => ({
+        ...item,
+        categoryLabel: getCategoryLabel(item.category),
+    })));
+});
+
+const VALID_CATEGORIES = MENU_CATEGORY_SEED.map(cat => cat.slug);
 
 router.post('/',
     requireAdmin,
@@ -45,6 +62,7 @@ router.post('/',
 
         const id = 'ITEM-' + uuidv4().replace(/-/g, '').slice(0, 8).toUpperCase();
         const db = getDb();
+        ensureDefaultMenuCategories(db);
         const cleanDescription = [
             description,
             parsedPrice > 0 ? `Price: ₹${parsedPrice}` : '',
@@ -57,7 +75,7 @@ router.post('/',
             VALUES (?, ?, ?, ?, ?, ?)
         `).run(id, name.trim(), category, type, parsedPrice, cleanDescription);
 
-        res.status(201).json({ message: 'Menu item added', id, price: parsedPrice });
+        res.status(201).json({ message: 'Menu item added', id, price: parsedPrice, categoryLabel: getCategoryLabel(category) });
     }
 );
 
@@ -80,6 +98,9 @@ router.patch('/:id', requireAdmin,
         const updates = {};
         for (const key of allowed) {
             if (req.body[key] !== undefined) updates[key] = req.body[key];
+        }
+        if (req.body.category !== undefined && !VALID_CATEGORIES.includes(req.body.category)) {
+            return res.status(400).json({ error: 'Invalid category' });
         }
         if (req.body.price !== undefined || req.body.rate !== undefined) {
             const parsedPrice = Number(req.body.price ?? req.body.rate ?? 0);

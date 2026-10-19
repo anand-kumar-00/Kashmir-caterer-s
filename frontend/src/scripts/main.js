@@ -329,6 +329,12 @@ function openBookingModal(event) {
     document.body.style.overflow = 'hidden';
 }
 
+window.openBookingModal = openBookingModal;
+window.closeBookingModal = closeBookingModal;
+window.startBookingForService = startBookingForService;
+window.handleServiceCardKeydown = handleServiceCardKeydown;
+window.toggleMobileMenu = toggleMobileMenu;
+
 function closeBookingModal(event) {
     if (event && event.target !== event.currentTarget) return;
     document.getElementById('bookingModal')?.classList.remove('active');

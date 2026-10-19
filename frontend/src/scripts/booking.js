@@ -18,6 +18,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ── STEP NAVIGATION ───────────────────────────────────────────── */
+window.goToStep = goToStep;
+window.submitBooking = submitBooking;
+window.submitPaymentProof = submitPaymentProof;
+window.skipPayment = skipPayment;
+window.resetBookingForm = resetBookingForm;
+
 async function goToStep(step) {
     if (step > currentStep) {
         const valid = await validateCurrentStep();

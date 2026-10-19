@@ -52,6 +52,19 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 
 -- ============================================================
+-- MENU CATEGORIES
+-- ============================================================
+CREATE TABLE IF NOT EXISTS menu_categories (
+    id         TEXT PRIMARY KEY,
+    slug       TEXT UNIQUE NOT NULL,
+    name       TEXT NOT NULL,
+    sort_order INTEGER DEFAULT 0,
+    is_active  INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+-- ============================================================
 -- MENU ITEMS
 -- ============================================================
 CREATE TABLE IF NOT EXISTS menu_items (
@@ -218,6 +231,34 @@ CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read);
 -- ============================================================
 -- DEFAULT SEED DATA
 -- ============================================================
+
+-- Menu categories
+INSERT OR IGNORE INTO menu_categories (id, slug, name, sort_order, is_active, created_at, updated_at) VALUES
+  ('menu-cat-001', 'cold-beverages', 'Cold Beverages', 1, 1, datetime('now'), datetime('now')),
+  ('menu-cat-002', 'shakes-smoothies', 'Shakes, Smoothies & Punches', 2, 1, datetime('now'), datetime('now')),
+  ('menu-cat-003', 'hot-beverages', 'Hot Beverages', 3, 1, datetime('now'), datetime('now')),
+  ('menu-cat-004', 'soup-veg', 'Soup Station (Veg)', 4, 1, datetime('now'), datetime('now')),
+  ('menu-cat-005', 'soup-nonveg', 'Soup Station (Non-Veg)', 5, 1, datetime('now'), datetime('now')),
+  ('menu-cat-006', 'appetizers-veg', 'Appetizers (Veg)', 6, 1, datetime('now'), datetime('now')),
+  ('menu-cat-007', 'appetizers-nonveg', 'Appetizers (Non-Veg)', 7, 1, datetime('now'), datetime('now')),
+  ('menu-cat-008', 'main-course-veg', 'Main Course (Veg)', 8, 1, datetime('now'), datetime('now')),
+  ('menu-cat-009', 'main-course-nonveg', 'Main Course (Non-Veg)', 9, 1, datetime('now'), datetime('now')),
+  ('menu-cat-010', 'main-course-hightea', 'Main Course (High Tea)', 10, 1, datetime('now'), datetime('now')),
+  ('menu-cat-011', 'rice-pulao', 'Rice, Pulao & Biryani', 11, 1, datetime('now'), datetime('now')),
+  ('menu-cat-012', 'assorted-bread', 'Assorted Breads', 12, 1, datetime('now'), datetime('now')),
+  ('menu-cat-013', 'salad-raita', 'Salad Station', 13, 1, datetime('now'), datetime('now')),
+  ('menu-cat-014', 'raita', 'Raita & Accompaniments', 14, 1, datetime('now'), datetime('now')),
+  ('menu-cat-015', 'live-counters', 'Live Counters (Veg)', 15, 1, datetime('now'), datetime('now')),
+  ('menu-cat-016', 'live-counters-nonveg', 'Live Counters (Non-Veg)', 16, 1, datetime('now'), datetime('now')),
+  ('menu-cat-017', 'dessert', 'Dessert & Sweets', 17, 1, datetime('now'), datetime('now')),
+  ('menu-cat-018', 'fruit-counter', 'Fruit Counter', 18, 1, datetime('now'), datetime('now')),
+  ('menu-cat-019', 'specialty-counters', 'Specialty Counters', 19, 1, datetime('now'), datetime('now')),
+  ('menu-cat-020', 'arrival-drinks', 'As You Arrive (Koshur)', 20, 1, datetime('now'), datetime('now')),
+  ('menu-cat-021', 'buffet-nonveg', 'Buffet Non-Veg (Koshur)', 21, 1, datetime('now'), datetime('now')),
+  ('menu-cat-022', 'soft-drink', 'Soft Drink (High Tea)', 22, 1, datetime('now'), datetime('now')),
+  ('menu-cat-023', 'wazwan-nonveg', 'Wazwan Non-Veg', 23, 1, datetime('now'), datetime('now')),
+  ('menu-cat-024', 'wazwan-veg', 'Wazwan Veg', 24, 1, datetime('now'), datetime('now')),
+  ('menu-cat-025', 'wazwan-sweet', 'Wazwan Sweets', 25, 1, datetime('now'), datetime('now'));
 
 -- Menu items
 INSERT OR IGNORE INTO menu_items VALUES

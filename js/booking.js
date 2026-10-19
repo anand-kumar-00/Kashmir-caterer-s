@@ -387,8 +387,7 @@ function validateMenuSelection() {
     return true;
 }
 
-function renderBookingMenuOptions() {
-    // Show KC preloaded banner if applicable
+async function renderBookingMenuOptions() {
     const banner  = document.getElementById('kcPreloadedMenuBanner');
     const summary = document.getElementById('kcPreloadedMenuSummary');
     if (banner && summary && appState.bookingData.kcMenuItems && appState.bookingData.kcMenuItems.length) {
@@ -404,13 +403,42 @@ function renderBookingMenuOptions() {
     }
 
     const container = document.getElementById('bookingMenuCategories');
+    if (!container) return;
 
-    if (!container) {
-        return;
+    try {
+        const res = await fetch('/api/menu');
+        if (!res.ok) throw new Error('Menu api failed');
+        const items = await res.json();
+        if (Array.isArray(items) && items.length) {
+            const grouped = {};
+            items.forEach((item) => {
+                const key = item.category || 'other';
+                if (!grouped[key]) grouped[key] = [];
+                grouped[key].push(item);
+            });
+
+            container.innerHTML = Object.entries(grouped).map(([category, categoryItems]) => `
+                <section class="menu-modal-section">
+                    <div class="menu-modal-heading">
+                        <h3>${getCategoryLabel(category)}</h3>
+                    </div>
+                    <div class="menu-modal-items">
+                        ${categoryItems.map(item => renderBookingSelectableMenuItem(item)).join('')}
+                    </div>
+                </section>
+            `).join('');
+
+            document.querySelectorAll('.menu-item').forEach((menuItem) => {
+                menuItem.addEventListener('change', updateBookingMenuSelectionState);
+            });
+            updateBookingOverview();
+            return;
+        }
+    } catch (_) {
+        // Fall through to the legacy local catalog if the API is unavailable.
     }
 
     const bookingMenuCatalog = getBookingMenuCatalog();
-
     if (!bookingMenuCatalog.length) {
         const emptyLabel = typeof getTranslationValue === 'function' ? getTranslationValue('menuEmpty') : 'No menu items available yet.';
         container.innerHTML = `<div class="menu-loading-state">${emptyLabel}</div>`;
@@ -509,27 +537,35 @@ function findMenuItemById(itemId) {
     return null;
 }
 
-function ensureMenuStorage() {
-    const existingMenuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
-
-    if (!existingMenuItems.length) {
-        localStorage.setItem('menuItems', JSON.stringify(getDefaultMenuItems()));
-    }
-}
-
-function getDefaultMenuItems() {
-    return defaultBookingMenuCatalog.flatMap((section) =>
-        section.courses.flatMap((course) =>
-            course.items.map((item) => ({
-                id: item.id,
-                name: item.name,
-                category: section.meal.toLowerCase(),
-                type: course.title.toLowerCase().includes('main') ? 'main' : 'snacks',
-                price: item.price,
-                description: item.note,
-            }))
-        )
-    );
+function getCategoryLabel(category) {
+    const labels = {
+        'cold-beverages': 'Cold Beverages',
+        'shakes-smoothies': 'Shakes, Smoothies & Punches',
+        'hot-beverages': 'Hot Beverages',
+        'soup-veg': 'Soup Station (Veg)',
+        'soup-nonveg': 'Soup Station (Non-Veg)',
+        'appetizers-veg': 'Appetizers (Veg)',
+        'appetizers-nonveg': 'Appetizers (Non-Veg)',
+        'main-course-veg': 'Main Course (Veg)',
+        'main-course-nonveg': 'Main Course (Non-Veg)',
+        'main-course-hightea': 'Main Course (High Tea)',
+        'rice-pulao': 'Rice, Pulao & Biryani',
+        'assorted-bread': 'Assorted Breads',
+        'salad-raita': 'Salad Station',
+        'raita': 'Raita & Accompaniments',
+        'live-counters': 'Live Counters (Veg)',
+        'live-counters-nonveg': 'Live Counters (Non-Veg)',
+        'dessert': 'Dessert & Sweets',
+        'fruit-counter': 'Fruit Counter',
+        'specialty-counters': 'Specialty Counters',
+        'arrival-drinks': 'As You Arrive (Koshur)',
+        'buffet-nonveg': 'Buffet Non-Veg (Koshur)',
+        'soft-drink': 'Soft Drink (High Tea)',
+        'wazwan-nonveg': 'Wazwan Non-Veg',
+        'wazwan-veg': 'Wazwan Veg',
+        'wazwan-sweet': 'Wazwan Sweets',
+    };
+    return labels[category] || (category || 'Other').replace(/-/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
 }
 
 function getBookingMenuCatalog() {
@@ -960,6 +996,13 @@ function resetBookingForm() {
 // ================================
 // GALLERY LIGHTBOX
 // ================================
+
+window.submitBooking = submitBooking;
+window.resetBookingForm = resetBookingForm;
+window.goToStep = goToStep;
+window.closePaymentModal = closePaymentModal;
+window.simulatePayment = simulatePayment;
+window.completePayment = completePayment;
 
 function openLightbox(element) {
     const lightbox = document.getElementById('lightbox');

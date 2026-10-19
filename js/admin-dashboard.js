@@ -10,13 +10,6 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 function initializeDashboard(){ensureDashboardData();const appState=JSON.parse(localStorage.getItem('appState')||'{}');const hasDashboardAccess=appState.isLoggedIn&&(appState.userRole==='employee'||appState.userRole==='admin');if(!hasDashboardAccess){window.location.href='../index.html';return;}setDashboardDate();loadBusinessSettings();if(appState.currentUser){document.getElementById('user-name').textContent=appState.currentUser.name;document.getElementById('user-role-label').textContent=`${formatStatus(appState.currentUser.role)} access${appState.currentUser.employeeCode?` | ${appState.currentUser.employeeCode}`:''}`;const avatar=document.querySelector('.user-avatar');if(avatar){avatar.textContent=getInitials(appState.currentUser.name||appState.currentUser.role||'User');}}syncDashboardData();}
 function ensureDashboardData(){
   if(!JSON.parse(localStorage.getItem('locations')||'[]').length){localStorage.setItem('locations',JSON.stringify(defaultLocations));}
-  /* Seed full BBS menu from KCMenuData if not yet stored */
-  const storedMenu=JSON.parse(localStorage.getItem('menuItems')||'[]');
-  if(!storedMenu.length){
-    const seed=(window.KCMenuData&&window.KCMenuData.ITEMS)||[];
-    const mapped=seed.map(function(it){return{id:it.id,name:it.name,category:it.section||'other',type:it.type||'veg',rate:it.rate||'',note:it.note||'',description:it.description||'',isActive:true,createdAt:new Date().toISOString()};});
-    localStorage.setItem('menuItems',JSON.stringify(mapped));
-  }
   if(!JSON.parse(localStorage.getItem('galleryItems')||'[]').length){localStorage.setItem('galleryItems',JSON.stringify(defaultGalleryItems));}
   if(!localStorage.getItem('businessSettings')){localStorage.setItem('businessSettings',JSON.stringify(defaultBusinessSettings));}
   if(!localStorage.getItem('employeesDatabase')){const users=getUsers();const employees=users.filter((user)=>user.role==='employee'||user.role==='admin').map((user)=>({id:user.id,employeeCode:user.employeeCode,name:user.name,email:user.email,role:user.role,jobRole:user.jobRole||'staff',dailyRate:Number(user.dailyRate||0),daysWorked:Number(user.daysWorked||0),advancePaid:Number(user.advancePaid||0),isActive:user.isActive!==false,createdAt:user.createdAt||new Date().toISOString()}));localStorage.setItem('employeesDatabase',JSON.stringify(employees));}
@@ -72,10 +65,20 @@ const MENU_CAT_LABELS = {
 };
 const MENU_CAT_ORDER = Object.keys(MENU_CAT_LABELS);
 
-function loadMenuItems(){
+async function loadMenuItems(){
   const search = (document.getElementById('menu-search')||{}).value||'';
   const catFilter = (document.getElementById('menu-cat-filter')||{}).value||'';
-  _renderAdminMenu(search, catFilter);
+
+  try {
+    const res = await fetch('/api/menu');
+    if (!res.ok) throw new Error('Menu API unavailable');
+    const items = await res.json();
+    localStorage.setItem('menuItems', JSON.stringify(items));
+    _renderAdminMenu(search, catFilter, items);
+    return;
+  } catch (_) {
+    _renderAdminMenu(search, catFilter, getMenuItems());
+  }
 }
 
 function filterAdminMenu(){
@@ -84,11 +87,11 @@ function filterAdminMenu(){
   _renderAdminMenu(search, catFilter);
 }
 
-function _renderAdminMenu(search, typeFilter){
+function _renderAdminMenu(search, typeFilter, itemsOverride){
   const container = document.getElementById('admin-menu-sections');
   const countEl = document.getElementById('menu-item-count');
   if(!container) return;
-  let items = getMenuItems();
+  let items = Array.isArray(itemsOverride) ? itemsOverride : getMenuItems();
 
   /* apply filters */
   const q = search.trim().toLowerCase();
@@ -185,7 +188,7 @@ function openAddMenuModal(){
   document.getElementById('add-menu-form').reset();
   document.getElementById('addMenuModal').classList.add('active');
 }
-function handleAddMenuItem(event){
+async function handleAddMenuItem(event){
   event.preventDefault();
   const editId=document.getElementById('edit-menu-item-id').value.trim();
   const name=document.getElementById('mi-name').value.trim();
@@ -194,10 +197,28 @@ function handleAddMenuItem(event){
   const rate=document.getElementById('mi-rate').value.trim();
   const note=document.getElementById('mi-note').value.trim();
   const desc=document.getElementById('mi-desc').value.trim();
-  const menuItems=getMenuItems();
-  if(editId){const item=menuItems.find(i=>i.id===editId);if(item){item.name=name;item.category=category;item.type=type;item.rate=rate;item.note=note;item.description=desc;}}
-  else{menuItems.push({id:'ITEM-'+Date.now(),name,category,type,rate,note,description:desc,isActive:true,createdAt:new Date().toISOString()});}
-  localStorage.setItem('menuItems',JSON.stringify(menuItems));
+
+  const payload = { name, category, type, price: rate || 0, note, description: desc };
+  try {
+    if (editId) {
+      await fetch(`/api/menu/${editId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } else {
+      await fetch('/api/menu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    }
+  } catch (_) {
+    const menuItems=getMenuItems();
+    if(editId){const item=menuItems.find(i=>i.id===editId);if(item){item.name=name;item.category=category;item.type=type;item.rate=rate;item.note=note;item.description=desc;}}
+    else{menuItems.push({id:'ITEM-'+Date.now(),name,category,type,rate,note,description:desc,isActive:true,createdAt:new Date().toISOString()});}
+    localStorage.setItem('menuItems',JSON.stringify(menuItems));
+  }
   closeModal();loadMenuItems();loadBookedMenus();
 }
 function editMenuItem(itemId){
@@ -214,9 +235,14 @@ function editMenuItem(itemId){
   document.getElementById('add-menu-submit-btn').textContent='Save Changes';
   document.getElementById('addMenuModal').classList.add('active');
 }
-function deleteMenuItem(itemId){
+async function deleteMenuItem(itemId){
   if(!confirm('Delete this menu item?'))return;
-  localStorage.setItem('menuItems',JSON.stringify(getMenuItems().filter(i=>i.id!==itemId)));
+  try {
+    const res = await fetch(`/api/menu/${itemId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Menu delete failed');
+  } catch (_) {
+    localStorage.setItem('menuItems',JSON.stringify(getMenuItems().filter(i=>i.id!==itemId)));
+  }
   loadMenuItems();loadBookedMenus();
 }
 function loadGalleryItems(){const galleryItems=getGalleryItems();const container=document.getElementById('gallery-admin-list');if(!container)return;if(galleryItems.length===0){container.innerHTML='<div class="empty-state-panel">No gallery items added</div>';return;}container.innerHTML=galleryItems.map((item)=>`<article class="gallery-admin-card"><img src="${item.image}" alt="${item.title||'Gallery image'}"><div class="gallery-admin-content"><h4>${item.title||'Gallery Item'}</h4><p>${item.image}</p><div class="gallery-admin-actions"><button class="action-btn" onclick="editGalleryItem('${item.id}')">Edit</button><button class="action-btn" onclick="deleteGalleryItem('${item.id}')">Delete</button></div></div></article>`).join('');}

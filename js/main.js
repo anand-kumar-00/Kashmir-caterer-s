@@ -16,22 +16,6 @@ const appState = {
     },
 };
 
-const defaultHomepageMenuItems = [
-    { id: 'breakfast-kahwa', name: 'Kashmiri Kahwa', category: 'breakfast', type: 'snacks', price: 1800, description: 'Traditional welcome beverage' },
-    { id: 'breakfast-bakerkhani', name: 'Bakerkhani', category: 'breakfast', type: 'snacks', price: 2200, description: 'Flaky bakery special' },
-    { id: 'breakfast-harissa-bites', name: 'Harissa Bites', category: 'breakfast', type: 'snacks', price: 2600, description: 'Chef-served mini portions' },
-    { id: 'breakfast-nadru-yakhni', name: 'Nadru Yakhni', category: 'breakfast', type: 'main', price: 3400, description: 'Lotus stem yogurt curry' },
-    { id: 'breakfast-chaman-qaliya', name: 'Chaman Qaliya', category: 'breakfast', type: 'main', price: 3200, description: 'Paneer in saffron gravy' },
-    { id: 'lunch-seekh-kebab', name: 'Seekh Kebab', category: 'lunch', type: 'snacks', price: 3000, description: 'Chargrilled signature starter' },
-    { id: 'lunch-paneer-tikka', name: 'Paneer Tikka', category: 'lunch', type: 'snacks', price: 2800, description: 'Smoky vegetarian classic' },
-    { id: 'lunch-rogan-josh', name: 'Rogan Josh', category: 'lunch', type: 'main', price: 4200, description: 'Slow-cooked Kashmiri mutton curry' },
-    { id: 'lunch-gushtaba', name: 'Gushtaba', category: 'lunch', type: 'main', price: 4500, description: 'Royal meatball delicacy' },
-    { id: 'dinner-mutton-shami', name: 'Mutton Shami Kebab', category: 'dinner', type: 'snacks', price: 3400, description: 'Soft kebabs with rich aroma' },
-    { id: 'dinner-cheese-cigars', name: 'Cheese Cigars', category: 'dinner', type: 'snacks', price: 2600, description: 'Crisp party starter' },
-    { id: 'dinner-rista', name: 'Rista', category: 'dinner', type: 'main', price: 4300, description: 'Classic red-gravy meatballs' },
-    { id: 'dinner-yakhni', name: 'Mutton Yakhni', category: 'dinner', type: 'main', price: 4100, description: 'Aromatic yogurt-based curry' },
-];
-
 const defaultHomepageGalleryItems = [
     { id: 'gallery-1', title: 'Wedding Service Setup', image: 'images/gallery-1.png' },
     { id: 'gallery-2', title: 'Celebration Decor', image: 'images/gallery-2.png' },
@@ -102,10 +86,6 @@ function initializeApp() {
 }
 
 function ensureHomepageData() {
-    if (!JSON.parse(localStorage.getItem('menuItems') || '[]').length) {
-        localStorage.setItem('menuItems', JSON.stringify(defaultHomepageMenuItems));
-    }
-
     if (!JSON.parse(localStorage.getItem('galleryItems') || '[]').length) {
         localStorage.setItem('galleryItems', JSON.stringify(defaultHomepageGalleryItems));
     }
@@ -124,60 +104,68 @@ function renderHomepageContent() {
     setupScrollAnimations();
 }
 
-function renderMenuModalContent() {
+async function renderMenuModalContent() {
     const menuContainer = document.getElementById('menu-modal-list');
     if (!menuContainer) {
         return;
     }
 
-    const groupedMenu = getGroupedMenuData();
+    try {
+        const res = await fetch('/api/menu');
+        if (!res.ok) throw new Error('Menu API unavailable');
+        const menuItems = await res.json();
+        const groupedMenu = getGroupedMenuData(menuItems);
 
-    if (!groupedMenu.length) {
-        menuContainer.innerHTML = `<div class="menu-loading-state">${getTranslationValue('menuEmpty')}</div>`;
-        return;
-    }
+        if (!groupedMenu.length) {
+            menuContainer.innerHTML = `<div class="menu-loading-state">${getTranslationValue('menuEmpty')}</div>`;
+            return;
+        }
 
-    menuContainer.innerHTML = groupedMenu
-        .map(
-            (section) => `
-                <section class="menu-modal-section">
-                    <div class="menu-modal-heading">
-                        <h3>${section.label}</h3>
-                    </div>
-                    <div class="menu-modal-courses">
-                        ${section.courses
-                            .map(
-                                (course) => `
-                                    <article class="menu-modal-course">
-                                        <div class="menu-course-title">${course.label}</div>
-                                        <div class="menu-modal-items">
-                                            ${course.items
-                                                .map(
-                                                    (item) => `
-                                                        <div class="menu-modal-item">
-                                                            <div>
-                                                                <strong>${item.name}</strong>
-                                                                <p>${item.description || getTranslationValue('chefCurated')}</p>
+        menuContainer.innerHTML = groupedMenu
+            .map(
+                (section) => `
+                    <section class="menu-modal-section">
+                        <div class="menu-modal-heading">
+                            <h3>${section.label}</h3>
+                        </div>
+                        <div class="menu-modal-courses">
+                            ${section.courses
+                                .map(
+                                    (course) => `
+                                        <article class="menu-modal-course">
+                                            <div class="menu-course-title">${course.label}</div>
+                                            <div class="menu-modal-items">
+                                                ${course.items
+                                                    .map(
+                                                        (item) => `
+                                                            <div class="menu-modal-item">
+                                                                <div>
+                                                                    <strong>${item.name}</strong>
+                                                                    <p>${item.description || getTranslationValue('chefCurated')}</p>
+                                                                </div>
+                                                                <span>Rs ${Number(item.price || 0).toLocaleString('en-IN')}</span>
                                                             </div>
-                                                            <span>Rs ${Number(item.price || 0).toLocaleString('en-IN')}</span>
-                                                        </div>
-                                                    `
-                                                )
-                                                .join('')}
-                                        </div>
-                                    </article>
-                                `
-                            )
-                            .join('')}
-                    </div>
-                </section>
-            `
-        )
-        .join('');
+                                                        `
+                                                    )
+                                                    .join('')}
+                                            </div>
+                                        </article>
+                                    `
+                                )
+                                .join('')}
+                        </div>
+                    </section>
+                `
+            )
+            .join('');
+        return;
+    } catch (_) {
+        menuContainer.innerHTML = `<div class="menu-loading-state">${getTranslationValue('menuEmpty')}</div>`;
+    }
 }
 
-function getGroupedMenuData() {
-    const menuItems = JSON.parse(localStorage.getItem('menuItems') || '[]');
+function getGroupedMenuData(menuItems = []) {
+    const items = Array.isArray(menuItems) && menuItems.length ? menuItems : JSON.parse(localStorage.getItem('menuItems') || '[]');
     const categories = [
         { key: 'breakfast', label: getTranslationValue('menuCategoryBreakfast') },
         { key: 'lunch', label: getTranslationValue('menuCategoryLunch') },
@@ -194,7 +182,7 @@ function getGroupedMenuData() {
             courses: courses
                 .map((course) => ({
                     label: course.label,
-                    items: menuItems.filter(
+                    items: items.filter(
                         (item) => item.category === category.key && normalizeMenuType(item.type) === course.key
                     ),
                 }))
@@ -256,6 +244,10 @@ function openBookingModal(event) {
         modal.classList.add('active');
     }
 }
+
+window.openBookingModal = openBookingModal;
+window.closeBookingModal = closeBookingModal;
+window.toggleMobileMenu = toggleMobileMenu;
 
 function closeBookingModal(event) {
     if (event && event.target !== event.currentTarget) {
